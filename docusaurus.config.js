@@ -59,7 +59,7 @@ const config = {
         items: [
           {
             type: "doc",
-            label: "Coding",
+            label: "Essentials",
             docId: "intro",
             position: "left"
           },
@@ -88,7 +88,7 @@ const config = {
             title: "Site Navigation",
             items: [
               {
-                label: "Coding",
+                label: "Essential Tools for Coding",
                 to: "/docs/intro"
               },
               {
