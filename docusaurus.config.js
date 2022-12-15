@@ -6,8 +6,8 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula")
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "My Site",
-  tagline: "Dinosaurs are cool",
+  title: "Easier to learn by practice",
+  tagline: "A documentation by Isaac Li",
   url: "https://your-docusaurus-test-site.com",
   baseUrl: "/",
   onBrokenLinks: "throw",
@@ -33,16 +33,12 @@ const config = {
       /** @type {import('@docusaurus/preset-classic').Options} */
       ({
         docs: {
-          sidebarPath: require.resolve("./sidebars.js"),
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/"
+          sidebarPath: require.resolve("./sidebars.js")
+          // editUrl: "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/"
         },
         blog: {
-          showReadingTime: true,
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
-          editUrl: "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/"
+          showReadingTime: true
+          // editUrl: "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/"
         },
         theme: {
           customCss: require.resolve("./src/css/custom.css")
@@ -55,22 +51,39 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: "My Site",
+        title: "Site Navigation",
         logo: {
-          alt: "My Site Logo",
-          src: "img/logo.svg"
+          alt: "Logo of Docusaurus",
+          src: "img/black_cat.svg"
         },
         items: [
           {
             type: "doc",
+            label: "Coding",
             docId: "intro",
-            position: "left",
-            label: "Tutorial"
+            position: "left"
           },
-          { to: "/blog", label: "Blog", position: "left" },
+          { label: "Next.js", to: "/docs/nextjs/get-started", position: "left" },
+          { label: "Outdoor Activities", to: "/blog", position: "left" },
+          { label: " ", to: "/", position: "left" },
           {
-            href: "https://github.com/facebook/docusaurus",
+            label: "YouTube",
+            href: "https://www.youtube.com/@catreunion/videos",
+            position: "right"
+          },
+          {
             label: "GitHub",
+            href: "https://github.com/catreunion",
+            position: "right"
+          },
+          {
+            label: "Facebook",
+            href: "https://www.facebook.com/catreunion2/",
+            position: "right"
+          },
+          {
+            label: "Twitter",
+            href: "https://twitter.com/catreunion2",
             position: "right"
           }
         ]
@@ -78,47 +91,44 @@ const config = {
       footer: {
         style: "dark",
         links: [
+          // to
           {
-            title: "Docs",
+            title: "Site Navigation",
             items: [
               {
-                label: "Tutorial",
+                label: "Coding",
                 to: "/docs/intro"
-              }
-            ]
-          },
-          {
-            title: "Community",
-            items: [
-              {
-                label: "Stack Overflow",
-                href: "https://stackoverflow.com/questions/tagged/docusaurus"
               },
               {
-                label: "Discord",
-                href: "https://discordapp.com/invite/docusaurus"
-              },
-              {
-                label: "Twitter",
-                href: "https://twitter.com/docusaurus"
-              }
-            ]
-          },
-          {
-            title: "More",
-            items: [
-              {
-                label: "Blog",
+                label: "Outdoor Activities",
                 to: "/blog"
+              }
+            ]
+          },
+          // href
+          {
+            title: "About me",
+            items: [
+              {
+                label: "YouTube",
+                href: "https://www.youtube.com/@catreunion/videos"
               },
               {
                 label: "GitHub",
                 href: "https://github.com/facebook/docusaurus"
+              },
+              {
+                label: "Facebook",
+                href: "https://www.facebook.com/catreunion2/"
+              },
+              {
+                label: "Twitter",
+                href: "https://twitter.com/catreunion2"
               }
             ]
           }
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`
+        copyright: `Copyright © ${new Date().getFullYear()} Isaac Li Computer Services, Inc.`
       },
       prism: {
         theme: lightCodeTheme,
