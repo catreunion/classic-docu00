@@ -61,7 +61,7 @@ const config = {
             docId: "intro",
             position: "left"
           },
-          { label: "Next.js", to: "/docs/nextjs/00get-started", position: "left" },
+          { label: "Next.js", to: "/docs/nextjs/00React", position: "left" },
           { label: "Tailwind", to: "/docs/tailwind/get-started", position: "left" },
           { label: "Supabase", to: "/docs/supabase/00JWT", position: "left" },
           { label: "Blog", to: "/blog", position: "left" },
@@ -91,7 +91,7 @@ const config = {
               },
               {
                 label: "Next.js",
-                to: "/docs/nextjs/00get-started"
+                to: "/docs/nextjs/00React"
               },
               {
                 label: "Tailwind CSS",

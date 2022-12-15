@@ -2,7 +2,51 @@
 sidebar_position: 1
 ---
 
-# Git
+# GitHub
+
+## Create a repository on GitHub
+
+1. Sign in to [GitHub](https://github.com/)
+
+2. On the upper right corner, click the plus icon. Click "New repository"
+
+3. Suggest a repository name, e.g. `next-demo-00`. Choose **private**. Click "Create repository"
+
+4. On the section of **Quick setup**, click **SSH**. Click the copy icon.
+
+&nbsp;
+
+## Link the Next.js project with the GitHub repository
+
+```shell
+# stop the dev environment
+
+# remove the default git setup
+❯ rm -rf .git
+
+# initialize a local git
+❯ git init
+
+# add all the files and directories to local git
+❯ git add .
+
+# leave a note about this changes
+❯ git commit -m 'version 1.0.0'
+
+# link the local git to the remote git on GitHub
+❯ git remote add origin git@github.com:yuniscat/next-demo-00.git
+
+# create a new branch called main
+❯ git branch -M main
+
+# upload all the files and directories to the remote git on GitHub
+❯ git push -u origin main
+
+# input the passphrase of the SSH keys
+Enter passphrase for key '/Users/isaac/.ssh/id_ed25519':
+
+# go to https://vercel.com and sign up for a free account
+```
 
 Connect and authenticate to GitHub using Secure Shell Protocol (SSH).
 
