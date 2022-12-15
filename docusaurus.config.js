@@ -63,7 +63,7 @@ const config = {
           },
           { label: "Next.js", to: "/docs/nextjs/00get-started", position: "left" },
           { label: "Tailwind", to: "/docs/tailwind/get-started", position: "left" },
-          { label: "Supabase", to: "/docs/supabase/get-started", position: "left" },
+          { label: "Supabase", to: "/docs/supabase/00JWT", position: "left" },
           { label: "Blog", to: "/blog", position: "left" },
           { label: " ", to: "/", position: "left" },
           {
@@ -99,7 +99,7 @@ const config = {
               },
               {
                 label: "Supabase",
-                to: "/docs/supabase/get-started"
+                to: "/docs/supabase/00JWT"
               },
               {
                 label: "Blog",
