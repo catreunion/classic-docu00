@@ -51,7 +51,7 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       navbar: {
-        title: "Site Navigation",
+        title: "",
         logo: {
           alt: "Logo of Docusaurus",
           src: "img/black_cat.svg"
@@ -63,29 +63,21 @@ const config = {
             docId: "intro",
             position: "left"
           },
-          { label: "Next.js", to: "/docs/nextjs/get-started", position: "left" },
-          { label: "Outdoor Activities", to: "/blog", position: "left" },
-          { label: " ", to: "/", position: "left" },
-          {
-            label: "YouTube",
-            href: "https://www.youtube.com/@catreunion/videos",
-            position: "right"
-          },
-          {
-            label: "GitHub",
-            href: "https://github.com/catreunion",
-            position: "right"
-          },
-          {
-            label: "Facebook",
-            href: "https://www.facebook.com/catreunion2/",
-            position: "right"
-          },
-          {
-            label: "Twitter",
-            href: "https://twitter.com/catreunion2",
-            position: "right"
-          }
+          { label: "Next.js", to: "/docs/nextjs/00get-started", position: "left" },
+          { label: "Tailwind", to: "/docs/tailwind/00get-started", position: "left" },
+          { label: "Supabase", to: "/docs/supabase/get-started", position: "left" },
+          { label: "My Blog", to: "/blog", position: "left" },
+          { label: " ", to: "/", position: "left" }
+          // {
+          //   label: "YouTube",
+          //   href: "https://www.youtube.com/@catreunion/videos",
+          //   position: "right"
+          // },
+          // {
+          //   label: "GitHub",
+          //   href: "https://github.com/catreunion",
+          //   position: "right"
+          // }
         ]
       },
       footer: {
@@ -98,6 +90,18 @@ const config = {
               {
                 label: "Coding",
                 to: "/docs/intro"
+              },
+              {
+                label: "Next.js",
+                to: "/docs/intro"
+              },
+              {
+                label: "Tailwind",
+                to: "/docs/tailwind/00get-started"
+              },
+              {
+                label: "Supabase",
+                to: "/docs/supabase/get-started"
               },
               {
                 label: "Outdoor Activities",
