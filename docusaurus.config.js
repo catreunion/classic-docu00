@@ -5,23 +5,21 @@ const lightCodeTheme = require("prism-react-renderer/themes/github")
 const darkCodeTheme = require("prism-react-renderer/themes/dracula")
 
 /** @type {import('@docusaurus/types').Config} */
+
 const config = {
   title: "Easier to learn by practice",
   tagline: "A documentation by Isaac Li",
-  url: "https://your-docusaurus-test-site.com",
+  url: "https://isaac-ds.vercel.app/",
   baseUrl: "/",
   onBrokenLinks: "throw",
   onBrokenMarkdownLinks: "warn",
   favicon: "img/favicon.ico",
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: "facebook", // Usually your GitHub org/user name.
-  projectName: "docusaurus", // Usually your repo name.
+  // GitHub pages deployment config
+  organizationName: "catreunion",
+  projectName: "isaac-ds",
 
-  // Even if you don't use internalization, you can use this field to set useful
-  // metadata like html lang. For example, if your site is Chinese, you may want
-  // to replace "en" with "zh-Hans".
+  // for Chinese site, replace "en" with "zh-Hans"
   i18n: {
     defaultLocale: "en",
     locales: ["en"]
@@ -53,31 +51,31 @@ const config = {
       navbar: {
         title: "",
         logo: {
-          alt: "Logo of Docusaurus",
+          alt: "a black cat",
           src: "img/black_cat.svg"
         },
         items: [
           {
             type: "doc",
-            label: "Essentials",
+            label: "Essential Tools",
             docId: "intro",
             position: "left"
           },
           { label: "Next.js", to: "/docs/nextjs/00get-started", position: "left" },
-          { label: "Tailwind", to: "/docs/tailwind/00get-started", position: "left" },
+          { label: "Tailwind", to: "/docs/tailwind/get-started", position: "left" },
           { label: "Supabase", to: "/docs/supabase/get-started", position: "left" },
-          { label: "My Blog", to: "/blog", position: "left" },
-          { label: " ", to: "/", position: "left" }
-          // {
-          //   label: "YouTube",
-          //   href: "https://www.youtube.com/@catreunion/videos",
-          //   position: "right"
-          // },
-          // {
-          //   label: "GitHub",
-          //   href: "https://github.com/catreunion",
-          //   position: "right"
-          // }
+          { label: "Blog", to: "/blog", position: "left" },
+          { label: " ", to: "/", position: "left" },
+          {
+            label: "YouTube",
+            href: "https://www.youtube.com/@catreunion/videos",
+            position: "right"
+          },
+          {
+            label: "GitHub",
+            href: "https://github.com/catreunion",
+            position: "right"
+          }
         ]
       },
       footer: {
@@ -93,18 +91,18 @@ const config = {
               },
               {
                 label: "Next.js",
-                to: "/docs/intro"
+                to: "/docs/nextjs/00get-started"
               },
               {
-                label: "Tailwind",
-                to: "/docs/tailwind/00get-started"
+                label: "Tailwind CSS",
+                to: "/docs/tailwind/get-started"
               },
               {
                 label: "Supabase",
                 to: "/docs/supabase/get-started"
               },
               {
-                label: "Outdoor Activities",
+                label: "Blog",
                 to: "/blog"
               }
             ]
