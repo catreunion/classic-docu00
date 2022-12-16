@@ -4,11 +4,9 @@ sidebar_position: 3
 
 # Coding in Next.js
 
-Next.js is a highly versatile framework offering pre-rendering at build time (SSG), server-side rendering at request time (SSR), API routes, and middleware edge-functions
+APIs will be automatically generated when you create your database tables.
 
-APIs will be automatically generated when you create your database tables
-
-Install several Supabase libraries
+## Installation
 
 ```bash
 yarn add @supabase/supabase-js
@@ -16,7 +14,7 @@ yarn add @supabase/auth-helpers-react @supabase/auth-helpers-nextjs
 yarn add @supabase/auth-ui-react
 ```
 
-Collect 2 environment variables
+## Collect 2 environment variables
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=

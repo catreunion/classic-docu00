@@ -74,19 +74,30 @@ A [component](https://beta.reactjs.org/learn/your-first-component) is a **functi
 
 Inside the return statement of the function, we write **JSX**.
 
-Break down UI into smaller building blocks.
+Always start component names with a capital letter.
+
+Split / break down UI into smaller, self-contained, reusable snippets of code. <-- Modularity
 
 Think of components as **LEGO bricks** which can be combined together to **form a larger structure**.
 
-Self-contained, reusable snippets of code <-- Modularity
+Recommend naming props from the component’s own point of view rather than the context in which it is being used. <-- Choose a more generic name: user rather than author
 
 Source : [import and export components](https://beta.reactjs.org/learn/importing-and-exporting-components)
 
+```jsx
+// use an ES6 class to define a component
+class Welcome extends React.Component {
+  render() {
+    return <h1>Hello, {this.props.name}</h1>
+  }
+}
+```
+
 ## Props and State
 
-Data (state) can be passed **from parent to child** components as props (short for properties).
+UIs are dynamic and change over time.
 
-Data flows down component tree <-- One-way
+Data (state) can be passed **from parent to child** components as a single **props** (short for properties) **object**.
 
 Example 1 :
 
@@ -119,6 +130,24 @@ export default HomePage
 Example 2 :
 
 ```jsx
+const Comment = ({ author, text, date }) => {
+  return (
+    <>
+      <div>
+        <img src={author.avatarUrl} alt={author.name} />
+        <div>{author.name}</div>
+      </div>
+
+      <div>{text}</div>
+      <div>{formatDate(date)}</div>
+    </>
+  )
+}
+```
+
+Example 3 :
+
+```jsx
 const Header = ({ title }) => {
   const createTitle = (title) => {
     if (title) {
@@ -127,8 +156,6 @@ const Header = ({ title }) => {
       return "default title"
     }
   }
-
-  console.log(title)
 
   return (
     <>
@@ -150,7 +177,30 @@ const HomePage = () => {
 export default HomePage
 ```
 
-Example 3 :
+Props are **read-only**. Data flows down component tree in one-way.
+
+Rule : Never modify its own props.
+
+Example 4 :
+
+```js
+// does not change the values of inputs
+// return the same result for the same inputs
+// pure
+const sum = (a, b) => {
+  return a + b
+}
+
+// change the value of its own input
+// inpure
+const withdraw = (account, amount) => {
+  account.total -= amount
+}
+```
+
+React components must act like pure functions with respect to their props.
+
+Example 5 :
 
 ```jsx
 import { useState } from "react"
@@ -193,6 +243,42 @@ export default Home
 ```
 
 **object destructuring** explicitly name the values of props inside the function parameters
+
+## Dealing with a collection of data
+
+Keys help React identify which items have changed, added or removed.
+
+Keys should be given to the elements **inside the array**.
+
+Use a string that uniquely identifies a item among its siblings.
+
+Example 1 :
+
+```jsx
+const numbers = [1, 2, 3, 4, 5]
+
+// transform an array into a list of elements
+// a bullet list of numbers between 1 and 5
+const NumberList = ({ numbers }) => {
+  // return a <li> element for each item
+  // assign the resulting array of elements to listItems
+  const listItems = numbers.map((item) => <li key={item.toString()}>{item}</li>)
+  return <ul>{listItems}</ul>
+}
+
+return (
+  <>
+    <NumberList numbers={numbers} />
+  </>
+)
+```
+
+Example 2 :
+
+```js
+// use the item index as a key
+const todoItems = todos.map((todo, index) => <li key={index}>{todo.text}</li>)
+```
 
 Source : [Passing Props to a Component](https://beta.reactjs.org/learn/passing-props-to-a-component), [Rendering Lists](https://beta.reactjs.org/learn/rendering-lists), [Conditional Rendering](https://beta.reactjs.org/learn/conditional-rendering), curly braces `{ }`, [Introducing Hooks](https://reactjs.org/docs/hooks-intro.html), [Adding Interactivity](https://beta.reactjs.org/learn/adding-interactivity), [Managing State](https://beta.reactjs.org/learn/managing-state), [State: A Component's Memory](https://beta.reactjs.org/learn/state-a-components-memory#), [Meet your first Hook](https://beta.reactjs.org/learn/state-a-components-memory#meet-your-first-hook), [Responding to Events](https://beta.reactjs.org/learn/responding-to-events)
 

@@ -77,3 +77,7 @@ Dynamic routes
 - `pages/posts/[id].jsx` → `/posts/:id`
 
 - `pages/[username]/settings.jsx` → `/:username/settings`
+
+## \_App.js
+
+Pass JSX attributes and children to this component as a single object
