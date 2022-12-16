@@ -16,7 +16,7 @@ yarn add @supabase/auth-ui-react
 
 ## Collect 2 environment variables
 
-```env
+```env title='.env.local'
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
