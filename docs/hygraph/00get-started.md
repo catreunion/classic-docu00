@@ -56,8 +56,6 @@ const PostsPage = ({ posts }) => (
 export default PostsPage
 ```
 
-[Example]()
-
 - querying via GraphQL
 
 [Create a Model | YouTube](https://youtu.be/gDlWGrg8nxw), [Add fields | YouTube](https://youtu.be/W1x2OOFt7Ro)
@@ -81,9 +79,7 @@ Hygraph automatically generates queries to fetch content entries, as well as mut
 }
 ```
 
-[API Reference]() : filtering, pagination, ordering, transforming image assets
-
-[Mutating content]()
+filtering, pagination, ordering, transforming image assets
 
 Hygraph will automatically generate GraphQL mutations so you can create, update, delete, publish, and unpublish content entries.
 

@@ -1,6 +1,6 @@
 {
   "label": "Next.js",
-  "position": 5,
+  "position": 4,
   "link": {
     "type": "generated-index",
     "description": "Next.js is a highly versatile framework offering pre-rendering at build time (SSG), server-side rendering at request time (SSR), API routes, and middleware edge-functions."
