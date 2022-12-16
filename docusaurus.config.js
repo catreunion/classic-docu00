@@ -65,7 +65,7 @@ const config = {
           },
           { label: "Next.js", to: "/docs/nextjs/00React", position: "left" },
           { label: "Tailwind", to: "/docs/tailwind/get-started", position: "left" },
-          { label: "Hygraph", to: "/docs/hygraph/00get-started", position: "left" },
+          { label: "Hygraph", to: "/docs/hygraph/00Intro", position: "left" },
           { label: "Supabase", to: "/docs/supabase/00JWT", position: "left" },
           { label: "Blog", to: "/blog", position: "left" },
           { label: " ", to: "/", position: "left" },
@@ -102,7 +102,7 @@ const config = {
               },
               {
                 label: "Hygraph",
-                to: "/docs/hygraph/00get-started"
+                to: "/docs/hygraph/00Intro"
               },
               {
                 label: "Supabase",

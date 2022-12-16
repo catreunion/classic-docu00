@@ -1,3 +1,9 @@
+---
+sidebar_position: 2
+---
+
+# Coding in Next.js
+
 ```bash
 # install dependencies
 yarn add graphql-request graphql
