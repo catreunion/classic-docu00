@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 
-# Querying from Hygraph via GraphQL
+# Querying via GraphQL
 
 - the syntax is modern and straightforward to read
 

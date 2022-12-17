@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# GraphQL Headless CMS
+# A GraphQL Headless CMS
 
 - Source : [CMS explained in 5 mins](https://hygraph.com/academy/headless-cms), [Video 01](https://youtu.be/s-47dgkrQns), [Video 02](https://youtu.be/SdyK5k4HXaQ)
 
