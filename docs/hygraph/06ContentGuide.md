@@ -2,7 +2,7 @@
 sidebar_position: 7
 ---
 
-# Customizing content dashboard
+# Content Management
 
 ### Configuring columns
 

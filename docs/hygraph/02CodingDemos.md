@@ -1,8 +1,8 @@
 ---
-sidebar_position: 4
+sidebar_position: 3
 ---
 
-# Querying via GraphQL
+# Coding demos
 
 - the syntax is modern and straightforward to read
 
