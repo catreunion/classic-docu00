@@ -106,96 +106,11 @@ const typeDefs = gql`
 module.exports = typeDefs
 ```
 
-## Apollo Server and Apollo Explorer
-
-Receive an incoming GraphQL query from our client
-Validate that query against our newly created schema
-Populate the queried schema fields with mocked data
-Return the populated fields as a response
-
-The Apollo Server library helps us implement this server quickly, painlessly, and in a production-ready way.
-
-To create our server, we'll use the apollo-server package that we installed previously. From that package, we'll only need the named export ApolloServer, so we'll declare that constant between curly braces. Just below, we'll import our typeDefs from our schema.js file:
+## Apollo Server
 
 ```js title='server/src/index.js'
 const { ApolloServer } = require("apollo-server")
 const typeDefs = require("./schema")
-```
-
-Next, we'll create an instance of the ApolloServer class and pass it our typeDefs in its options object:
-
-Note: We're using shorthand property notation with implied keys, because we've named our constant with the matching key (typeDefs).
-
-```js
-const server = new ApolloServer({ typeDefs })
-```
-
-Finally, to start it up, we'll call the async listen method. When it resolves, it logs a nice little message letting us know that our server is indeed up and running:
-
-```js
-server.listen().then(() => {
-  console.log(`
-    🚀  Server is running!
-    🔉  Listening on port 4000
-    📭  Query at http://localhost:4000
-  `)
-})
-```
-
-Save your changes. From the terminal, we'll launch our server with npm run start (make sure you're in the server/ folder).
-
-We get the log message and...not much else! We have a running server, but that's it. Floating in the vacuum of localhost space without access to any data, it's a sad and lonely server for now. 😿
-
-Which of these are purposes of a GraphQL server?
-
-Even though our server isn't connected to any data sources yet, it would be great to be able to send the server a test query and get a valid response. Fortunately, ApolloServer provides a way to do exactly that, using mocked data.
-
-To enable basic mocked data, we could provide mocks:true to the ApolloServer constructor, like so:
-
-```js
-const server = new ApolloServer({
-  typeDefs,
-  mocks: true
-})
-```
-
-This instructs Apollo Server to populate every queried schema field with a placeholder value (such as Hello World for String fields).
-
-However, Hello World isn't a very realistic value for the title of a track or the URL of an author's picture! To serve mocked data that's closer to reality, we'll pass an object to the mocks property instead of just true. This object contains functions that provide the mocked data we want the server to return for each queried field.
-
-Here's our mocks object:
-
-```js
-const mocks = {
-  Track: () => ({
-    id: () => "track_01",
-    title: () => "Astro Kitty, Space Explorer",
-    author: () => {
-      return {
-        name: "Grumpy Cat",
-        photo: "https://res.cloudinary.com/dety84pbu/image/upload/v1606816219/kitty-veyron-sm_mctf3c.jpg"
-      }
-    },
-    thumbnail: () => "https://res.cloudinary.com/dety84pbu/image/upload/v1598465568/nebula_cat_djkt9r.jpg",
-    length: () => 1210,
-    modulesCount: () => 6
-  })
-}
-```
-
-This object defines mock values for all of the fields of a Track object (including the Author object it contains). We pass this object to the ApolloServer constructor like so:
-
-```js
-const server = new ApolloServer({
-  typeDefs,
-  mocks
-})
-```
-
-With mocks enabled, Apollo Server always returns exactly two entries for every list field.
-To get more entries at a time, let's say 6, we'll add a Query.tracksForHome to our mocks object and return an Array of that given length like so: [...new Array(6)].
-
-```js
 const mocks = {
   Query: () => ({
     tracksForHome: () => [...new Array(6)]
@@ -212,23 +127,186 @@ const mocks = {
     thumbnail: () => "https://res.cloudinary.com/dety84pbu/image/upload/v1598465568/nebula_cat_djkt9r.jpg",
     length: () => 1210,
     modulesCount: () => 6
+  }),
+  SpaceCat: () => ({
+    id: () => "spacecat_01",
+    title: () => "spacecat pioneer"
   })
 }
+
+// create an instance of the ApolloServer class
+// const server = new ApolloServer({ typeDefs, mocks: true })
+const server = new ApolloServer({ typeDefs, mocks })
+
+server.listen().then(() => {
+  console.log(`
+    🚀  Server is running!
+    🔉  Listening on port 4000
+    📭  Query at http://localhost:4000
+  `)
+})
 ```
 
-Which of these are true about querying Apollo Server without a connected data source?
+## Apollo Explorer
 
-Code Challenge!
-
-Create a mock object with a type SpaceCat, an id of spacecat_01, and a title of 'spacecat pioneer'
+Apollo Sandbox : A special mode of Apollo Studio that lets you test your local graph changes before deploying them.
+http://localhost:4000
 
 ```
-const mocks = {
-  // define your mock properties here
+query GetTracks {
+  tracksForHome {
+    id
+    title
+    thumbnail
+    length
+    modulesCount
+    author {
+      id
+      name
+      photo
+    }
+  }
 }
 ```
 
-Now, with our server loaded with mocked data, how can we run a query on it to test if everything works as expected? In the next lesson, we'll use the Apollo Studio Explorer to build and run test queries seamlessly.
+```bash
+yarn add graphql @apollo/client
+```
+
+```js
+import React from "react"
+import ReactDOM from "react-dom"
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client"
+import GlobalStyles from "./styles"
+import Pages from "./pages"
+
+// create a new client instance
+const client = new ApolloClient({
+  // specify the location of our GraphQL server
+  uri: "http://localhost:4000",
+  // provide an InMemoryCache instance in the cache option
+  // store and reuse query results
+  cache: new InMemoryCache()
+})
+
+ReactDOM.render(
+  // pass the Apollo Client instance as a prop
+  // make it available throughout the component tree with React's Context API
+  // pages, containers, and components can access the client via React Hooks
+  <ApolloProvider client={client}>
+    <GlobalStyles />
+    <Pages />
+  </ApolloProvider>,
+  document.getElementById("root")
+)
+```
+
+creat client queries
+
+design the first query that our client will execute. Specifically, we'll design the query that our tracks page will use to display its card grid.
+
+The code for our tracks page lives in
+
+```js title='src/pages/tracks.js'
+import { gql } from "@apollo/client"
+
+// wrap all GraphQL strings in the gql template literal
+const TRACKS = gql`
+  query GetTracks {
+    tracksForHome {
+      id
+      title
+      thumbnail
+      length
+      modulesCount
+      author {
+        name
+        photo
+      }
+    }
+  }
+`
+
+const SPACECATS = gql`
+  query ListSpaceCats {
+    spaceCats {
+      name
+      age
+      missions {
+        name
+        description
+      }
+    }
+  }
+`
+```
+
+Create a ListSpaceCats query with a spaceCats query field and its name, age and missions selection set in that order. For the missions field, select name and description
+
+Executing with useQuery
+
+The useQuery hook is the primary API for executing queries in a React application. We run a query within a React component by calling useQuery and passing it our GraphQL query string. This makes running queries from React components a breeze.
+
+When our component renders, useQuery returns an object from Apollo Client that contains loading, error, and data properties that we can use to render our UI. Let's put all of that into code.
+
+```js title='src/pages/tracks.js'
+import { useQuery, gql } from "@apollo/client"
+
+const Tracks = () => {
+  const { loading, error, data } = useQuery(TRACKS)
+
+  if (loading) return "Loading..."
+  if (error) return `Error! ${error.message}`
+
+  return <Layout grid>{JSON.stringify(data)}</Layout>
+}
+```
+
+Now, in our Tracks functional component (below the opened curly brace), we'll declare three destructured constants from our useQuery hook
+
+just dump our raw data object with JSON.stringify to see what happens.
+
+```js
+// consider the SPACECATS query:
+const SPACECATS = gql`
+  query ListSpaceCats {
+    spaceCats{
+      name
+      age
+      missions {
+        name
+        description
+      }
+```
+
+tracksForHome object (the name of our operation)
+
+The component takes a track prop and uses its title, thumbnail, author, length, and modulesCount. So, we just need to pass each TrackCard a Track object from our query response.
+
+Let's head back to src/pages/tracks.js. We've seen that the server response to our TRACKS GraphQL query includes a tracksForHome key, which contains the array of tracks.
+
+To create one card per track, we'll map through the tracksForHome array and return a TrackCard component with its corresponding track data as its prop:
+
+We refresh our browser, and voila! We get a bunch of nice-looking cards with cool catstronaut thumbnails. Our track title, length, number of modules, and author information all display nicely thanks to our TrackCard component. Pretty neat!
+
+The UI of our Catstronauts app, displaying a number of track cards
+Note: You might see a warning in the browser console saying something like, "Encountered two children with the same key, track_01." This is happening because we're still mocking our track data, so every track has the same id, but React wants each key to be unique. This warning will go away after we update our server to use real track data (in Lift-off II), so we can safely ignore it for now.
+
+Wrapping query results
+
+While refreshing the browser, you might have noticed that because we return the loading message as a simple string, we don't currently show the component's entire layout and navbar (the same issue goes for the error message). We should make sure that our UI's behavior is consistent throughout all of a query's phases.
+
+That's where our QueryResult helper component comes in. This isn't a component that's provided directly by an Apollo library. We've added it to use query results in a consistent, predictable way throughout our app.
+
+Let's open components/query-result. This component takes the useQuery hook's return values as props. It then performs basic conditional logic to either render a spinner, an error message, or its children:
+
+We can now remove the lines in this file that handle the loading and error states, because the QueryResult component will handle them instead.
+
+Apollo Server : Build a basic GraphQL endpoint that provides mocked responses.
+
+Apollo Sandbox Explorer : Interactively build and test queries against the local GraphQL server.
+
+Connect our app to live data using a REST data source and write our first resolvers to provide that data to clients.
 
 ## Wording
 
