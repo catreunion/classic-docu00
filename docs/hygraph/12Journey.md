@@ -12,8 +12,6 @@ Source : [Lift-off II Resolvers](https://www.apollographql.com/tutorials/lift-of
 git clone https://github.com/apollographql/odyssey-lift-off-part2
 ```
 
-##
-
 1. Our web app (GraphQL client) sends a query, in HTTP POST or GET requests, to the remote GraphQL server. The query itself is formatted as a string.
 
 2. The server **parses** and **transforms** the string into something it can better manipulate : a tree-structured document called an Abstract Syntax Tree (AST).
@@ -28,11 +26,13 @@ git clone https://github.com/apollographql/odyssey-lift-off-part2
 
 4. For **each field** in the query, the server invokes that field's **resolver function** to populate data from a correct source.
 
-5. As all of the query's fields are resolved, the **data is assembled into a nicely ordered JSON object** with the **exact same shape as the query**.
+5. As all of the query's fields are resolved, the **data is assembled / stitched into a nicely ordered JSON object** with the **exact same shape as the query**.
 
 6. The server assigns the object to the HTTP response body's **data key**, and it's time for the return trip, back to our app.
 
 7. Our web app (GraphQL client) receives the response with exactly the data it needs, passes that data to the right components to render them.
+
+An amazing illustration by apollographql.com
 
 ![An amazing illustration by apollographql.com](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
 
@@ -138,19 +138,9 @@ Making N calls to the exact same endpoint to fetch the exact same data is very i
 
 ## Implementing the `RESTDataSource` class in our app
 
-The RESTDataSource class **provides helper methods** for HTTP requests.
+The RESTDataSource class **provides helper methods** for HTTP requests, making API calls more efficient.
 
-Efficiently handle resource caching and deduplication.
-
-- Prevent unneccessary REST API calls for data that doesn't get updated frequently.
-
-- Help manage the mix of different endpoints with different cache policies.
-
-Data resolvers in a GraphQL server can work with any number of data sources, forming a **single API** that serves the needs of your client app.
-
-Resolver functions filter the data properties to match only what the query asks for.
-
-GraphQL server stitches the results together, forming the shape of the data that our resolver, and our query, is expecting.
+Resource caching prevents unneccessary REST API calls for data that doesn't get updated frequently.
 
 ```js title='server/src/datasources/track-api.js'
 const { RESTDataSource } = require("apollo-datasource-rest")
@@ -166,7 +156,7 @@ class TrackAPI extends RESTDataSource {
   }
   // define a method called getTracksForHome
   getTracksForHome() {
-    // perform a GET request to the `tracks` endpoint
+    // perform a GET request to the `/tracks` endpoint
     // return the results of that call
     return this.get("tracks")
   }
@@ -204,6 +194,10 @@ module.exports = SpaceCatsAPI
 ## Implementing resolvers in our app
 
 A resolver is a function. It has the **same name as the field** that it populates the data for. It can fetch data from any data source. Data will be transformed into the shape that you request.
+
+Data resolvers in a GraphQL server can work with any number of data sources
+
+Resolver functions filter the data properties to match only what the query asks for.
 
 ```js title='server/src/resolvers.js'
 // declare a resolvers constant (an object)
@@ -277,16 +271,6 @@ const resolvers = {
       return dataSources.spaceCatsAPI.getSpaceCats()
     }
   }
-}
-```
-
-```js
-const resolvers = {
-  Query: {
-    spaceCats: (_, __, { dataSources }) => {
-      return dataSources.spaceCatsAPI.getSpaceCats()
-    }
-  }
   SpaceCat: {
     missions: ({catId}, _, {dataSources}) => {
       return dataSources.spaceCatsAPI.getMissions(catId)
@@ -294,3 +278,112 @@ const resolvers = {
   }
 }
 ```
+
+## Connecting our schema, resolvers and data sources together
+
+```js title='server/src/index.js'
+const resolvers = require("./resolvers")
+const TrackAPI = require("./datasources/track-api")
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  // gain access to our data sources from each resolver's context parameter
+  // to connect our server with our TrackAPI
+  dataSources: () => {
+    return {
+      // trackAPI : an instance of TrackAPI
+      // used to access dataSources.trackAPI and its methods
+      // from the context parameter of our resolvers
+      trackAPI: new TrackAPI()
+    }
+  }
+})
+```
+
+```js
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  dataSources: () => {
+    return {
+      spaceCatsAPI: new SpaceCatsAPI()
+    }
+  }
+})
+```
+
+## Testing with Apollo Explorer
+
+```text title='Lift-off I'
+query GetTracks {
+  tracksForHome {
+    id
+    title
+    thumbnail
+    length
+    modulesCount
+    author {
+      id
+      name
+      photo
+    }
+  }
+}
+```
+
+```
+const lastTrackEntry = {
+  //paste the last track entry here
+}
+```
+
+```js title='server/src/schema.js'
+const typeDefs = gql`
+  type Query {
+    tracksForHome: [Track!]!
+    tracksForHomeFetch: [Track!]!
+  }
+
+  # ...
+`
+```
+
+```js title='server/src/resolvers.js'
+const resolvers = {
+  Query: {
+    tracksForHome: () => {
+      // ...
+    }
+    tracksForHomeFetch: async () => {
+      const baseUrl = "https://odyssey-lift-off-rest-api.herokuapp.com";
+      const res = await fetch(`${baseUrl}/tracks`);
+      return res.json();
+    },
+  },
+  Track: {
+    // using fetch instead of dataSources
+    author: async ({ authorId }, _, { dataSources }) => {
+      const baseUrl = "https://odyssey-lift-off-rest-api.herokuapp.com";
+      const res = await fetch(`${baseUrl}/author/${authorId}`);
+      return res.json();
+
+      // return dataSources.trackAPI.getAuthor(authorId);
+    },
+  },
+}
+```
+
+## Error returned due to submitting a query with an invalid field
+
+Things never go smoothly in the real world.
+
+underlined by a red squiggly line
+
+help to narrow down what caused the issues.
+
+There are more than a few ways things can go south.
+
+RESTDataSource to handle making these API calls more efficien
+
+resolver to connect to that data source and successfully return the correct fields to our client

@@ -4,11 +4,12 @@ sidebar_position: 12
 
 # Apollo Tutorials - Defining a schema
 
-Think of each object as a node and each relationship as an edge between two nodes. A schema defines this graph structure in Schema Definition Language (SDL).
+Think of each object as a node and each relationship as an edge between two nodes. A schema defines this graph structure in Schema Definition Language (SDL). Schema is the single **source of truth** for your data.
 
-An amazing tutorial by Raph Terrier @ apollographql.com
+[apollographql.com](apollographql.com) provides an amazing tutorial about the principle of schema
 
 Source : [Lift-off I: Basics](https://www.apollographql.com/tutorials/lift-off-part1/feature-overview-and-setup)
+by Raph Terrier
 
 Catstronauts : A learning platform for adventurous cats (developers) who want to explore the universe (GraphQL)! 😺 🚀
 
@@ -63,6 +64,8 @@ const typeDefs = gql`
 ```
 
 A schema is like a contract between the server and the client. It defines what a GraphQL API can and can't do, and how clients can request or change data.
+
+The `Query` type contains the **entry points** to our schema. There are two other possible entry points: **Mutation** and **Subscription**
 
 Writing strings (in **double quotes**) directly above types or fields as **descriptions**
 
