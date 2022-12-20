@@ -2,13 +2,19 @@
 sidebar_position: 12
 ---
 
-# Apollo Tutorials
+# Apollo Tutorials - Defining a schema
 
-Catstronauts : A learning platform for adventurous cats (developers) who want to explore the universe (GraphQL)! 😺 🚀
+Think of each object as a node and each relationship as an edge between two nodes. A schema defines this graph structure in Schema Definition Language (SDL).
+
+An amazing tutorial by Raph Terrier @ apollographql.com
 
 Source : [Lift-off I: Basics](https://www.apollographql.com/tutorials/lift-off-part1/feature-overview-and-setup)
 
+Catstronauts : A learning platform for adventurous cats (developers) who want to explore the universe (GraphQL)! 😺 🚀
+
 ## Setup
+
+In the directory of your choice with your preferred terminal, clone the starter repository.
 
 ```bash
 git clone https://github.com/apollographql/odyssey-lift-off-part1
@@ -16,17 +22,17 @@ cd server
 yarn
 yarn add apollo-server graphql
 yarn start
-# go to http://localhost:4000/ in Firefox or Chrome
+# navigate to http://localhost:4000 in Firefox or Chrome
 ```
 
-Open a new terminal.
+In a new terminal window, navigate to the repo's client directory.
 
 ```bash
 cd client
 yarn
 yarn add graphql @apollo/client
 yarn start
-# go to http://localhost:3000/
+# navigate to http://localhost:3000 in any browser
 ```
 
 ## Defining the schema
