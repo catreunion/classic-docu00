@@ -6,7 +6,7 @@ sidebar_position: 12
 
 Think of each object as a node and each relationship as an edge between two nodes. A schema defines this graph structure in Schema Definition Language (SDL). Schema is the single **source of truth** for your data.
 
-[apollographql.com](apollographql.com) provides an amazing tutorial about the principle of schema
+[apollographql.com](https://www.apollographql.com/tutorials/) provides an amazing tutorial about the principle of schema
 
 Source : [Lift-off I: Basics](https://www.apollographql.com/tutorials/lift-off-part1/feature-overview-and-setup)
 by Raph Terrier

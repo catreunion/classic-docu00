@@ -4,7 +4,7 @@ sidebar_position: 13
 
 # Apollo Tutorials - Journey of a GraphQL query
 
-[apollographql.com](apollographql.com) provides an amazing tutorial about the principle of fetching live data in Node.js environment.
+[apollographql.com](https://www.apollographql.com/tutorials/) provides an amazing tutorial about the principle of fetching live data in Node.js environment.
 
 Source : [Lift-off II Resolvers](https://www.apollographql.com/tutorials/lift-off-part2/journey-of-a-graphql-query) by Raph Terrier & Michelle Mabuyo
 
