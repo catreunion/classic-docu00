@@ -59,19 +59,21 @@ const typeDefs = gql`
 `
 ```
 
-`gql` : Called a **tagged template literal** wrapping GraphQL strings with backticks.
+`gql` : Called a **tagged template literal**. It wraps GraphQL strings with backticks.
 
-`type SpaceCat` : Declare an **object type** called SpaceCat in **PascalCase** with **curly brackets**.
+`type SpaceCat {}` : Declare an **object type** called SpaceCat in **PascalCase** with **curly brackets**.
 
 `name: String!` : Declare a **field** called name in **camelCase** with a **colon** and **without commas**.
 
 If a field should never be null, add an **exclamation mark** after its type.
 
-`missions: [Mission]` : Declare a **field** called missions which is an **array** of missions indicated by **square brackets**.
+`missions: [Mission]` : Declare a field called missions which is an **array** of missions indicated by **square brackets**.
 
-A schema is like a contract between the server and the client. It defines what a GraphQL API can and can't do, and how clients can request or change data.
+Schema defines what a GraphQL API can and can't do, and how clients can request or change data, like a contract between the server and the client.
 
-Writing strings (in **double quotes**) directly above types or fields as **descriptions**
+**Descriptions** are strings wrapped with **double quotes**.
+
+--
 
 The `Query` type contains the **entry points** to our schema. There are two other possible entry points: **Mutation** and **Subscription**
 
@@ -205,9 +207,11 @@ Making N calls to the exact same endpoint to fetch the exact same data is very i
 
 ## Implementing `RESTDataSource`
 
-The RESTDataSource class **provides helper methods** for HTTP requests, making API calls more efficient.
+Define methods that will be used when fetching live data from a REST API.
 
-Resource caching prevents unneccessary REST API calls for data that doesn't get updated frequently.
+Provide **helper methods** that make API calls efficient.
+
+Resource caching prevents unneccessary API calls for data that doesn't change frequently.
 
 ```js title='server/src/datasources/spacecats-api.js'
 const { RESTDataSource } = require("apollo-datasource-rest")
@@ -229,26 +233,18 @@ class SpaceCatsAPI extends RESTDataSource {
 module.exports = SpaceCatsAPI
 ```
 
-## Implementing resolvers
-
-A resolver is a function. It has the **same name as the field** that it populates the data for. It can fetch data from any data source. Data will be transformed into the shape that you request.
-
-Data resolvers in a GraphQL server can work with any number of data sources
-
-Resolver functions filter the data properties to match only what the query asks for.
-
 [The Catstronauts REST API](https://odyssey-lift-off-rest-api.herokuapp.com/)
 
 ```text title='contains 6 endpoints'
 GET   /tracks
-GET   /track/:id
-PATCH /track/:id
-GET   /track/:id/modules
 GET   /author/:id
+GET   /track/:id
+GET   /track/:id/modules
+PATCH /track/:id
 GET   /module/:id
 ```
 
-### 4 optional parameters of a resolver function <-- signature
+## 4 optional parameters of a resolver function <-- signature
 
 `parent`
 
@@ -272,86 +268,15 @@ GET   /module/:id
 
 - used in more advanced actions like setting cache policies at the resolver level
 
-## `RESTDataSource`, Schema and Resolvers
+## Implementing Resolvers
 
-```js title="server/src/datasources/track-api.js"
-getTracksForHome() {
-  return this.get("tracks")
-}
+- Data resolvers in a GraphQL server can work with any number of data sources.
 
-getTrack(trackId) {
-  return this.get(`track/${trackId}`)
-}
+- Their **keys** correspond to the **object types** in schema.
 
-getAuthor(authorId) {
-  return this.get(`author/${authorId}`)
-}
+- A resolver is a function. It has the **same name as the field** that it populates the data for.
 
-getTrackModules(trackId) {
-  return this.get(`track/${trackId}/modules`)
-}
-```
-
-```js title="server/src/schema.js"
-const typeDefs = gql`
-  type Track {
-    id: ID!
-    title: String!
-    author: Author!
-    thumbnail: String
-    length: Int
-    modulesCount: Int
-    description: String
-    numberOfViews: Int
-    modules: [Module!]!
-  }
-
-  type Author {
-    id: ID!
-    name: String!
-    photo: String
-  }
-
-  type Module {
-    id: ID!
-    title: String!
-    length: Int
-  }
-
-  type Query {
-    tracksForHome: [Track!]!
-    track(id: ID!): Track!
-    spaceCats: [SpaceCat!]!
-    spaceCat(id: ID!): SpaceCat
-    missions(to: String, scheduled: Boolean): [Mission]
-  }
-`
-```
-
-Resolvers' object keys (`Query`, `Track`) correspond to the schema's **types** and **fields**
-
-```js title='server/src/resolvers.js'
-const resolvers = {
-  Query: {
-    tracksForHome: (_, __, { dataSources }) => {
-      return dataSources.trackAPI.getTracksForHome()
-    },
-    track: (_, { id }, { dataSources }) => {
-      return dataSources.trackAPI.getTrack(id)
-    }
-  },
-  Track: {
-    author: ({ authorId }, _, { dataSources }) => {
-      return dataSources.trackAPI.getAuthor(authorId)
-    },
-    modules: ({ id }, _, { dataSources }) => {
-      return dataSources.trackAPI.getTrackModules(id)
-    }
-  }
-}
-
-module.exports = resolvers
-```
+- Resolver functions filter the data properties to match only what the query asks for.
 
 ```js
 const resolvers = {
@@ -368,27 +293,7 @@ const resolvers = {
 }
 ```
 
-## Connecting our schema, resolvers and data sources together
-
-```js title='server/src/index.js'
-const resolvers = require("./resolvers")
-const TrackAPI = require("./datasources/track-api")
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  // gain access to our data sources from each resolver's context parameter
-  // to connect our server with our TrackAPI
-  dataSources: () => {
-    return {
-      // trackAPI : an instance of TrackAPI
-      // used to access dataSources.trackAPI and its methods
-      // from the context parameter of our resolvers
-      trackAPI: new TrackAPI()
-    }
-  }
-})
-```
+## Connecting schema, resolvers and data sources
 
 ```js
 const server = new ApolloServer({
