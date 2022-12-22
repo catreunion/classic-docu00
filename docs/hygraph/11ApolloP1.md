@@ -2,7 +2,7 @@
 sidebar_position: 12
 ---
 
-# Apollo Tutorials - Part 1
+# Apollo Tutorials P1
 
 Think of each object as a node and each relationship as an edge between two nodes. A schema defines this graph structure in Schema Definition Language (SDL). Schema is the single **source of truth** for your data.
 
@@ -99,7 +99,7 @@ Apollo Sandbox Explorer : A special mode of Apollo Studio that lets you interact
 
 7. Our web app (GraphQL client) receives the response with exactly the data it needs, passes that data to the right components to render them.
 
-An amazing illustration by apollographql.com
+An amazing illustration by [apollographql.com](https://www.apollographql.com/tutorials/)
 
 ![An amazing illustration by apollographql.com](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
 
@@ -205,17 +205,6 @@ Making N calls to the exact same endpoint to fetch the exact same data is very i
 
 ## Implementing `RESTDataSource`
 
-[The Catstronauts REST API](https://odyssey-lift-off-rest-api.herokuapp.com/)
-
-```text title='contains 6 endpoints'
-GET   /tracks
-GET   /track/:id
-PATCH /track/:id
-GET   /track/:id/modules
-GET   /author/:id
-GET   /module/:id
-```
-
 The RESTDataSource class **provides helper methods** for HTTP requests, making API calls more efficient.
 
 Resource caching prevents unneccessary REST API calls for data that doesn't get updated frequently.
@@ -248,6 +237,17 @@ Data resolvers in a GraphQL server can work with any number of data sources
 
 Resolver functions filter the data properties to match only what the query asks for.
 
+[The Catstronauts REST API](https://odyssey-lift-off-rest-api.herokuapp.com/)
+
+```text title='contains 6 endpoints'
+GET   /tracks
+GET   /track/:id
+PATCH /track/:id
+GET   /track/:id/modules
+GET   /author/:id
+GET   /module/:id
+```
+
 ### 4 optional parameters of a resolver function <-- signature
 
 `parent`
@@ -272,25 +272,80 @@ Resolver functions filter the data properties to match only what the query asks 
 
 - used in more advanced actions like setting cache policies at the resolver level
 
-### coding
+## `RESTDataSource`, Schema and Resolvers
+
+```js title="server/src/datasources/track-api.js"
+getTracksForHome() {
+  return this.get("tracks")
+}
+
+getTrack(trackId) {
+  return this.get(`track/${trackId}`)
+}
+
+getAuthor(authorId) {
+  return this.get(`author/${authorId}`)
+}
+
+getTrackModules(trackId) {
+  return this.get(`track/${trackId}/modules`)
+}
+```
+
+```js title="server/src/schema.js"
+const typeDefs = gql`
+  type Track {
+    id: ID!
+    title: String!
+    author: Author!
+    thumbnail: String
+    length: Int
+    modulesCount: Int
+    description: String
+    numberOfViews: Int
+    modules: [Module!]!
+  }
+
+  type Author {
+    id: ID!
+    name: String!
+    photo: String
+  }
+
+  type Module {
+    id: ID!
+    title: String!
+    length: Int
+  }
+
+  type Query {
+    tracksForHome: [Track!]!
+    track(id: ID!): Track!
+    spaceCats: [SpaceCat!]!
+    spaceCat(id: ID!): SpaceCat
+    missions(to: String, scheduled: Boolean): [Mission]
+  }
+`
+```
+
+Resolvers' object keys (`Query`, `Track`) correspond to the schema's **types** and **fields**
 
 ```js title='server/src/resolvers.js'
 const resolvers = {
   Query: {
-    // destructure `context` to access its child object `dataSources`
     tracksForHome: (_, __, { dataSources }) => {
-      // trackAPI : an instance of our TrackAPI class
       return dataSources.trackAPI.getTracksForHome()
+    },
+    track: (_, { id }, { dataSources }) => {
+      return dataSources.trackAPI.getTrack(id)
     }
   },
-  // add a resolver specifically for a track's author
-  // indicating that it's for the Track type in our schema
   Track: {
-    // parent contains data returned by tracksForHome resolver
-    // include title, description and authorId
-    // destructure `parent` to access its child object `authorId`
     author: ({ authorId }, _, { dataSources }) => {
       return dataSources.trackAPI.getAuthor(authorId)
+    },
+    modules: ({ id }, _, { dataSources }) => {
+      return dataSources.trackAPI.getTrackModules(id)
     }
   }
 }
