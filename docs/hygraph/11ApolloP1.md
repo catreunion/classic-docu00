@@ -20,7 +20,10 @@ git clone https://github.com/apollographql/odyssey-lift-off-part1
 git clone https://github.com/apollographql/odyssey-lift-off-part2
 # or
 git clone https://github.com/apollographql/odyssey-lift-off-part3
+# or
+git clone https://github.com/apollographql/odyssey-lift-off-part4
 
+# open the repository in your favorite IDE
 cd server
 yarn
 yarn add apollo-server graphql
@@ -242,27 +245,13 @@ GET   /module/:id
 
 ## 4 optional parameters of a resolver function <-- signature
 
-`parent`
+`parent` : Contain the **data** returned from the **previous** function in a **resolver chain**.
 
-- the returned value of the resolver for this field's parent
+`args` : Contain all the **arguments** provided to the field for querying a specific item.
 
-- will be useful when dealing with resolver chains.
+`context` : Used to access the methods defined in `RESTDataSource`, or to access authentication info
 
-`args`
-
-- an object that contains all GraphQL arguments that were provided for the field by the GraphQL operation. When querying for a specific item (such as a specific track instead of all tracks), in client-land we'll make a query with an id argument that will be accessible via this args parameter in server-land. We'll cover this further in Lift-off III.
-
-`context`
-
-- an object shared across all resolvers that are executing for a particular operation
-
-- used to share state, e.g. authentication info, database connection or in our case the RESTDataSource
-
-`info`
-
-- contains information about the operation's execution state, including the field name, the path to the field from the root, and more
-
-- used in more advanced actions like setting cache policies at the resolver level
+`info` : Contain informational properties about the operation's execution state, including the field name, the path to the field from the root, and more
 
 ## Implementing Resolvers
 
