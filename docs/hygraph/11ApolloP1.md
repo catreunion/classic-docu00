@@ -12,12 +12,14 @@ Catstronauts : A learning platform for adventurous cats (developers) who want to
 
 ## Setup
 
-In the directory of your choice with your preferred terminal, clone one of the official repositories that suits your level.
+In the directory of your choice with your preferred terminal, clone one of the [apollographql.com](https://www.apollographql.com/tutorials/) repositories that suits your level.
 
 ```bash
 git clone https://github.com/apollographql/odyssey-lift-off-part1
 # or
 git clone https://github.com/apollographql/odyssey-lift-off-part2
+# or
+git clone https://github.com/apollographql/odyssey-lift-off-part3
 
 cd server
 yarn
@@ -72,12 +74,6 @@ If a field should never be null, add an **exclamation mark** after its type.
 Schema defines what a GraphQL API can and can't do, and how clients can request or change data, like a contract between the server and the client.
 
 **Descriptions** are strings wrapped with **double quotes**.
-
---
-
-The `Query` type contains the **entry points** to our schema. There are two other possible entry points: **Mutation** and **Subscription**
-
-Apollo Sandbox Explorer : A special mode of Apollo Studio that lets you interactively build and test queries against the local GraphQL server.
 
 ## Journey of a GraphQL query
 
@@ -278,6 +274,10 @@ GET   /module/:id
 
 - Resolver functions filter the data properties to match only what the query asks for.
 
+The `Query` type contains the **entry points** to our schema. There are two other possible entry points: **Mutation** and **Subscription**
+
+Apollo Sandbox Explorer : A special mode of Apollo Studio that lets you interactively build and test queries against the local GraphQL server.
+
 ```js
 const resolvers = {
   Query: {
@@ -377,7 +377,3 @@ underlined by a red squiggly line
 help to narrow down what caused the issues.
 
 There are more than a few ways things can go south.
-
-RESTDataSource to handle making these API calls more efficien
-
-resolver to connect to that data source and successfully return the correct fields to our client
