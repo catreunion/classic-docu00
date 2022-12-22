@@ -1,8 +1,83 @@
 ---
-sidebar_position: 13
+sidebar_position: 12
 ---
 
-# Apollo Tutorials - Journey of a GraphQL query
+# Apollo Tutorials - Part 1
+
+Think of each object as a node and each relationship as an edge between two nodes. A schema defines this graph structure in Schema Definition Language (SDL). Schema is the single **source of truth** for your data.
+
+[apollographql.com](https://www.apollographql.com/tutorials/) provides a series of amazing tutorials about GraphQL.
+
+Catstronauts : A learning platform for adventurous cats (developers) who want to explore the universe (GraphQL)! 😺 🚀
+
+## Setup
+
+In the directory of your choice with your preferred terminal, clone one of the official repositories that suits your level.
+
+```bash
+git clone https://github.com/apollographql/odyssey-lift-off-part1
+# or
+git clone https://github.com/apollographql/odyssey-lift-off-part2
+
+cd server
+yarn
+yarn add apollo-server graphql
+yarn start
+# navigate to http://localhost:4000 in Firefox or Chrome
+```
+
+In a new terminal window, navigate to the repo's client directory.
+
+```bash
+cd client
+yarn
+yarn add graphql @apollo/client
+yarn start
+# navigate to http://localhost:3000 in any browser
+```
+
+## Defining the schema
+
+A schema defines this **graph structure** in Schema Definition Language (SDL).
+
+```js title="server/src/schema.js"
+const typeDefs = gql`
+  type SpaceCat {
+    id: ID!
+    name: String!
+    age: Int
+    missions: [Mission]
+  }
+
+  type Mission {
+    id: ID!
+    codename: String!
+    to: String!
+    scheduled: Boolean!
+    crewMembers: [SpaceCat]!
+  }
+`
+```
+
+`gql` : Called a **tagged template literal** wrapping GraphQL strings with backticks.
+
+`type SpaceCat` : Declare an **object type** called SpaceCat in **PascalCase** with **curly brackets**.
+
+`name: String!` : Declare a **field** called name in **camelCase** with a **colon** and **without commas**.
+
+If a field should never be null, add an **exclamation mark** after its type.
+
+`missions: [Mission]` : Declare a **field** called missions which is an **array** of missions indicated by **square brackets**.
+
+A schema is like a contract between the server and the client. It defines what a GraphQL API can and can't do, and how clients can request or change data.
+
+Writing strings (in **double quotes**) directly above types or fields as **descriptions**
+
+The `Query` type contains the **entry points** to our schema. There are two other possible entry points: **Mutation** and **Subscription**
+
+Apollo Sandbox Explorer : A special mode of Apollo Studio that lets you interactively build and test queries against the local GraphQL server.
+
+## Journey of a GraphQL query
 
 1. Our web app (GraphQL client) sends a query, in HTTP POST or GET requests, to the remote GraphQL server. The query itself is formatted as a string.
 
@@ -128,41 +203,22 @@ Making N calls to the exact same endpoint to fetch the exact same data is very i
 }
 ```
 
-## Implementing the `RESTDataSource` class in our app
+## Implementing `RESTDataSource`
+
+[The Catstronauts REST API](https://odyssey-lift-off-rest-api.herokuapp.com/)
+
+```text title='contains 6 endpoints'
+GET   /tracks
+GET   /track/:id
+PATCH /track/:id
+GET   /track/:id/modules
+GET   /author/:id
+GET   /module/:id
+```
 
 The RESTDataSource class **provides helper methods** for HTTP requests, making API calls more efficient.
 
 Resource caching prevents unneccessary REST API calls for data that doesn't get updated frequently.
-
-```js title='server/src/datasources/track-api.js'
-const { RESTDataSource } = require("apollo-datasource-rest")
-
-// declare a class called TrackAPI that extends RESTDataSource
-class TrackAPI extends RESTDataSource {
-  // define a constructor method
-  constructor() {
-    // call super() to access RESTDataSource features
-    super()
-    // assign the base url of Catstronauts REST API
-    this.baseURL = "https://odyssey-lift-off-rest-api.herokuapp.com/"
-  }
-  // define a method called getTracksForHome
-  getTracksForHome() {
-    // perform a GET request to the `/tracks` endpoint
-    // return the results of that call
-    return this.get("tracks")
-  }
-  // define a method called getAuthor
-  // take `authorId` as an argument
-  getAuthor(authorId) {
-    // perform a GET request to the `/author/:id` endpoint
-    // backticks (`) string interpolation
-    return this.get(`author/${authorId}`)
-  }
-}
-
-module.exports = TrackAPI
-```
 
 ```js title='server/src/datasources/spacecats-api.js'
 const { RESTDataSource } = require("apollo-datasource-rest")
@@ -172,6 +228,7 @@ class SpaceCatsAPI extends RESTDataSource {
     super()
     this.baseURL = "https://fake-spacecats-rest-api.cat/"
   }
+
   getSpaceCats() {
     return this.get("spacecats")
   }
@@ -183,28 +240,13 @@ class SpaceCatsAPI extends RESTDataSource {
 module.exports = SpaceCatsAPI
 ```
 
-## Implementing resolvers in our app
+## Implementing resolvers
 
 A resolver is a function. It has the **same name as the field** that it populates the data for. It can fetch data from any data source. Data will be transformed into the shape that you request.
 
 Data resolvers in a GraphQL server can work with any number of data sources
 
 Resolver functions filter the data properties to match only what the query asks for.
-
-```js title='server/src/resolvers.js'
-// declare a resolvers constant (an object)
-// will be used in server config options
-const resolvers = {
-  // resolvers' object keys correspond to our schema's types and fields
-  Query: {
-    // return an array of Tracks
-    // will be used to populate the homepage grid
-    tracksForHome: (parent, args, context, info) => {}
-  }
-}
-
-module.exports = resolvers
-```
 
 ### 4 optional parameters of a resolver function <-- signature
 
