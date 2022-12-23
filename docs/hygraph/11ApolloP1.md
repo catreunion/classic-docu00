@@ -8,6 +8,8 @@ Think of each object as a node and each relationship as an edge between two node
 
 [apollographql.com](https://www.apollographql.com/tutorials/) provides a series of amazing tutorials about GraphQL.
 
+catstronauts-client
+
 Catstronauts : A learning platform for adventurous cats (developers) who want to explore the universe (GraphQL)! 😺 🚀
 
 ## Setup
