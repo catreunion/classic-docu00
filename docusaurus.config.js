@@ -101,8 +101,8 @@ const config = {
                 to: "/docs/tailwind/get-started"
               },
               {
-                label: "Hygraph",
-                to: "/docs/hygraph/00Explained"
+                label: "GraphQL",
+                to: "/docs/graphql/01Catstronauts"
               },
               {
                 label: "Supabase",
