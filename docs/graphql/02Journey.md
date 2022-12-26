@@ -1,5 +1,5 @@
 ---
-sidebar_position: 13
+sidebar_position: 2
 ---
 
 ## Fetching live data from a REST API in Node.js environment

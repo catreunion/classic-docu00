@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 34
 ---
 
 # Fetching GraphQL Data in Next.js

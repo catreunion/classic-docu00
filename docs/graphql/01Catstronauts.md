@@ -1,8 +1,8 @@
 ---
-sidebar_position: 12
+sidebar_position: 1
 ---
 
-# Apollo Tutorials P1
+# Catstronauts
 
 Think of each object as a node and each relationship as an edge between two nodes. A schema defines this graph structure in Schema Definition Language (SDL). Schema is the single **source of truth** for your data.
 
