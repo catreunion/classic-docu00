@@ -161,7 +161,9 @@ GET   /author/:id
 GET   /module/:id
 ```
 
-A very helpful illustration by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - ![A GraphQL server retrieving data from data sources such as a database, REST API and a web hook](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
+A very helpful illustration by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - A GraphQL server retrieving data from data sources such as a database, REST API and a web hook
+
+![A GraphQL server retrieving data from data sources such as a database, REST API and a web hook](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
 
 ### How is our data structured?
 
@@ -279,7 +281,11 @@ class SpaceCatsAPI extends RESTDataSource {
 module.exports = SpaceCatsAPI
 ```
 
-## 4 parameters of a resolver
+### Implementing Resolvers
+
+A resolver is a function populating the data for a field in your schema. It has the same name as the field that it populates the data for.
+
+4 parameters of a resolver
 
 `parent` : Contain the **data** returned from the **previous** function in a **resolver chain**.
 
@@ -289,53 +295,87 @@ module.exports = SpaceCatsAPI
 
 `info` : Contain informational properties about the operation's execution state, including the field name, the path to the field from the root, and more
 
-## Implementing Resolvers
-
-- Data resolvers in a GraphQL server can work with any number of data sources.
-
 - Their **keys** correspond to the **object types** in schema.
-
-- A resolver is a function. It has the **same name as the field** that it populates the data for.
 
 - Resolver functions filter the data properties to match only what the query asks for.
 
 The `Query` type contains the **entry points** to our schema. There are two other possible entry points: **Mutation** and **Subscription**
 
-Apollo Sandbox Explorer : A special mode of Apollo Studio that lets you interactively build and test queries against the local GraphQL server.
-
-```js
+```js title="server/src/resolvers.js"
+// declare an object
+// the keys correspond to the object types in the schema
 const resolvers = {
+  // known as the `Query` key
   Query: {
+    // x: (parent, args, context, info) => {},
+
+    // known as the `spaceCats` key
+    // define the resolver function for the `spaceCats` field
+    // destructure `context` to access its child object `dataSources`
     spaceCats: (_, __, { dataSources }) => {
+      // spaceCatsAPI : an instance of the SpaceCatsAPI class
       return dataSources.spaceCatsAPI.getSpaceCats()
     }
   }
   SpaceCat: {
-    missions: ({catId}, _, {dataSources}) => {
+    // Query.spaceCats resolver passes data to SpaceCat.missions resolver as a parent parameter
+    // these two resolvers form a resolver chain
+    // destructure `parent` to access its child object `catId`
+    // SpaceCat.missions resolver will only be called when the query asks for that specific SpaceCat
+    // prevent unnecessary REST API calls when a query doesn't ask for other SpaceCat
+    // keep each resolver lightweight and responsible for specific pieces of data
+    missions: ({ catId }, _, { dataSources }) => {
       return dataSources.spaceCatsAPI.getMissions(catId)
     }
   }
 }
 ```
 
-## Schema, resolvers & data sources
+## Schema, `RESTDataSource` & Resolvers
 
-```js
-const server = new ApolloServer({
-  typeDefs,
-  resolvers,
-  dataSources: () => {
-    return {
-      spaceCatsAPI: new SpaceCatsAPI()
-    }
+```js title="server/src/schema.js"
+const typeDefs = gql`
+  "A track is a group of modules."
+  type Track {
+    id: ID!
+    title: String!
+    author: Author!
+    thumbnail: String
+    length: Int
+    modulesCount: Int
+    description: String
+    numberOfViews: Int
+    modules: [Module!]!
   }
-})
+
+  "Author of a complete Track or a Module."
+  type Author {
+    id: ID!
+    name: String!
+    photo: String
+  }
+
+  "Multiple modules form a track."
+  type Module {
+    id: ID!
+    title: String!
+    length: Int
+    content: String
+    videoUrl: String
+  }
+
+  type Query {
+    tracksForHome: [Track!]!
+    track(id: ID!): Track!
+    module(id: ID!): Module!
+  }
+`
 ```
 
-## Testing with Apollo Explorer
-
-```text title='Lift-off I'
-query GetTracks {
+```graphql title="running a client query in Apollo Sandbox"
+<!-- start up the local Apollo server -->
+<!-- navigate to http://localhost:4000 in Firefox or Chrome -->
+query getTracksForHome {
   tracksForHome {
     id
     title
@@ -351,22 +391,99 @@ query GetTracks {
 }
 ```
 
-```
-const lastTrackEntry = {
-  //paste the last track entry here
-}
+```text title="6 endpoints"
+GET   /tracks
+GET   /track/:id
+PATCH /track/:id
+GET   /track/:id/modules
+GET   /author/:id
+GET   /module/:id
 ```
 
-```js title='server/src/schema.js'
-const typeDefs = gql`
-  type Query {
-    tracksForHome: [Track!]!
-    tracksForHomeFetch: [Track!]!
+```js title="server/src/datasources/track-api.js"
+const { RESTDataSource } = require("apollo-datasource-rest")
+
+class TrackAPI extends RESTDataSource {
+  constructor() {
+    super()
+    this.baseURL = "https://odyssey-lift-off-rest-api.herokuapp.com/"
   }
 
-  # ...
-`
+  getTracksForHome() {
+    return this.get("tracks")
+  }
+
+  getAuthor(authorId) {
+    return this.get(`author/${authorId}`)
+  }
+
+  getTrack(trackId) {
+    return this.get(`track/${trackId}`)
+  }
+
+  getTrackModules(trackId) {
+    return this.get(`track/${trackId}/modules`)
+  }
+
+  incrementTrackViews(trackId) {
+    return this.patch(`track/${trackId}/numberOfViews`)
+  }
+}
+
+module.exports = TrackAPI
 ```
+
+```js title="server/src/resolvers.js"
+const resolvers = {
+  Query: {
+    tracksForHome: (_, __, { dataSources }) => {
+      return dataSources.trackAPI.getTracksForHome()
+    },
+
+    track: (_, { id }, { dataSources }) => {
+      return dataSources.trackAPI.getTrack(id)
+    }
+  },
+
+  Track: {
+    author: ({ authorId }, _, { dataSources }) => {
+      return dataSources.trackAPI.getAuthor(authorId)
+    },
+    modules: ({ id }, _, { dataSources }) => {
+      return dataSources.trackAPI.getTrackModules(id)
+    }
+  }
+}
+
+module.exports = resolvers
+```
+
+```js title="server/src/index.js"
+const { ApolloServer } = require("apollo-server")
+const typeDefs = require("./schema")
+const TrackAPI = require("./datasources/track-api")
+const resolvers = require("./resolvers")
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  dataSources: () => {
+    return {
+      trackAPI: new TrackAPI()
+    }
+  }
+})
+
+server.listen().then(() => {
+  console.log(`
+    🚀  Server is running!
+    🔉  Listening on port 4000
+    📭  Query at http://localhost:4000
+  `)
+})
+```
+
+## Testing with Apollo Explorer
 
 ```js title='server/src/resolvers.js'
 const resolvers = {
@@ -374,6 +491,7 @@ const resolvers = {
     tracksForHome: () => {
       // ...
     }
+    // using fetch instead of dataSources
     tracksForHomeFetch: async () => {
       const baseUrl = "https://odyssey-lift-off-rest-api.herokuapp.com";
       const res = await fetch(`${baseUrl}/tracks`);
