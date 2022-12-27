@@ -63,7 +63,7 @@ yarn start
 
 At its heart, a schema is a collection of **object types** that **contain fields**. A schema is like a contract between the server and the client. It defines what a GraphQL API can and can't do, and how clients can request or change data.
 
-The **fields** of Query object type are the **entry points** into the schema. They are the **top-level** fields that clients can query for.
+The **fields** of Query object type are the **entry points** into the schema. They are the **top-level** fields that clients can query for. Two other possible entry points : **Mutation** and **Subscription**
 
 We structure our schema to provide that data as intuitively as possible.
 
@@ -283,23 +283,17 @@ module.exports = SpaceCatsAPI
 
 ### Implementing Resolvers
 
-A resolver is a function populating the data for a field in your schema. It has the same name as the field that it populates the data for.
-
-4 parameters of a resolver
+A resolver, having 4 parameters, is a function populating the data for a field in your schema. It has the same name as the field that it populates the data for.
 
 `parent` : Contain the **data** returned from the **previous** function in a **resolver chain**.
 
 `args` : Contain all the **arguments** provided to the field for querying a specific item.
 
-`context` : Used to access the methods defined in `RESTDataSource`, or to access authentication info
+`context` : Used to access the helper methods defined in `RESTDataSource` or to access authentication info.
 
-`info` : Contain informational properties about the operation's execution state, including the field name, the path to the field from the root, and more
+`info` : Contain informational properties about the operation's execution state.
 
-- Their **keys** correspond to the **object types** in schema.
-
-- Resolver functions filter the data properties to match only what the query asks for.
-
-The `Query` type contains the **entry points** to our schema. There are two other possible entry points: **Mutation** and **Subscription**
+Their **keys** correspond to the **object types** in schema.
 
 ```js title="server/src/resolvers.js"
 // declare an object
@@ -330,6 +324,14 @@ const resolvers = {
   }
 }
 ```
+
+Keep resolver functions as thin as possible.
+
+1. Make your API more resilient to future changes.
+
+2. Can safely refactor your data fetching code, or change the source entirely from a REST API to a database, without breaking your API.
+
+3. Keep your resolvers readable and easier to understand, which comes in handy as you define more and more of them!
 
 ## Schema, `RESTDataSource` & Resolvers
 
