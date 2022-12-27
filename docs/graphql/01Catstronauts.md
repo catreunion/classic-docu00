@@ -6,7 +6,7 @@ sidebar_position: 1
 
 A learning platform for adventurous cats who want to explore the universe! 😺 🚀 Created by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/), a series of amazing and helpful tutorials about GraphQL. Thank you the creation team!! 🙏🏻
 
-## What data do we need to build our feature?
+## What data do we need?
 
 1. Think of our app's data as a collection of objects (**nodes**) and relationships (**edges**) between objects.
 
@@ -37,6 +37,7 @@ cd odyssey-lift-off-part1/server
 # install
 yarn
 yarn add apollo-server graphql
+yarn add apollo-datasource-rest
 
 # start up the server
 yarn start
@@ -101,7 +102,7 @@ const typeDefs = gql`
 `
 ```
 
-## Send a query in Apollo Sandbox
+## Sending a query in Apollo Sandbox
 
 Sandbox is a special mode of Apollo Studio for testing the **local server** before deploying the graph to Schema Registry.
 
@@ -125,7 +126,7 @@ query getTracksForHome {
 }
 ```
 
-## Journey of a GraphQL query operation
+## Journey of a query operation
 
 1. Our web app (GraphQL client) sends a GraphQL query operation, formatted as a string in HTTP POST or GET request, to the remote GraphQL server.
 
@@ -221,7 +222,7 @@ fetch(`apiUrl/author/${authorId}`).then(function (response) {
 })
 ```
 
-### the N+1 problem
+### The N+1 problem
 
 "1" : the call to fetch the top-level tracks field.
 
@@ -242,33 +243,35 @@ Making N calls to the exact same endpoint to fetch the exact same data is very i
 }
 ```
 
-### Implementing `RESTDataSource`
+### The `RESTDataSource` class
 
 How to retrieve and transform the data that we need to match the fields in our schema?
 
 cache : avoid unnecessary calls to our REST API.
 
-Apollo provides the dedicated `RESTDataSource` class for solving this ch
-
-Define methods that will be used when fetching live data from a REST API.
-
-Provide **helper methods** that make API calls efficient.
-
 Resource caching prevents unneccessary API calls for data that doesn't change frequently.
 
-```js title='server/src/datasources/spacecats-api.js'
+```js title="server/src/datasources/spacecats-api.js"
 const { RESTDataSource } = require("apollo-datasource-rest")
 
+// declare a class called `SpaceCatsAPI` that extends the RESTDataSource class
 class SpaceCatsAPI extends RESTDataSource {
+  // constructor method
   constructor() {
     super()
     this.baseURL = "https://fake-spacecats-rest-api.cat/"
   }
 
+  // define the following helper methods that make API calls efficient
+
   getSpaceCats() {
+    // perform a GET request to the `spacecats` endpoint
     return this.get("spacecats")
   }
+
+  // take `catId` as an argument
   getMissions(catId) {
+    // string interpolation
     return this.get(`spacecats/${catId}/missions`)
   }
 }
@@ -276,7 +279,7 @@ class SpaceCatsAPI extends RESTDataSource {
 module.exports = SpaceCatsAPI
 ```
 
-## 4 optional parameters of a resolver function <-- signature
+## 4 parameters of a resolver
 
 `parent` : Contain the **data** returned from the **previous** function in a **resolver chain**.
 
@@ -315,7 +318,7 @@ const resolvers = {
 }
 ```
 
-## Connecting schema, resolvers and data sources
+## Schema, resolvers & data sources
 
 ```js
 const server = new ApolloServer({
