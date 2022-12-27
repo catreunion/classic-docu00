@@ -4,9 +4,7 @@ sidebar_position: 1
 
 # Catstronauts
 
-A learning platform for adventurous cats who want to explore the universe! 😺 🚀
-
-[Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/) are a series of amazing and helpful tutorials about GraphQL.
+A learning platform for adventurous cats who want to explore the universe! 😺 🚀 Created by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/), a series of amazing and helpful tutorials about GraphQL. Thank you the creation team!! 🙏🏻
 
 ## What data do we need to build our feature?
 
@@ -60,8 +58,6 @@ yarn start
 # navigate to http://localhost:3000 in any web browser
 ```
 
-Open the repository in your favorite IDE.
-
 ## Schema Definition Language (SDL)
 
 At its heart, a schema is a collection of **object types** that **contain fields**. A schema is like a contract between the server and the client. It defines what a GraphQL API can and can't do, and how clients can request or change data.
@@ -70,7 +66,9 @@ The **fields** of Query object type are the **entry points** into the schema. Th
 
 We structure our schema to provide that data as intuitively as possible.
 
-```js title="defining a schema"
+Open the repository in your favorite IDE.
+
+```js title="server/src/schema.js"
 // declare a typeDefs (short for "type definitions") constant
 // wrap GraphQL strings with the gql tag (template literal)
 // convert/parse GraphQL strings into the format that Apollo libraries expect
@@ -96,42 +94,64 @@ const typeDefs = gql`
     scheduled: Boolean!
     crewMembers: [SpaceCat]!
   }
+
+  type Query {
+    spaceCats: [SpaceCat]
+  }
 `
 ```
 
-## Journey of a GraphQL query
+## Send a query in Apollo Sandbox
 
-1. Our web app (GraphQL client) sends a query, in HTTP POST or GET requests, to the remote GraphQL server. The query itself is formatted as a string.
+Sandbox is a special mode of Apollo Studio for testing the **local server** before deploying the graph to Schema Registry.
 
-2. The server **parses** and **transforms** the string into something it can better manipulate : a tree-structured document called an Abstract Syntax Tree (AST).
+```graphql title="running a client query in Apollo Sandbox"
+<!-- start up the local Apollo server -->
+<!-- navigate to http://localhost:4000 in Firefox or Chrome -->
 
-3. The server **validates** the query against the **types** and **fields** in our **schema**.
+query getTracksForHome {
+  tracksForHome {
+    id
+    title
+    thumbnail
+    length
+    modulesCount
+    author {
+      id
+      name
+      photo
+    }
+  }
+}
+```
 
-- If anything is off, the server throws an error and sends it right back to the app.
+## Journey of a GraphQL query operation
 
-- Queries must use valid GraphQL syntax and must only include schema-defined fields.
+1. Our web app (GraphQL client) sends a GraphQL query operation, formatted as a string in HTTP POST or GET request, to the remote GraphQL server.
 
-- If the query looks good, the server can execute it and fetch the data.
+2. The server **parses** and **transforms** the string into a tree-structured document called an Abstract Syntax Tree (AST).
 
-4. For **each field** in the query, the server invokes that field's **resolver function** to populate data from a correct source.
+3. The server **validates** the query operation against the **types** and **fields** defined in our **schema**.
+
+4. For **each field** in the query, the server invokes that field's **resolver function** to populate data from the correct source.
 
 5. As all of the query's fields are resolved, the **data is assembled / stitched into a nicely ordered JSON object** with the **exact same shape as the query**.
 
-6. The server assigns the object to the HTTP response body's **data key**, and it's time for the return trip, back to our app.
+6. The server assigns the JSON object to the **data key** of the HTTP response body, and send it back to our web app.
 
-7. Our web app (GraphQL client) receives the response with exactly the data it needs, passes that data to the right components to render them.
+7. The GraphQL client receives the response and then passes the data to the right components for rendering.
 
-An amazing illustration by [apollographql.com](https://www.apollographql.com/tutorials/)
+A very helpful illustration by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - Journey of a GraphQL query operation
 
 ![An amazing illustration by apollographql.com](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
 
-## Fetching live data from a REST API in Node.js environment
+## Data fetching
 
-One query is often composed of a mix of different fields and types, coming from different REST API endpoints, with different cache policies.
+### Where is our data stored?
 
-[The Catstronauts REST API](https://odyssey-lift-off-rest-api.herokuapp.com/)
+[the Catstronauts REST API](https://odyssey-lift-off-rest-api.herokuapp.com/)
 
-```text title='contains 6 endpoints'
+```text title="6 endpoints"
 GET   /tracks
 GET   /track/:id
 PATCH /track/:id
@@ -140,15 +160,41 @@ GET   /author/:id
 GET   /module/:id
 ```
 
-`axios` / `node-fetch` : Libraries providing easy access to HTTP methods and nice async behavior.
+A very helpful illustration by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - ![A GraphQL server retrieving data from data sources such as a database, REST API and a web hook](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
 
-```js title='fetch data from the /tracks endpoint'
+### How is our data structured?
+
+A GraphQL query operation is often composed of a mix of different fields and types, coming from different endpoints, with different cache policies.
+
+```graphql title="a client query operation"
+<!-- start up the local Apollo server -->
+<!-- navigate to http://localhost:4000 in Firefox or Chrome -->
+
+query getTracksForHome {
+  tracksForHome {
+    id
+    title
+    thumbnail
+    length
+    modulesCount
+    author {
+      id
+      name
+      photo
+    }
+  }
+}
+```
+
+Is that structure different from our client app's needs and schema?
+
+```js title="retrieving all the tracks"
 fetch("apiUrl/tracks").then(function (response) {
-  // do something
+  // do something with our tracks JSON
 })
 ```
 
-```json title='response from the /tracks endpoint'
+```json title="a test result"
 [
   {
     "id": "c_0",
@@ -167,65 +213,42 @@ fetch("apiUrl/tracks").then(function (response) {
 ]
 ```
 
-Compare with the **Track object type** in our GraphQL schema
-
-```text title='GraphQL schema'
-type Track {
-  id: ID!
-  title: String!
-  author: Author!
-  thumbnail: String
-  length: Int
-  modulesCount: Int
-}
-```
-
 `author` is missing.
 
-```js title='fetch data from the /author/:id endpoint'
+```js title="retrieving a author"
 fetch(`apiUrl/author/${authorId}`).then(function (response) {
-  // do something
+  // this is the author of our track
 })
 ```
 
-```json title='response from the /author/:id endpoint'
-{
-  "id": "cat-1",
-  "name": "Henri, le Chat Noir",
-  "photo": "https://images.unsplash.com/photo-1442291928580-fb5d0856a8f1?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjExNzA0OH0"
-}
-```
+### the N+1 problem
 
-Compare with the **Author object type** in our GraphQL schema
+"1" : the call to fetch the top-level tracks field.
 
-```text title='GraphQL schema'
-type Author {
-  id: ID!
-  name: String!
-  photo: String
-}
-```
-
-## The classic N+1 problem
-
-1 : the call to fetch the top-level tracks field
-
-N : the number of subsequent calls to fetch the author subfield for each track
+"N" : the number of subsequent calls to fetch the author subfield for each track.
 
 Making N calls to the exact same endpoint to fetch the exact same data is very inefficient, especially if N is a large number.
 
-```text title='The classic N+1 problem'
+```graphql title="the N+1 problem"
 {
   tracks {
+    # 1
     title
     author {
+      # N calls for N tracks
       name
     }
   }
 }
 ```
 
-## Implementing `RESTDataSource`
+### Implementing `RESTDataSource`
+
+How to retrieve and transform the data that we need to match the fields in our schema?
+
+cache : avoid unnecessary calls to our REST API.
+
+Apollo provides the dedicated `RESTDataSource` class for solving this ch
 
 Define methods that will be used when fetching live data from a REST API.
 
@@ -251,17 +274,6 @@ class SpaceCatsAPI extends RESTDataSource {
 }
 
 module.exports = SpaceCatsAPI
-```
-
-[The Catstronauts REST API](https://odyssey-lift-off-rest-api.herokuapp.com/)
-
-```text title='contains 6 endpoints'
-GET   /tracks
-GET   /author/:id
-GET   /track/:id
-GET   /track/:id/modules
-PATCH /track/:id
-GET   /module/:id
 ```
 
 ## 4 optional parameters of a resolver function <-- signature
