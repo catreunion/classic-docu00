@@ -4,19 +4,27 @@ sidebar_position: 1
 
 # Catstronauts
 
-Think of each object as a node and each relationship as an edge between two nodes. A schema defines this graph structure in Schema Definition Language (SDL). Schema is the single **source of truth** for your data.
+A learning platform for adventurous cats who want to explore the universe! 😺 🚀
 
-[apollographql.com](https://www.apollographql.com/tutorials/) provides a series of amazing tutorials about GraphQL.
+[Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/) are a series of amazing and helpful tutorials about GraphQL.
 
-catstronauts-client
+## What data do we need to build our feature?
 
-Catstronauts : A learning platform for adventurous cats (developers) who want to explore the universe (GraphQL)! 😺 🚀
+1. Think of our app's data as a collection of objects (**nodes**) and relationships (**edges**) between objects.
+
+2. Think of our entire data model as a graph of nodes and edges.
+
+3. Define this graph structure using a schema.
+
+A very helpful illustration by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - Identifying the pieces of data for each card
+
+![Identifying the pieces of data for each card](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
 
 ## Setup
 
-In the directory of your choice with your preferred terminal, clone one of the [apollographql.com](https://www.apollographql.com/tutorials/) repositories that suits your level.
+In the directory of your choice with your preferred terminal, clone one of the [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) repositories that suits your level.
 
-```bash
+```bash title="repos from Apollo Odyssey tutorials"
 git clone https://github.com/apollographql/odyssey-lift-off-part1
 # or
 git clone https://github.com/apollographql/odyssey-lift-off-part2
@@ -25,29 +33,54 @@ git clone https://github.com/apollographql/odyssey-lift-off-part3
 # or
 git clone https://github.com/apollographql/odyssey-lift-off-part4
 
-# open the repository in your favorite IDE
-cd server
+# navigate to the server directory
+cd odyssey-lift-off-part1/server
+
+# install
 yarn
 yarn add apollo-server graphql
+
+# start up the server
 yarn start
+
 # navigate to http://localhost:4000 in Firefox or Chrome
 ```
 
-In a new terminal window, navigate to the repo's client directory.
+```bash title="in a new terminal window"
+# navigate to the client directory
+cd odyssey-lift-off-part1/client
 
-```bash
-cd client
+# install
 yarn
 yarn add graphql @apollo/client
+
+# start up the client
 yarn start
-# navigate to http://localhost:3000 in any browser
+
+# navigate to http://localhost:3000 in any web browser
 ```
 
-## Defining the schema
+Open the repository in your favorite IDE.
 
-A schema defines this **graph structure** in Schema Definition Language (SDL).
+## Schema Definition Language (SDL)
 
-```js title="server/src/schema.js"
+At its heart, a schema is a collection of **object types** that **contain fields**. A schema is like a contract between the server and the client. It defines what a GraphQL API can and can't do, and how clients can request or change data.
+
+The **fields** of Query object type are the **entry points** into the schema. They are the **top-level** fields that clients can query for.
+
+We structure our schema to provide that data as intuitively as possible.
+
+```js title="defining a schema"
+// declare a typeDefs (short for "type definitions") constant
+// wrap GraphQL strings with the gql tag (template literal)
+// convert/parse GraphQL strings into the format that Apollo libraries expect
+// use backticks (`), don't confused with single quotes (')
+// declare an object type called SpaceCat in PascalCase with curly brackets
+// declare a field called name in camelCase with a colon and without commas
+// if a field should never be null (non-nullable), add an exclamation mark after its type
+// declare a field called missions which is an array of missions indicated by square brackets
+// descriptions are strings wrapped with double quotes
+
 const typeDefs = gql`
   type SpaceCat {
     id: ID!
@@ -65,20 +98,6 @@ const typeDefs = gql`
   }
 `
 ```
-
-`gql` : Called a **tagged template literal**. It wraps GraphQL strings with backticks.
-
-`type SpaceCat {}` : Declare an **object type** called SpaceCat in **PascalCase** with **curly brackets**.
-
-`name: String!` : Declare a **field** called name in **camelCase** with a **colon** and **without commas**.
-
-If a field should never be null, add an **exclamation mark** after its type.
-
-`missions: [Mission]` : Declare a field called missions which is an **array** of missions indicated by **square brackets**.
-
-Schema defines what a GraphQL API can and can't do, and how clients can request or change data, like a contract between the server and the client.
-
-**Descriptions** are strings wrapped with **double quotes**.
 
 ## Journey of a GraphQL query
 
