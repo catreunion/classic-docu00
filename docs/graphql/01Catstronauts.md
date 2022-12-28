@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Catstronauts
 
-A learning platform for adventurous cats who want to explore the universe! 😺 🚀 Created by [Apollo Odyssey](https://www.apollographql.com/tutorials/), a series of amazing and super helpful tutorials about GraphQL. Thank you the creation team!! 🙏🏻
+A learning platform for adventurous cats who want to explore the universe! 😺 🚀 Created by [Apollo Odyssey](https://www.apollographql.com/tutorials/), a series of amazing tutorials about GraphQL with super helpful videos and interactive code challenges along the way. Thank you the creation team!! 🙏🏻
 
 ## What data do we need?
 
@@ -21,7 +21,7 @@ An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/lift
 In the directory of your choice with your preferred terminal, clone one of the [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) repositories that suits your needs.
 
 ```bash title="repos from Apollo Odyssey tutorials"
-# clone a repo that suits you
+# clone one of the repos that suits you
 git clone https://github.com/apollographql/odyssey-lift-off-part1
 git clone https://github.com/apollographql/odyssey-lift-off-part2
 git clone https://github.com/apollographql/odyssey-lift-off-part3
@@ -63,9 +63,15 @@ yarn start
 
 A schema is a collection of **object types** that contain **fields**. Like a contract between a server and it's clients, it defines what a GraphQL API can and can't do, and how clients can request or change data.
 
-Structure the schema as intuitively as possible.
+An object type has a collection of fields, and each field has a type of its own. A field's type can be either an object type or a scalar type. A scalar type is a primitive (like ID, String, Boolean, Int or Float) that resolves to a single value.
 
-The **fields** of **Query object type** are the **entry points** into the schema where clients can query for. Two other kinds of entry points are **Mutation** and **Subscription**
+Structure the schema as intuitively as possible. Each object type you define should support the actions that your clients will take.
+
+The **fields** of **Query object type** are the **entry points** into the schema where clients can have a way to fetch those objects / execute against the graph. Two other kinds of entry points are **Mutation** and **Subscription**
+
+Mutation enable clients to modify data / execute.
+
+If an array has an exclamation point after it, the array cannot be null, but it can be empty.
 
 Open the repository in your favorite IDE.
 
@@ -104,7 +110,9 @@ const typeDefs = gql`
 
 ## Sending a query in Apollo Sandbox
 
-Sandbox is a special mode of Apollo Studio.
+Apollo Studio is a powerful web IDE for exploring a GraphQL schema and building queries against it.
+
+[Apollo Sandbox](https://studio.apollographql.com/sandbox) is a special mode of Apollo Studio that enables you to use Studio features without an Apollo account.
 
 ```graphql title="query for tracks"
 query getTracksForHome {
@@ -183,7 +191,7 @@ query getTracksForHome {
 }
 ```
 
-```json title="result from the /tracks endpoint"
+```json title="result from the /tracks REST API endpoint"
 [
   {
     "id": "c_0",
@@ -204,13 +212,13 @@ query getTracksForHome {
 
 The field name `authorId` is used in the data source.
 
-### The 1+n problem
+### The n+1 problem
 
 One call to fetch tracks but n subsequent calls to fetch the author subfield for each track.
 
 Making n calls to the exact same endpoint to fetch the exact same data is very inefficient, especially if n is a large number.
 
-```graphql title="the 1+n problem"
+```graphql title="the n+1 problem"
 {
   tracks {
     title
@@ -240,6 +248,14 @@ class SpaceCatsAPI extends RESTDataSource {
 ```
 
 ### Resolver Functions
+
+A resolver is a function that's responsible for populating the data for a single field in your schema. Whenever a client queries for a particular field, the resolver for that field fetches the requested data from the appropriate data source.
+
+Keep each resolver lightweight and responsible for a specific piece of data.
+
+```js title=""
+fieldName: (parent, args, context, info) => data
+```
 
 `parent` : Contain the **data** returned from the **previous** function in a **resolver chain**.
 
