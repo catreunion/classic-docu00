@@ -158,17 +158,15 @@ PATCH /track/:id
 GET   /module/:id
 ```
 
-An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - A GraphQL server retrieving data from data sources such as a database, REST API and a web hook
+An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part2/exploring-our-data) - A GraphQL server can retrieve data from as a database, a REST API and a web hook.
 
-![A GraphQL server retrieving data from data sources such as a database, REST API and a web hook](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
+![A GraphQL server can retrieve data from as a database, a REST API and a web hook](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
 
 ### How is our data structured?
 
-A GraphQL query operation is often composed of a mix of different fields and types, coming from different endpoints, with different cache policies.
+A GraphQL query operation is often composed of a mix of **different** fields and **types**, coming from **different endpoints**, with different cache policies.
 
-```graphql title="a client query operation"
-<!-- start up the local Apollo server -->
-<!-- navigate to http://localhost:4000 in Firefox or Chrome -->
+```graphql title="query for tracks"
 query getTracksForHome {
   tracksForHome {
     id
@@ -185,9 +183,7 @@ query getTracksForHome {
 }
 ```
 
-Is that structure different from our client app's needs and schema?
-
-```json title="result of fetching all tracks"
+```json title="result from the /tracks endpoint"
 [
   {
     "id": "c_0",
@@ -206,23 +202,20 @@ Is that structure different from our client app's needs and schema?
 ]
 ```
 
-`author` is missing.
+The field name `authorId` is used in the data source.
 
-### The N+1 problem
+### The 1+n problem
 
-"1" : the call to fetch the top-level tracks field.
+One call to fetch tracks but n subsequent calls to fetch the author subfield for each track.
 
-"N" : the number of subsequent calls to fetch the author subfield for each track.
+Making n calls to the exact same endpoint to fetch the exact same data is very inefficient, especially if n is a large number.
 
-Making N calls to the exact same endpoint to fetch the exact same data is very inefficient, especially if N is a large number.
-
-```graphql title="the N+1 problem"
+```graphql title="the 1+n problem"
 {
   tracks {
-    # 1
     title
     author {
-      # N calls for N tracks
+      # n calls for n tracks
       name
     }
   }
@@ -231,43 +224,22 @@ Making N calls to the exact same endpoint to fetch the exact same data is very i
 
 ### The `RESTDataSource` class
 
-How to retrieve and transform the data that we need to match the fields in our schema?
-
-cache : avoid unnecessary calls to our REST API.
-
-Resource caching prevents unneccessary API calls for data that doesn't change frequently.
-
 ```js title="server/src/datasources/spacecats-api.js"
-const { RESTDataSource } = require("apollo-datasource-rest")
-
-// declare a class called `SpaceCatsAPI` that extends the RESTDataSource class
 class SpaceCatsAPI extends RESTDataSource {
-  // constructor method
   constructor() {
     super()
     this.baseURL = "https://fake-spacecats-rest-api.cat/"
   }
-
-  // define the following helper methods that make API calls efficient
-
   getSpaceCats() {
-    // perform a GET request to the `spacecats` endpoint
     return this.get("spacecats")
   }
-
-  // take `catId` as an argument
   getMissions(catId) {
-    // string interpolation
     return this.get(`spacecats/${catId}/missions`)
   }
 }
-
-module.exports = SpaceCatsAPI
 ```
 
 ### Resolver Functions
-
-A resolver, having 4 parameters, is a function populating the data for a field in your schema. It must has the same name as the field that it populates the data for.
 
 `parent` : Contain the **data** returned from the **previous** function in a **resolver chain**.
 
@@ -277,51 +249,23 @@ A resolver, having 4 parameters, is a function populating the data for a field i
 
 `info` : Contain informational properties about the operation's execution state.
 
-Their **keys** correspond to the **object types** in schema.
-
 ```js title="server/src/resolvers.js"
-// declare an object
-// the keys correspond to the object types in the schema
 const resolvers = {
-  // known as the `Query` key
   Query: {
-    // x: (parent, args, context, info) => {},
-
-    // known as the `spaceCats` key
-    // define the resolver function for the `spaceCats` field
-    // destructure `context` to access its child object `dataSources`
     spaceCats: (_, __, { dataSources }) => {
-      // spaceCatsAPI : an instance of the SpaceCatsAPI class
       return dataSources.spaceCatsAPI.getSpaceCats()
     },
     spaceCat: (_, { id }, { dataSources }) => {
       return dataSources.spaceCatsAPI.getSpaceCat(id)
     }
-
   }
   SpaceCat: {
-    // Query.spaceCats resolver passes data to SpaceCat.missions resolver as a parent parameter
-    // these two resolvers form a resolver chain
-    // destructure `parent` to access its child object `catId`
-    // SpaceCat.missions resolver will only be called when the query asks for that specific SpaceCat
-    // prevent unnecessary REST API calls when a query doesn't ask for other SpaceCat
-    // keep each resolver lightweight and responsible for specific pieces of data
-    missions: ({ catId }, _, { dataSources }) => {
-      return dataSources.spaceCatsAPI.getMissions(catId)
+    missions: ({ id }, _, { dataSources }) => {
+      return dataSources.spaceCatsAPI.getMissions(id)
     }
   }
 }
 ```
-
-Keep resolver functions as thin as possible.
-
-1. Make your API more resilient to future changes.
-
-2. Can safely refactor your data fetching code, or change the source entirely from a REST API to a database, without breaking your API.
-
-3. Keep your resolvers readable and easier to understand, which comes in handy as you define more and more of them!
-
-## Argument
 
 ### Local Catstronauts
 
@@ -367,9 +311,8 @@ query GetTrack($trackId: ID!) {
 
 ### Isaac's outdoor blog
 
-```bash title="opening Apollo Sandbox"
-# open an existing Sandbox
-# change the sandbox address to
+```bash title="connecting to Hygraph"
+# on the existing Sandbox, change the address to
 # https://api-us-east-1.hygraph.com/v2/clbq4ju4z13gl01uuf7xi0ulm/master
 ```
 
@@ -408,7 +351,7 @@ query getActivity {
 }
 ```
 
-## Schema, `RESTDataSource` & Resolvers
+### Putting all together
 
 ```js title="server/src/schema.js"
 const typeDefs = gql`
@@ -438,7 +381,6 @@ const typeDefs = gql`
     videoUrl: String
   }
 
-  "Queries on the server are the entry points into the schema. They are the top-level fields that clients can query for."
   type Query {
     tracksForHome: [Track!]!
     "Query for a specific track provided with the track's ID."
@@ -447,61 +389,6 @@ const typeDefs = gql`
     module(id: ID!): Module!
   }
 `
-```
-
-```json title="result of fetching all tracks"
-[
-  {
-    "id": "c_0",
-    "thumbnail": "https://res.cloudinary.com/dety84pbu/image/upload/v1598465568/nebula_cat_djkt9r.jpg",
-    "topic": "Cat-stronomy",
-    "authorId": "cat-1",
-    "title": "Cat-stronomy, an introduction",
-    "description": "Curious to learn what Cat-stronomy is all about? Explore the planetary and celestial alignments and how they have affected our space missions.",
-    "numberOfViews": 0,
-    "createdAt": "2018-09-10T07:13:53.020Z",
-    "length": 2377,
-    "modulesCount": 10,
-    "modules": ["l_0", "l_1", "l_2", "l_3", "l_4", "l_5", "l_6", "l_7", "l_8", "l_9"]
-  },
-  {...},
-]
-```
-
-```json title="result of fetching author cat-1 "
-{
-  "id": "cat-1",
-  "name": "Henri, le Chat Noir",
-  "photo": "https://images.unsplash.com/photo-1442291928580-fb5d0856a8f1?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjExNzA0OH0"
-}
-```
-
-```graphql title="running a client query in Apollo Sandbox"
-<!-- start up the local Apollo server -->
-<!-- navigate to http://localhost:4000 in Firefox or Chrome -->
-query getTracksForHome {
-  tracksForHome {
-    id
-    title
-    thumbnail
-    length
-    modulesCount
-    author {
-      id
-      name
-      photo
-    }
-  }
-}
-```
-
-```text title="6 endpoints"
-GET   /tracks
-GET   /track/:id
-GET   /author/:id
-GET   /track/:id/modules
-PATCH /track/:id
-GET   /module/:id
 ```
 
 ```js title="server/src/datasources/track-api.js"
@@ -513,14 +400,14 @@ class TrackAPI extends RESTDataSource {
   getTracksForHome() {
     return this.get("tracks")
   }
-  getTrack(id) {
-    return this.get(`track/${id}`)
+  getTrack(trackId) {
+    return this.get(`track/${trackId}`)
   }
   getAuthor(authorId) {
     return this.get(`author/${authorId}`)
   }
-  getTrackModules(id) {
-    return this.get(`track/${id}/modules`)
+  getTrackModules(trackId) {
+    return this.get(`track/${trackId}/modules`)
   }
   incrementTrackViews(trackId) {
     return this.patch(`track/${trackId}/numberOfViews`)
