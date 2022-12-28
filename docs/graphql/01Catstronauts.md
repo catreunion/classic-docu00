@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Catstronauts
 
-A learning platform for adventurous cats who want to explore the universe! 😺 🚀 Created by [Apollo Odyssey](https://www.apollographql.com/tutorials/), a series of amazing tutorials about GraphQL with super helpful videos and interactive code challenges along the way. Thank you the creation team!! 🙏🏻
+A learning platform for adventurous cats who want to explore the universe! 😺 🚀 Created by [Apollo](https://www.apollographql.com/tutorials/), a series of amazing tutorials about GraphQL with super helpful videos and interactive code challenges along the way. Thank you the productioin team!! 🙏🏻
 
 ## What data do we need?
 
@@ -12,13 +12,13 @@ Think of an app's data as a collection of **objects** and **relationships** betw
 
 Think of the entire data model as a **graph** of nodes and edges.
 
-An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) - Identifying the pieces of data for each node
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) presenting a collection of **objects** and the **relationships** among them.
 
-![Identifying the pieces of data for each node](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
+![A collection of objects and the relationships among them](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
 
 ## Setup
 
-In the directory of your choice with your preferred terminal, clone one of the [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) repositories that suits your needs.
+In the directory of your choice with your preferred terminal, clone one of the repositories createdy by [Apollo](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation).
 
 ```bash title="repos from Apollo Odyssey tutorials"
 # clone one of the repos that suits you
@@ -61,17 +61,11 @@ yarn start
 
 ## Schema Definition Language (SDL)
 
-A schema is a collection of **object types** that contain **fields**. Like a contract between a server and it's clients, it defines what a GraphQL API can and can't do, and how clients can request or change data.
+A schema is a collection of **object types** that contain **fields**. Like a contract between a server and it's clients, it defines what a GraphQL API can and can't do, and how clients can request or change data. A field's type can be either an **object type** or a **scalar type**. A scalar type is a primitive (like ID, String, Boolean, Int or Float) that resolves to a single value.
 
-An object type has a collection of fields, and each field has a type of its own. A field's type can be either an object type or a scalar type. A scalar type is a primitive (like ID, String, Boolean, Int or Float) that resolves to a single value.
+The **fields** of the **Query object type** are the **entry points** into the schema where clients can have a way to fetch data or execute against the graph. Two other kinds of entry points are **Mutation** and **Subscription**. Mutation enable clients to modify data / execute.
 
 Structure the schema as intuitively as possible. Each object type you define should support the actions that your clients will take.
-
-The **fields** of **Query object type** are the **entry points** into the schema where clients can have a way to fetch those objects / execute against the graph. Two other kinds of entry points are **Mutation** and **Subscription**
-
-Mutation enable clients to modify data / execute.
-
-If an array has an exclamation point after it, the array cannot be null, but it can be empty.
 
 Open the repository in your favorite IDE.
 
@@ -85,6 +79,7 @@ Open the repository in your favorite IDE.
 // declare a field called name in camelCase with a colon and without commas
 // if a field should never be null (non-nullable), add an exclamation mark after its type
 // declare a field called missions which is an array of Mission enclosed by square brackets
+// if an array has an exclamation point after it, the array cannot be null, but it can be empty.
 
 const typeDefs = gql`
   type SpaceCat {
@@ -108,13 +103,13 @@ const typeDefs = gql`
 `
 ```
 
-## Sending a query in Apollo Sandbox
+## Using in Apollo Sandbox
 
-Apollo Studio is a powerful web IDE for exploring a GraphQL schema and building queries against it.
+[Apollo Studio](https://studio.apollographql.com/) is a powerful web IDE for exploring a GraphQL schema and building queries against it.
 
-[Apollo Sandbox](https://studio.apollographql.com/sandbox) is a special mode of Apollo Studio that enables you to use Studio features without an Apollo account.
+[Apollo Sandbox](https://studio.apollographql.com/sandbox) is a special mode of Apollo Studio. It allows using the Studio features without an Apollo account.
 
-```graphql title="query for tracks"
+```graphql title="for Catstronauts homepage"
 query getTracksForHome {
   tracksForHome {
     id
@@ -131,7 +126,7 @@ query getTracksForHome {
 }
 ```
 
-## Journey of a query operation
+## Journey of a query
 
 The web app (GraphQL client) sends a GraphQL query operation, formatted as a string in HTTP POST or GET request, to the GraphQL server.
 
@@ -147,13 +142,13 @@ The server assigns the JSON object to the **data key** of the HTTP response body
 
 The web app (GraphQL client) receives the response and passes the data to the right components for rendering.
 
-An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part2/journey-of-a-graphql-query) - Journey of a GraphQL query operation
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part2/journey-of-a-graphql-query) presenting the journey of a GraphQL query operation
 
-![Journey of a GraphQL query operation](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
+![The journey of a GraphQL query operation](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
 
 ## Data fetching
 
-### Where is our data stored?
+### Where is our raw data?
 
 [the Catstronauts REST API](https://odyssey-lift-off-rest-api.herokuapp.com/)
 
@@ -166,15 +161,15 @@ PATCH /track/:id
 GET   /module/:id
 ```
 
-An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part2/exploring-our-data) - A GraphQL server can retrieve data from as a database, a REST API and a web hook.
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part2/exploring-our-data) presenting the data sources that GraphQL server supports
 
-![A GraphQL server can retrieve data from as a database, a REST API and a web hook](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
+![The data sources that GraphQL server supports](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
 
-### How is our data structured?
+### How is the raw data structured?
 
-A GraphQL query operation is often composed of a mix of **different** fields and **types**, coming from **different endpoints**, with different cache policies.
+A GraphQL query operation is often composed of a mix of fields and types, coming from **different endpoints**, with different cache policies.
 
-```graphql title="query for tracks"
+```graphql title="for Catstronauts homepage"
 query getTracksForHome {
   tracksForHome {
     id
@@ -191,7 +186,7 @@ query getTracksForHome {
 }
 ```
 
-```json title="result from the /tracks REST API endpoint"
+```json title="raw data from /tracks endpoint"
 [
   {
     "id": "c_0",
@@ -210,7 +205,7 @@ query getTracksForHome {
 ]
 ```
 
-The field name `authorId` is used in the data source.
+In the raw data, `authorId` is used instead of `author`.
 
 ### The n+1 problem
 
@@ -232,6 +227,8 @@ Making n calls to the exact same endpoint to fetch the exact same data is very i
 
 ### The `RESTDataSource` class
 
+Helper methods are defined for making API calls efficient.
+
 ```js title="server/src/datasources/spacecats-api.js"
 class SpaceCatsAPI extends RESTDataSource {
   constructor() {
@@ -247,13 +244,13 @@ class SpaceCatsAPI extends RESTDataSource {
 }
 ```
 
-### Resolver Functions
+### Resolvers
 
-A resolver is a function that's responsible for populating the data for a single field in your schema. Whenever a client queries for a particular field, the resolver for that field fetches the requested data from the appropriate data source.
+A resolver is a function that's responsible for populating the data for a single field in your schema. Whenever a client queries for a particular field, the resolver for that field fetches the requested data from the appropriate data source. A resolver's name must be the same as the field that it populates the data for.
 
 Keep each resolver lightweight and responsible for a specific piece of data.
 
-```js title=""
+```js title="the syntax"
 fieldName: (parent, args, context, info) => data
 ```
 
@@ -295,7 +292,7 @@ yarn start
 # navigate to http://localhost:4000 in Firefox or Chrome
 ```
 
-```graphql title="query for a specific track"
+```graphql title="for a track's details page"
 query GetTrack($trackId: ID!) {
   track(id: $trackId) {
     id
@@ -319,7 +316,7 @@ query GetTrack($trackId: ID!) {
 }
 ```
 
-```bash title="input a track id"
+```bash title="assign a value for the variable"
 {
   "trackId": "c_0"
 }
@@ -327,12 +324,12 @@ query GetTrack($trackId: ID!) {
 
 ### Isaac's outdoor blog
 
-```bash title="connecting to Hygraph"
+```bash title="Sandbox connects to Hygraph"
 # on the existing Sandbox, change the address to
 # https://api-us-east-1.hygraph.com/v2/clbq4ju4z13gl01uuf7xi0ulm/master
 ```
 
-```graphql title="query for all activities"
+```graphql title="for Isaac's homepage"
 query getActivities {
   activities {
     id
