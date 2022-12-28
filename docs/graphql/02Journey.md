@@ -30,32 +30,6 @@ the syntax breakdown of using GraphQL arguments
 
 ## Retrieving our data
 
-```json title="response from the track/:id endpoint giving it the id = c_0"
-{
-  "id": "c_0",
-  "thumbnail": "https://res.cloudinary.com/dety84pbu/image/upload/v1598465568/nebula_cat_djkt9r.jpg",
-  "topic": "Cat-stronomy",
-  "authorId": "cat-1",
-  "title": "Cat-stronomy, an introduction",
-  "description": "Curious to learn what Cat-stronomy is all about? Explore the planetary and celestial alignments and how they have affected our space missions.",
-  "numberOfViews": 0,
-  "createdAt": "2018-09-10T07:13:53.020Z",
-  "length": 2377,
-  "modulesCount": 10,
-  "modules": ["l_0", "l_1", "l_2", "l_3", "l_4", "l_5", "l_6", "l_7", "l_8", "l_9"]
-}
-```
-
-```js
-const resolvers = {
-  Query: {
-    spaceCat: (_, { id }, { dataSources }) => {
-      return dataSources.spaceCatsAPI.getSpaceCat(id)
-    }
-  }
-}
-```
-
 First let's determine where exactly we can place our call to get the details of a track's modules
 
 We need that information in our track query, but should we add the call here in the track resolver?

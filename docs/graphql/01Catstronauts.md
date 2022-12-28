@@ -155,9 +155,9 @@ A very helpful illustration by [Apollo Odyssey tutorials](https://www.apollograp
 ```text title="6 endpoints"
 GET   /tracks
 GET   /track/:id
-PATCH /track/:id
-GET   /track/:id/modules
 GET   /author/:id
+GET   /track/:id/modules
+PATCH /track/:id
 GET   /module/:id
 ```
 
@@ -172,7 +172,6 @@ A GraphQL query operation is often composed of a mix of different fields and typ
 ```graphql title="a client query operation"
 <!-- start up the local Apollo server -->
 <!-- navigate to http://localhost:4000 in Firefox or Chrome -->
-
 query getTracksForHome {
   tracksForHome {
     id
@@ -191,13 +190,7 @@ query getTracksForHome {
 
 Is that structure different from our client app's needs and schema?
 
-```js title="retrieving all the tracks"
-fetch("apiUrl/tracks").then(function (response) {
-  // do something with our tracks JSON
-})
-```
-
-```json title="a test result"
+```json title="result of fetching all tracks"
 [
   {
     "id": "c_0",
@@ -217,12 +210,6 @@ fetch("apiUrl/tracks").then(function (response) {
 ```
 
 `author` is missing.
-
-```js title="retrieving a author"
-fetch(`apiUrl/author/${authorId}`).then(function (response) {
-  // this is the author of our track
-})
-```
 
 ### The N+1 problem
 
@@ -281,7 +268,7 @@ class SpaceCatsAPI extends RESTDataSource {
 module.exports = SpaceCatsAPI
 ```
 
-### Implementing Resolvers
+### Resolver Functions
 
 A resolver, having 4 parameters, is a function populating the data for a field in your schema. It must has the same name as the field that it populates the data for.
 
@@ -309,7 +296,11 @@ const resolvers = {
     spaceCats: (_, __, { dataSources }) => {
       // spaceCatsAPI : an instance of the SpaceCatsAPI class
       return dataSources.spaceCatsAPI.getSpaceCats()
+    },
+    spaceCat: (_, { id }, { dataSources }) => {
+      return dataSources.spaceCatsAPI.getSpaceCat(id)
     }
+
   }
   SpaceCat: {
     // Query.spaceCats resolver passes data to SpaceCat.missions resolver as a parent parameter
@@ -333,11 +324,97 @@ Keep resolver functions as thin as possible.
 
 3. Keep your resolvers readable and easier to understand, which comes in handy as you define more and more of them!
 
+## Argument
+
+### Local Catstronauts
+
+```bash title="opening Apollo Sandbox"
+# navigate to the server directory
+cd server/
+
+# start up the server
+yarn start
+
+# navigate to http://localhost:4000 in Firefox or Chrome
+```
+
+```graphql title="query for a specific track"
+query GetTrack($trackId: ID!) {
+  track(id: $trackId) {
+    id
+    title
+    author {
+      id
+      name
+      photo
+    }
+    thumbnail
+    length
+    modulesCount
+    numberOfViews
+    modules {
+      id
+      title
+      length
+    }
+    description
+  }
+}
+```
+
+```bash title="input a track id"
+{
+  "trackId": "c_0"
+}
+```
+
+### Isaac's outdoor blog
+
+```bash title="opening Apollo Sandbox"
+# open an existing Sandbox
+# change the sandbox address to
+# https://api-us-east-1.hygraph.com/v2/clbq4ju4z13gl01uuf7xi0ulm/master
+```
+
+```graphql title="query for all activities"
+query getActivities {
+  activities {
+    id
+    title
+    calories
+    desc {
+      text
+    }
+  }
+}
+```
+
+```graphql title="query for a specific activity"
+query getActivity {
+  activity(where: { slug: "2022-dec-15-kowloon-peak-running" }) {
+    title
+    activityDate
+    avgHr
+    avgPace
+    calories
+    hours
+    id
+    maxHr
+    mins
+    secs
+    totalAscent
+    totalDescent
+    desc {
+      text
+    }
+  }
+}
+```
+
 ## Schema, `RESTDataSource` & Resolvers
 
 ```js title="server/src/schema.js"
 const typeDefs = gql`
-  "A track is a group of modules."
   type Track {
     id: ID!
     title: String!
@@ -350,14 +427,12 @@ const typeDefs = gql`
     modules: [Module!]!
   }
 
-  "Author of a complete Track or a Module."
   type Author {
     id: ID!
     name: String!
     photo: String
   }
 
-  "Multiple modules form a track."
   type Module {
     id: ID!
     title: String!
@@ -366,12 +441,42 @@ const typeDefs = gql`
     videoUrl: String
   }
 
+  "Queries on the server are the entry points into the schema. They are the top-level fields that clients can query for."
   type Query {
     tracksForHome: [Track!]!
+    "Query for a specific track provided with the track's ID."
     track(id: ID!): Track!
+    "Query for a specific module provided with the module's ID"
     module(id: ID!): Module!
   }
 `
+```
+
+```json title="result of fetching all tracks"
+[
+  {
+    "id": "c_0",
+    "thumbnail": "https://res.cloudinary.com/dety84pbu/image/upload/v1598465568/nebula_cat_djkt9r.jpg",
+    "topic": "Cat-stronomy",
+    "authorId": "cat-1",
+    "title": "Cat-stronomy, an introduction",
+    "description": "Curious to learn what Cat-stronomy is all about? Explore the planetary and celestial alignments and how they have affected our space missions.",
+    "numberOfViews": 0,
+    "createdAt": "2018-09-10T07:13:53.020Z",
+    "length": 2377,
+    "modulesCount": 10,
+    "modules": ["l_0", "l_1", "l_2", "l_3", "l_4", "l_5", "l_6", "l_7", "l_8", "l_9"]
+  },
+  {...},
+]
+```
+
+```json title="result of fetching author cat-1 "
+{
+  "id": "cat-1",
+  "name": "Henri, le Chat Noir",
+  "photo": "https://images.unsplash.com/photo-1442291928580-fb5d0856a8f1?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjExNzA0OH0"
+}
 ```
 
 ```graphql title="running a client query in Apollo Sandbox"
@@ -396,43 +501,34 @@ query getTracksForHome {
 ```text title="6 endpoints"
 GET   /tracks
 GET   /track/:id
-PATCH /track/:id
-GET   /track/:id/modules
 GET   /author/:id
+GET   /track/:id/modules
+PATCH /track/:id
 GET   /module/:id
 ```
 
 ```js title="server/src/datasources/track-api.js"
-const { RESTDataSource } = require("apollo-datasource-rest")
-
 class TrackAPI extends RESTDataSource {
   constructor() {
     super()
     this.baseURL = "https://odyssey-lift-off-rest-api.herokuapp.com/"
   }
-
   getTracksForHome() {
     return this.get("tracks")
   }
-
+  getTrack(id) {
+    return this.get(`track/${id}`)
+  }
   getAuthor(authorId) {
     return this.get(`author/${authorId}`)
   }
-
-  getTrack(trackId) {
-    return this.get(`track/${trackId}`)
+  getTrackModules(id) {
+    return this.get(`track/${id}/modules`)
   }
-
-  getTrackModules(trackId) {
-    return this.get(`track/${trackId}/modules`)
-  }
-
   incrementTrackViews(trackId) {
     return this.patch(`track/${trackId}/numberOfViews`)
   }
 }
-
-module.exports = TrackAPI
 ```
 
 ```js title="server/src/resolvers.js"
@@ -441,12 +537,10 @@ const resolvers = {
     tracksForHome: (_, __, { dataSources }) => {
       return dataSources.trackAPI.getTracksForHome()
     },
-
     track: (_, { id }, { dataSources }) => {
       return dataSources.trackAPI.getTrack(id)
     }
   },
-
   Track: {
     author: ({ authorId }, _, { dataSources }) => {
       return dataSources.trackAPI.getAuthor(authorId)
@@ -456,16 +550,9 @@ const resolvers = {
     }
   }
 }
-
-module.exports = resolvers
 ```
 
 ```js title="server/src/index.js"
-const { ApolloServer } = require("apollo-server")
-const typeDefs = require("./schema")
-const TrackAPI = require("./datasources/track-api")
-const resolvers = require("./resolvers")
-
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -475,15 +562,9 @@ const server = new ApolloServer({
     }
   }
 })
-
-server.listen().then(() => {
-  console.log(`
-    🚀  Server is running!
-    🔉  Listening on port 4000
-    📭  Query at http://localhost:4000
-  `)
-})
 ```
+
+##
 
 ## wording
 
