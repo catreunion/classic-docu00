@@ -8,11 +8,11 @@ A learning platform for adventurous cats who want to explore the universe! 😺 
 
 ## What data do we need?
 
-1. Think of an app's data as a collection of **objects** and **relationships** between objects.
+Think of an app's data as a collection of **objects** and **relationships** between objects.
 
-2. Think of the entire data model as a **graph** of nodes and edges.
+Think of the entire data model as a **graph** of nodes and edges.
 
-An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - Identifying the pieces of data for each node
+An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) - Identifying the pieces of data for each node
 
 ![Identifying the pieces of data for each node](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
 
@@ -21,15 +21,11 @@ An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/voya
 In the directory of your choice with your preferred terminal, clone one of the [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) repositories that suits your needs.
 
 ```bash title="repos from Apollo Odyssey tutorials"
-# clone one of the Apollo Odyssey repositories that suits your needs
+# clone a repo that suits you
 git clone https://github.com/apollographql/odyssey-lift-off-part1
-# or
 git clone https://github.com/apollographql/odyssey-lift-off-part2
-# or
 git clone https://github.com/apollographql/odyssey-lift-off-part3
-# or
 git clone https://github.com/apollographql/odyssey-lift-off-part4
-# or
 git clone https://github.com/apollographql/odyssey-lift-off-part5
 
 # navigate to the server directory
@@ -44,7 +40,7 @@ yarn add apollo-server apollo-datasource-rest graphql
 # start up the server
 yarn start
 
-# navigate to http://localhost:4000 in Firefox or Chrome
+# navigate to localhost:4000 in a web browser
 ```
 
 ```bash title="in a new terminal window"
@@ -60,16 +56,16 @@ yarn add graphql @apollo/client
 # start up the client
 yarn start
 
-# navigate to http://localhost:3000 in any web browser
+# navigate to localhost:3000 in a web browser
 ```
 
 ## Schema Definition Language (SDL)
 
-A schema is a collection of **object types** that contain **fields**. Like a contract between the server and the client, it defines what a GraphQL API can and can't do, and how clients can request or change data.
+A schema is a collection of **object types** that contain **fields**. Like a contract between a server and it's clients, it defines what a GraphQL API can and can't do, and how clients can request or change data.
 
 Structure the schema as intuitively as possible.
 
-The **fields** of **Query object type** are the **entry points** into the schema where clients can query for. Two other kinds of entry points : **Mutation** and **Subscription**
+The **fields** of **Query object type** are the **entry points** into the schema where clients can query for. Two other kinds of entry points are **Mutation** and **Subscription**
 
 Open the repository in your favorite IDE.
 
@@ -110,7 +106,7 @@ const typeDefs = gql`
 
 Sandbox is a special mode of Apollo Studio.
 
-```graphql title="navigate to http://localhost:4000 in Firefox or Chrome"
+```graphql title="query for tracks"
 query getTracksForHome {
   tracksForHome {
     id
@@ -129,21 +125,21 @@ query getTracksForHome {
 
 ## Journey of a query operation
 
-1. Our web app (GraphQL client) sends a GraphQL query operation, formatted as a string in HTTP POST or GET request, to the remote GraphQL server.
+The web app (GraphQL client) sends a GraphQL query operation, formatted as a string in HTTP POST or GET request, to the GraphQL server.
 
-2. The server **parses** and **transforms** the string into a tree-structured document called an Abstract Syntax Tree (AST).
+The server **parses** and **transforms** the string into a tree-structured document called an Abstract Syntax Tree (AST).
 
-3. The server **validates** the query operation against the **types** and **fields** defined in our **schema**.
+The server **validates** the query operation against the **types** and **fields** defined in **schema**.
 
-4. For **each field** in the query, the server invokes that field's **resolver function** to populate data from the correct source.
+For **each field** in the query, the server invokes that field's **resolver function** to populate data from the correct source.
 
-5. As all of the query's fields are resolved, the **data is assembled / stitched into a nicely ordered JSON object** with the **exact same shape as the query**.
+As all of the query's fields are resolved, the data is **assembled / stitched into a JSON object** with the **exact same shape as the query**.
 
-6. The server assigns the JSON object to the **data key** of the HTTP response body, and send it back to our web app.
+The server assigns the JSON object to the **data key** of the HTTP response body, and send it back to the web app.
 
-7. The GraphQL client receives the response and then passes the data to the right components for rendering.
+The web app (GraphQL client) receives the response and passes the data to the right components for rendering.
 
-An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - Journey of a GraphQL query operation
+An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part2/journey-of-a-graphql-query) - Journey of a GraphQL query operation
 
 ![Journey of a GraphQL query operation](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
 
@@ -162,7 +158,7 @@ PATCH /track/:id
 GET   /module/:id
 ```
 
-A very helpful illustration by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - A GraphQL server retrieving data from data sources such as a database, REST API and a web hook
+An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - A GraphQL server retrieving data from data sources such as a database, REST API and a web hook
 
 ![A GraphQL server retrieving data from data sources such as a database, REST API and a web hook](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
 
