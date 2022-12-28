@@ -4,25 +4,24 @@ sidebar_position: 1
 
 # Catstronauts
 
-A learning platform for adventurous cats who want to explore the universe! 😺 🚀 Created by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/), a series of amazing and helpful tutorials about GraphQL. Thank you the creation team!! 🙏🏻
+A learning platform for adventurous cats who want to explore the universe! 😺 🚀 Created by [Apollo Odyssey](https://www.apollographql.com/tutorials/), a series of amazing and super helpful tutorials about GraphQL. Thank you the creation team!! 🙏🏻
 
 ## What data do we need?
 
-1. Think of our app's data as a collection of objects (**nodes**) and relationships (**edges**) between objects.
+1. Think of an app's data as a collection of **objects** and **relationships** between objects.
 
-2. Think of our entire data model as a graph of nodes and edges.
+2. Think of the entire data model as a **graph** of nodes and edges.
 
-3. Define this graph structure using a schema.
+An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - Identifying the pieces of data for each node
 
-A very helpful illustration by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - Identifying the pieces of data for each card
-
-![Identifying the pieces of data for each card](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
+![Identifying the pieces of data for each node](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
 
 ## Setup
 
-In the directory of your choice with your preferred terminal, clone one of the [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) repositories that suits your level.
+In the directory of your choice with your preferred terminal, clone one of the [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) repositories that suits your needs.
 
 ```bash title="repos from Apollo Odyssey tutorials"
+# clone one of the Apollo Odyssey repositories that suits your needs
 git clone https://github.com/apollographql/odyssey-lift-off-part1
 # or
 git clone https://github.com/apollographql/odyssey-lift-off-part2
@@ -30,14 +29,17 @@ git clone https://github.com/apollographql/odyssey-lift-off-part2
 git clone https://github.com/apollographql/odyssey-lift-off-part3
 # or
 git clone https://github.com/apollographql/odyssey-lift-off-part4
+# or
+git clone https://github.com/apollographql/odyssey-lift-off-part5
 
 # navigate to the server directory
 cd odyssey-lift-off-part1/server
 
-# install
+# install the default dependencies
 yarn
-yarn add apollo-server graphql
-yarn add apollo-datasource-rest
+
+# install additional dependencies
+yarn add apollo-server apollo-datasource-rest graphql
 
 # start up the server
 yarn start
@@ -49,8 +51,10 @@ yarn start
 # navigate to the client directory
 cd odyssey-lift-off-part1/client
 
-# install
+# install the default dependencies
 yarn
+
+# install additional dependencies
 yarn add graphql @apollo/client
 
 # start up the client
@@ -61,24 +65,24 @@ yarn start
 
 ## Schema Definition Language (SDL)
 
-At its heart, a schema is a collection of **object types** that **contain fields**. A schema is like a contract between the server and the client. It defines what a GraphQL API can and can't do, and how clients can request or change data.
+A schema is a collection of **object types** that contain **fields**. Like a contract between the server and the client, it defines what a GraphQL API can and can't do, and how clients can request or change data.
 
-The **fields** of Query object type are the **entry points** into the schema. They are the **top-level** fields that clients can query for. Two other possible entry points : **Mutation** and **Subscription**
+Structure the schema as intuitively as possible.
 
-We structure our schema to provide that data as intuitively as possible.
+The **fields** of **Query object type** are the **entry points** into the schema where clients can query for. Two other kinds of entry points : **Mutation** and **Subscription**
 
 Open the repository in your favorite IDE.
 
 ```js title="server/src/schema.js"
-// declare a typeDefs (short for "type definitions") constant
+// declare a constant called typeDefs (short for "type definitions")
 // wrap GraphQL strings with the gql tag (template literal)
-// convert/parse GraphQL strings into the format that Apollo libraries expect
+// convert/parse GraphQL strings into the format that Apollo libraries understand
 // use backticks (`), don't confused with single quotes (')
+
 // declare an object type called SpaceCat in PascalCase with curly brackets
 // declare a field called name in camelCase with a colon and without commas
 // if a field should never be null (non-nullable), add an exclamation mark after its type
-// declare a field called missions which is an array of missions indicated by square brackets
-// descriptions are strings wrapped with double quotes
+// declare a field called missions which is an array of Mission enclosed by square brackets
 
 const typeDefs = gql`
   type SpaceCat {
@@ -104,12 +108,9 @@ const typeDefs = gql`
 
 ## Sending a query in Apollo Sandbox
 
-Sandbox is a special mode of Apollo Studio for testing the **local server** before deploying the graph to Schema Registry.
+Sandbox is a special mode of Apollo Studio.
 
-```graphql title="running a client query in Apollo Sandbox"
-<!-- start up the local Apollo server -->
-<!-- navigate to http://localhost:4000 in Firefox or Chrome -->
-
+```graphql title="navigate to http://localhost:4000 in Firefox or Chrome"
 query getTracksForHome {
   tracksForHome {
     id
@@ -142,9 +143,9 @@ query getTracksForHome {
 
 7. The GraphQL client receives the response and then passes the data to the right components for rendering.
 
-A very helpful illustration by [Apollo Odyssey tutorials](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - Journey of a GraphQL query operation
+An illustration by [Apollo Odyssey](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation) - Journey of a GraphQL query operation
 
-![An amazing illustration by apollographql.com](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
+![Journey of a GraphQL query operation](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
 
 ## Data fetching
 
