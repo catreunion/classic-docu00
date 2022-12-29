@@ -186,7 +186,7 @@ query getTracksForHome {
 }
 ```
 
-```json title="raw data from /tracks endpoint"
+```json title="raw data from /tracks endpoint with id = "c_0""
 [
   {
     "id": "c_0",
@@ -205,7 +205,9 @@ query getTracksForHome {
 ]
 ```
 
-In the raw data, `authorId` is used instead of `author`.
+The raw data doesn't have the author name, but it does have the `authorId` which is an ID we can use for the `author/:id` endpoint.
+
+The raw data contains an array of modules with their module IDs which we can use for the `track/:id/modules` endpoint.
 
 ### The n+1 problem
 
@@ -244,23 +246,23 @@ class SpaceCatsAPI extends RESTDataSource {
 }
 ```
 
-### Resolvers
+### Resolvers & ⛓️ resolver chains
 
-A resolver is a function that's responsible for populating the data for a single field in your schema. Whenever a client queries for a particular field, the resolver for that field fetches the requested data from the appropriate data source. A resolver's name must be the same as the field that it populates the data for.
+A resolver is a function that's responsible for populating live data for a single field from a data source. Whenever a client queries for a particular field, the resolver for that field fetches the requested data from the appropriate data source. A resolver's name must be the same as the field that it populates the data for.
 
-Keep each resolver lightweight and responsible for a specific piece of data.
-
-```js title="the syntax"
+```js title="the 4 parameters of a resolver"
 fieldName: (parent, args, context, info) => data
 ```
 
 `parent` : Contain the **data** returned from the **previous** function in a **resolver chain**.
 
-`args` : Contain all the **arguments** provided to the field for querying a specific item.
+`args` : Contain all the **arguments** provided to the field for querying a specific object.
 
-`context` : Used to access the helper methods defined in `RESTDataSource` or to access authentication info.
+`context` : Used to access all the **methods** defined in `RESTDataSource` or to access authentication info.
 
 `info` : Contain informational properties about the operation's execution state.
+
+Keep each resolver lightweight and responsible for a specific piece of data. This pattern keeps each resolver readable, easy to understand, and more resilient to future changes.
 
 ```js title="server/src/resolvers.js"
 const resolvers = {
@@ -280,7 +282,7 @@ const resolvers = {
 }
 ```
 
-### Local Catstronauts
+### Local Catstronauts & Variables
 
 ```bash title="opening Apollo Sandbox"
 # navigate to the server directory
@@ -316,9 +318,20 @@ query GetTrack($trackId: ID!) {
 }
 ```
 
-```bash title="assign a value for the variable"
+The $ symbol indicates a variable in GraphQL. The name after the $ symbol is the variable name. After the colon is the variable's type, which must match the type specified in the **schema**.
+
+```bash title="assign a value to $trackId"
 {
   "trackId": "c_0"
+}
+```
+
+```graphql title="hardcode a track ID"
+query track(id: ‘c_0') {
+  title
+  author {
+    name
+  }
 }
 ```
 
@@ -461,7 +474,47 @@ const server = new ApolloServer({
 })
 ```
 
-##
+## Query with arguments
+
+An argument is a value provided for a particular field in a query.
+
+To define an argument for a field in schema :
+
+1. Add parentheses after the field name.
+
+2. Write the name of the argument followed by a colon, then the type of that argument.
+
+3. Separate multiple arguments with commas.
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the syntax breakdown of arguments definition.
+
+![showing the syntax breakdown of arguments definition](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623354512/odyssey/lift-off-part3/args-syntax_t0wseq.jpg)
+
+Arguments help you retrieve specific objects, filter through a set of objects, or even transform the field's returned value.
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) - A resolver function retrieving a specific object using an argument.
+
+![A resolver function retrieving a specific object from data-land using an argument](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623354512/odyssey/lift-off-part3/args-find_xpn4en.jpg)
+
+## ⛓️ Resolver chains
+
+The `Query.track` resolver linked with the `Track.author` resolver in a **resolver chain**.
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `Query.track` resolver passes data to the `Track.author` resolver as a **parent parameter**.
+
+![Illustration showing the Query.track resolver passing the data to the Track.author resolver as a `parent` parameter](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623355358/odyssey/lift-off-part3/resolver-parent_kne6hn.jpg)
+
+## The `useQuery` hook
+
+The `useQuery` hook returns **an object** with **three properties**.
+
+`loading` indicates whether the query has completed and results have been returned.
+
+`error` is an object that contains any errors that the operation has thrown.
+
+`data` contains the results of the query after it has completed.
+
+[Lift-off III: Arguments | Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part3/the-usequery-hook---with-variables)
 
 ## wording
 
