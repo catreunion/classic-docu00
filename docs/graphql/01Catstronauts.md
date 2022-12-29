@@ -294,7 +294,7 @@ yarn start
 # navigate to http://localhost:4000 in Firefox or Chrome
 ```
 
-```graphql title="for a track's details page"
+```graphql title="getting a track's details"
 query GetTrack($trackId: ID!) {
   track(id: $trackId) {
     id
@@ -385,20 +385,20 @@ query GetAnActivity($where: ActivityWhereInput) {
 ```
 
 ```graphql title="hardcoding slug"
-query getActivity {
-  activity(where: { slug: "2022-dec-15-kowloon-peak-running" }) {
-    title
+query GetAnActivitySlug {
+  activities(where: { slug: "2022-dec-15-kowloon-peak-running" }) {
+    id
     activityDate
-    avgHr
+    title
     avgPace
     calories
-    hours
-    id
-    maxHr
-    mins
-    secs
     totalAscent
     totalDescent
+    avgHr
+    maxHr
+    hours
+    mins
+    secs
     desc {
       text
     }
