@@ -229,7 +229,7 @@ Making n calls to the exact same endpoint to fetch the exact same data is very i
 
 ### The `RESTDataSource` class
 
-Helper methods are defined for making API calls efficient.
+Methods are defined here for making API calls.
 
 ```js title="server/src/datasources/spacecats-api.js"
 class SpaceCatsAPI extends RESTDataSource {
@@ -246,9 +246,9 @@ class SpaceCatsAPI extends RESTDataSource {
 }
 ```
 
-### Resolvers & ⛓️ resolver chains
+### Resolvers & resolver ⛓️
 
-A resolver is a function that's responsible for populating live data for a single field from a data source. Whenever a client queries for a particular field, the resolver for that field fetches the requested data from the appropriate data source. A resolver's name must be the same as the field that it populates the data for.
+A resolver is a function that's responsible for populating live data for a **single field** from a data source. Whenever a client queries for a particular field, the resolver for that field fetches the requested data from the appropriate data source. **A resolver's name must be the same as the field** that it populates the data for.
 
 ```js title="the 4 parameters of a resolver"
 fieldName: (parent, args, context, info) => data
@@ -256,13 +256,13 @@ fieldName: (parent, args, context, info) => data
 
 `parent` : Contain the **data** returned from the **previous** function in a **resolver chain**.
 
-`args` : Contain all the **arguments** provided to the field for querying a specific object.
+`args` : Contain all the **arguments** provided for querying a specific object.
 
-`context` : Used to access all the **methods** defined in `RESTDataSource` or to access authentication info.
+`context` : Contain authentication info and all the **methods** defined in `RESTDataSource`.
 
-`info` : Contain informational properties about the operation's execution state.
+`info` : Contain informational properties about the **execution state**.
 
-Keep each resolver lightweight and responsible for a specific piece of data. This pattern keeps each resolver readable, easy to understand, and more resilient to future changes.
+Keep each resolver lightweight and responsible for one piece of data. <-- Readable, easy to understand and more resilient to future changes
 
 ```js title="server/src/resolvers.js"
 const resolvers = {
@@ -282,7 +282,7 @@ const resolvers = {
 }
 ```
 
-### Local Catstronauts & Variables
+### Sandbox & Variables
 
 ```bash title="opening Apollo Sandbox"
 # navigate to the server directory
@@ -320,13 +320,13 @@ query GetTrack($trackId: ID!) {
 
 The $ symbol indicates a variable in GraphQL. The name after the $ symbol is the variable name. After the colon is the variable's type, which must match the type specified in the **schema**.
 
-```bash title="assign a value to $trackId"
+```bash title="assigning a value to the variable"
 {
   "trackId": "c_0"
 }
 ```
 
-```graphql title="hardcode a track ID"
+```graphql title="if prefer hardcoding a value"
 query track(id: ‘c_0') {
   title
   author {
@@ -337,12 +337,12 @@ query track(id: ‘c_0') {
 
 ### Isaac's outdoor blog
 
-```bash title="Sandbox connects to Hygraph"
+```bash title="connecting to Hygraph"
 # on the existing Sandbox, change the address to
 # https://api-us-east-1.hygraph.com/v2/clbq4ju4z13gl01uuf7xi0ulm/master
 ```
 
-```graphql title="for Isaac's homepage"
+```graphql title="getting activities for Homepage"
 query getActivities {
   activities {
     id
@@ -355,7 +355,49 @@ query getActivities {
 }
 ```
 
-```graphql title="query for a specific activity"
+```graphql title="getting activities (brief)"
+query GetActivitiesBrief {
+  activities {
+    id
+    activityDate
+    desc {
+      text
+    }
+  }
+}
+```
+
+```graphql title="getting with variable id"
+query GetAnActivity($where: ActivityWhereInput) {
+  activities(where: $where) {
+    title
+    activityDate
+    avgHr
+    avgPace
+    calories
+    hours
+    id
+    maxHr
+    mins
+    secs
+    totalAscent
+    totalDescent
+    desc {
+      text
+    }
+  }
+}
+```
+
+```bash title="assigning a value to a variable"
+{
+  "where": {
+    "id": "clbq5ubpk02u70binbk2el2jd"
+  }
+}
+```
+
+```graphql title="hardcoding slug"
 query getActivity {
   activity(where: { slug: "2022-dec-15-kowloon-peak-running" }) {
     title
