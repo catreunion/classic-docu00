@@ -342,19 +342,6 @@ query track(id: ‘c_0') {
 # https://api-us-east-1.hygraph.com/v2/clbq4ju4z13gl01uuf7xi0ulm/master
 ```
 
-```graphql title="getting activities for Homepage"
-query getActivities {
-  activities {
-    id
-    title
-    calories
-    desc {
-      text
-    }
-  }
-}
-```
-
 ```graphql title="getting activities (brief)"
 query GetActivitiesBrief {
   activities {
@@ -367,21 +354,21 @@ query GetActivitiesBrief {
 }
 ```
 
-```graphql title="getting with variable id"
+```graphql title="getting an activity with id"
 query GetAnActivity($where: ActivityWhereInput) {
   activities(where: $where) {
-    title
+    id
     activityDate
-    avgHr
+    title
     avgPace
     calories
-    hours
-    id
-    maxHr
-    mins
-    secs
     totalAscent
     totalDescent
+    avgHr
+    maxHr
+    hours
+    mins
+    secs
     desc {
       text
     }
@@ -389,7 +376,7 @@ query GetAnActivity($where: ActivityWhereInput) {
 }
 ```
 
-```bash title="assigning a value to a variable"
+```bash title="assigning a value to id"
 {
   "where": {
     "id": "clbq5ubpk02u70binbk2el2jd"
