@@ -335,6 +335,15 @@ query track(id: ‘c_0') {
 }
 ```
 
+```graphql title=""
+query GetMission($isScheduled: Boolean) {
+  mission(scheduled: $isScheduled) {
+    id
+    codename
+  }
+}
+```
+
 ### Isaac's outdoor blog
 
 ```bash title="connecting to Hygraph"
@@ -384,7 +393,7 @@ query GetAnActivity($where: ActivityWhereInput) {
 }
 ```
 
-```graphql title="hardcoding slug"
+```graphql title="if prefer hardcoding a slug"
 query GetAnActivitySlug {
   activities(where: { slug: "2022-dec-15-kowloon-peak-running" }) {
     id
@@ -542,6 +551,36 @@ The `useQuery` hook returns **an object** with **three properties**.
 `error` is an object that contains any errors that the operation has thrown.
 
 `data` contains the results of the query after it has completed.
+
+To set **variables** in a query, declare them in the **second** parameter of the `useQuery` hook.
+
+```js
+const GET_SPACECAT = gql`
+  query GetSpacecat($spaceCatId: ID!) {
+    spacecat(id: $spaceCatId) {
+      name
+    }
+  }
+`
+
+const spaceCatId = "kitty-1"
+
+const Cat = ({ spaceCatId }) => {
+  const { loading, error, data } = useQuery(GET_SPACECAT, {
+    variables: { spaceCatId }
+  })
+
+  return (
+    <Layout>
+      <QueryResult loading={loading} error={error} data={data}>
+        <TrackDetail track={data?.track} />
+      </QueryResult>
+    </Layout>
+  )
+}
+
+export default Cat
+```
 
 [Lift-off III: Arguments | Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part3/the-usequery-hook---with-variables)
 
