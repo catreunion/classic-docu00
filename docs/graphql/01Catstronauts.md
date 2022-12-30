@@ -161,7 +161,7 @@ PATCH /track/:id
 GET   /module/:id
 ```
 
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part2/exploring-our-data) presenting the data sources that GraphQL server supports
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part2/exploring-our-data) presenting the data sources that GraphQL server supports.
 
 ![The data sources that GraphQL server supports](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
 
@@ -186,7 +186,7 @@ query getTracksForHome {
 }
 ```
 
-```json title="raw data from /tracks endpoint with id = "c_0""
+```json title="raw data from /tracks endpoint""
 [
   {
     "id": "c_0",
@@ -205,9 +205,9 @@ query getTracksForHome {
 ]
 ```
 
-The raw data doesn't have the author name, but it does have the `authorId` which is an ID we can use for the `author/:id` endpoint.
+The raw data has the `authorId` field. It's value can be used in the `author/:id` endpoint.
 
-The raw data contains an array of modules with their module IDs which we can use for the `track/:id/modules` endpoint.
+The raw data contains an array of modules. Their values can be used in the `track/:id/modules` endpoint.
 
 ### The n+1 problem
 
@@ -250,7 +250,7 @@ class SpaceCatsAPI extends RESTDataSource {
 
 A resolver is a function that's responsible for populating live data for a **single field** from a data source. Whenever a client queries for a particular field, the resolver for that field fetches the requested data from the appropriate data source. **A resolver's name must be the same as the field** that it populates the data for.
 
-```js title="the 4 parameters of a resolver"
+```js title="4 parameters of a resolver"
 fieldName: (parent, args, context, info) => data
 ```
 
@@ -281,6 +281,32 @@ const resolvers = {
   }
 }
 ```
+
+## Query with arguments
+
+An argument is a value provided for a particular field in a query. It is used to retrieve specific objects, filter through a set of objects, or even transform the field's returned value.
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the syntax breakdown of arguments definition.
+
+![Showing the syntax breakdown of arguments definition](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623354512/odyssey/lift-off-part3/args-syntax_t0wseq.jpg)
+
+Add parentheses after the field name.
+
+Write the name of the argument followed by a colon, then the type of that argument.
+
+Separate multiple arguments with commas.
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) - A resolver function retrieving a specific object using an argument.
+
+![A resolver function retrieving a specific object from data-land using an argument](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623354512/odyssey/lift-off-part3/args-find_xpn4en.jpg)
+
+## ⛓️ Resolver chains
+
+The `Query.track` resolver linked with the `Track.author` resolver in a **resolver chain**.
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `Query.track` resolver passes data to the `Track.author` resolver as a **parent parameter**.
+
+![Illustration showing the Query.track resolver passing the data to the Track.author resolver as a `parent` parameter](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623355358/odyssey/lift-off-part3/resolver-parent_kne6hn.jpg)
 
 ### Sandbox & Variables
 
@@ -511,36 +537,6 @@ const server = new ApolloServer({
   }
 })
 ```
-
-## Query with arguments
-
-An argument is a value provided for a particular field in a query.
-
-To define an argument for a field in schema :
-
-1. Add parentheses after the field name.
-
-2. Write the name of the argument followed by a colon, then the type of that argument.
-
-3. Separate multiple arguments with commas.
-
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the syntax breakdown of arguments definition.
-
-![showing the syntax breakdown of arguments definition](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623354512/odyssey/lift-off-part3/args-syntax_t0wseq.jpg)
-
-Arguments help you retrieve specific objects, filter through a set of objects, or even transform the field's returned value.
-
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) - A resolver function retrieving a specific object using an argument.
-
-![A resolver function retrieving a specific object from data-land using an argument](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623354512/odyssey/lift-off-part3/args-find_xpn4en.jpg)
-
-## ⛓️ Resolver chains
-
-The `Query.track` resolver linked with the `Track.author` resolver in a **resolver chain**.
-
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `Query.track` resolver passes data to the `Track.author` resolver as a **parent parameter**.
-
-![Illustration showing the Query.track resolver passing the data to the Track.author resolver as a `parent` parameter](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623355358/odyssey/lift-off-part3/resolver-parent_kne6hn.jpg)
 
 ## The `useQuery` hook
 
