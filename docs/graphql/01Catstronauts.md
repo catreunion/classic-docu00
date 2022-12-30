@@ -584,6 +584,48 @@ export default Cat
 
 [Lift-off III: Arguments | Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part3/the-usequery-hook---with-variables)
 
+## Mutations
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) comparing **SpaceCat** and **Mission** object types.
+
+![Comparing SpaceCat and Mission object types](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624650767/odyssey/lift-off-part4/doodle_schema_ea1ivm.png)
+
+A spacecat has a list of missions assigned to.
+
+A mission can have more than one spacecat assigned to it.
+
+Assign one spacecat to a particular mission.
+
+Update that spacecat's list of missions.
+
+Update the mission lists of other crew members.
+
+Similar to Query fields, fields of the **Mutation** type are also **entry points** into a GraphQL API.
+
+### `assignMission` and `AssignMissionResponse`
+
+`assignMission` mutation
+
+`AssignMissionResponse` return type
+
+When a mutation modifies multiple objects, it returns all the objects of the return type.
+
+**Mutation response** : An **object** storing the mutation's return type.
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `AssignMissionResponse` return type.
+
+![The new `AssignMissionResponse` return type](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624651213/odyssey/lift-off-part4/doodle_mutation_return_type_jklp3a.png)
+
+A mutation response contains 3 properties, as well as additional fields for each object that the mutation updated.
+
+`code` : Int! refers to the status of the response, similar to an HTTP status code.
+
+`success` : Boolean! indicates whether the mutation was successful.
+
+`message` : String! shows the result of the mutation.
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the fields on the mutation type.
+
 ## wording
 
 Things never go smoothly in the real world.

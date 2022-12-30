@@ -68,6 +68,7 @@ const config = {
           { label: "GraphQL", to: "/docs/graphql/01Catstronauts", position: "left" },
           { label: "Supabase", to: "/docs/supabase/00JWT", position: "left" },
           { label: "Blog", to: "/blog", position: "left" },
+          { label: "邵太", to: "/docs/shaw/01", position: "left" },
           { label: " ", to: "/", position: "left" },
           {
             label: "YouTube",
@@ -111,6 +112,10 @@ const config = {
               {
                 label: "Blog",
                 to: "/blog"
+              },
+              {
+                label: "邵太",
+                to: "/docs/shaw/01"
               }
             ]
           },
