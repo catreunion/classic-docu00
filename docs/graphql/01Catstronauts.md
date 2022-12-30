@@ -146,9 +146,7 @@ An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-par
 
 ![The journey of a GraphQL query operation](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
 
-## Data fetching
-
-### Where is our raw data?
+## Where is our raw data?
 
 [the Catstronauts REST API](https://odyssey-lift-off-rest-api.herokuapp.com/)
 
@@ -165,7 +163,7 @@ An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-par
 
 ![The data sources that GraphQL server supports](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
 
-### How is the raw data structured?
+## How is the raw data structured?
 
 A GraphQL query operation is often composed of a mix of fields and types, coming from **different endpoints**, with different cache policies.
 
@@ -209,7 +207,7 @@ The raw data has the `authorId` field. It's value can be used in the `author/:id
 
 The raw data contains an array of modules. Their values can be used in the `track/:id/modules` endpoint.
 
-### The n+1 problem
+## The n+1 problem
 
 One call to fetch tracks but n subsequent calls to fetch the author subfield for each track.
 
@@ -227,7 +225,7 @@ Making n calls to the exact same endpoint to fetch the exact same data is very i
 }
 ```
 
-### The `RESTDataSource` class
+## The `RESTDataSource` class
 
 Methods are defined here for making API calls.
 
@@ -246,7 +244,7 @@ class SpaceCatsAPI extends RESTDataSource {
 }
 ```
 
-### Resolvers & resolver ⛓️
+## Resolvers & resolver ⛓️
 
 A resolver is a function that's responsible for populating live data for a **single field** from a data source. Whenever a client queries for a particular field, the resolver for that field fetches the requested data from the appropriate data source. **A resolver's name must be the same as the field** that it populates the data for.
 
@@ -262,7 +260,7 @@ fieldName: (parent, args, context, info) => data
 
 `info` : Contain informational properties about the **execution state**.
 
-Keep each resolver lightweight and responsible for one piece of data. <-- Readable, easy to understand and more resilient to future changes
+Keep each resolver lightweight and responsible for one piece of data. --> Easy to understand and more resilient to future changes
 
 ```js title="server/src/resolvers.js"
 const resolvers = {
@@ -300,15 +298,15 @@ An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-par
 
 ![A resolver function retrieving a specific object from data-land using an argument](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623354512/odyssey/lift-off-part3/args-find_xpn4en.jpg)
 
-## ⛓️ Resolver chains
+## A closer look to ⛓️
 
-The `Query.track` resolver linked with the `Track.author` resolver in a **resolver chain**.
+The `Query.track` resolver and the `Track.author` resolver are linked to form a **resolver chain**.
 
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `Query.track` resolver passes data to the `Track.author` resolver as a **parent parameter**.
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `Query.track` resolver passes data to the `Track.author` resolver. The data is known as **parent parameter**.
 
-![Illustration showing the Query.track resolver passing the data to the Track.author resolver as a `parent` parameter](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623355358/odyssey/lift-off-part3/resolver-parent_kne6hn.jpg)
+![Showing the `Query.track` resolver passes data to the `Track.author` resolver](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623355358/odyssey/lift-off-part3/resolver-parent_kne6hn.jpg)
 
-### Sandbox & Variables
+## Sandbox & Variables
 
 ```bash title="opening Apollo Sandbox"
 # navigate to the server directory
@@ -346,7 +344,7 @@ query GetTrack($trackId: ID!) {
 
 The $ symbol indicates a variable in GraphQL. The name after the $ symbol is the variable name. After the colon is the variable's type, which must match the type specified in the **schema**.
 
-```bash title="assigning a value to the variable"
+```bash title="passing an argument to the variable"
 {
   "trackId": "c_0"
 }
@@ -370,7 +368,7 @@ query GetMission($isScheduled: Boolean) {
 }
 ```
 
-### Isaac's outdoor blog
+## Isaac's outdoor blog
 
 ```bash title="connecting to Hygraph"
 # on the existing Sandbox, change the address to
@@ -411,7 +409,7 @@ query GetAnActivity($where: ActivityWhereInput) {
 }
 ```
 
-```bash title="assigning a value to id"
+```bash title="passing an argument to "
 {
   "where": {
     "id": "clbq5ubpk02u70binbk2el2jd"
@@ -441,7 +439,7 @@ query GetAnActivitySlug {
 }
 ```
 
-### Putting all together
+## Putting all together
 
 ```js title="server/src/schema.js"
 const typeDefs = gql`
