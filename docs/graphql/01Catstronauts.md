@@ -12,7 +12,7 @@ Think of an app's data as a collection of **objects** and **relationships** betw
 
 Think of the entire data model as a **graph** of nodes and edges.
 
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) presenting a collection of **objects** and the **relationships** among them.
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing a collection of **objects** and the **relationships** among them.
 
 ![A collection of objects and the relationships among them](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
 
@@ -142,7 +142,7 @@ The server assigns the JSON object to the **data key** of the HTTP response body
 
 The web app (GraphQL client) receives the response and passes the data to the right components for rendering.
 
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part2/journey-of-a-graphql-query) presenting the journey of a GraphQL query operation
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part2/journey-of-a-graphql-query) showing the journey of a GraphQL query operation.
 
 ![The journey of a GraphQL query operation](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1617351987/odyssey/lift-off-part2/lop2-1-06_enfbis.jpg)
 
@@ -159,7 +159,7 @@ PATCH /track/:id
 GET   /module/:id
 ```
 
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part2/exploring-our-data) presenting the data sources that GraphQL server supports.
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part2/exploring-our-data) showing the data sources that GraphQL server supports.
 
 ![The data sources that GraphQL server supports](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612408870/odyssey/lift-off-part2/lop2-2-01_actpy7.jpg)
 
@@ -286,7 +286,7 @@ An argument is a value provided for a particular field in a query. It is used to
 
 An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the syntax breakdown of arguments definition.
 
-![Showing the syntax breakdown of arguments definition](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623354512/odyssey/lift-off-part3/args-syntax_t0wseq.jpg)
+![The syntax breakdown of arguments definition](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623354512/odyssey/lift-off-part3/args-syntax_t0wseq.jpg)
 
 Add parentheses after the field name.
 
@@ -306,7 +306,7 @@ An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-par
 
 ![Showing the `Query.track` resolver passes data to the `Track.author` resolver](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1623355358/odyssey/lift-off-part3/resolver-parent_kne6hn.jpg)
 
-## Sandbox & Variables
+## Sandbox & variables
 
 ```bash title="opening Apollo Sandbox"
 # navigate to the server directory
@@ -409,7 +409,7 @@ query GetAnActivity($where: ActivityWhereInput) {
 }
 ```
 
-```bash title="passing an argument to "
+```bash title="passing an argument to the variable"
 {
   "where": {
     "id": "clbq5ubpk02u70binbk2el2jd"
@@ -580,7 +580,7 @@ export default Cat
 
 ## Mutations
 
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) comparing **SpaceCat** and **Mission** object types.
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing **SpaceCat** and **Mission** object types.
 
 ![Comparing SpaceCat and Mission object types](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624650767/odyssey/lift-off-part4/doodle_schema_ea1ivm.png)
 
@@ -594,17 +594,13 @@ Update that spacecat's list of missions.
 
 Update the mission lists of other crew members.
 
-Similar to Query fields, fields of the **Mutation** type are also **entry points** into a GraphQL API.
+Fields of the **Mutation** type are also **entry points** into the GraphQL API. <-- Similar to the Query type
 
 ### `assignMission` and `AssignMissionResponse`
 
-`assignMission` mutation
+When the `assignMission` mutation modifies multiple objects, it returns all the objects of the return type.
 
-`AssignMissionResponse` return type
-
-When a mutation modifies multiple objects, it returns all the objects of the return type.
-
-**Mutation response** : An **object** storing the mutation's return type.
+The `AssignMissionResponse` return type is an **object** created for storing the return type of `assignMission`.
 
 An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `AssignMissionResponse` return type.
 
@@ -617,8 +613,6 @@ A mutation response contains 3 properties, as well as additional fields for each
 `success` : Boolean! indicates whether the mutation was successful.
 
 `message` : String! shows the result of the mutation.
-
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the fields on the mutation type.
 
 ## wording
 
