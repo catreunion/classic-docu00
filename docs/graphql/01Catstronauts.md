@@ -725,11 +725,15 @@ the structure of the graph reference variable is really <APOLLO_GRAPH_ID>@<APOLL
 
 Railway automatically set the NODE_ENV environment variable to production, which alerts our **Apollo Server** to switch itself to production as well, **automatically disabling introspection**. Tools like Apollo Sandbox use introspection to build and run queries. Introspection enables us to query a GraphQL server for data like types, fields, and field-level descriptions.
 
-Illustration of introspection in development environments
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part5/deploying-apollo-server) showing introspection in development environments.
+
+![introspection in development environments](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1629226863/odyssey/lift-off-part5/e4-introspect-dev_gdfpnj.jpg)
 
 Having introspection in production can be a major security issue. It exposes all of our graph's structure and what we can do with it to the whole world.
 
-Illustration of introspection in production environments, where introspection is turned off
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part5/deploying-apollo-server) showing introspection in production environments, where introspection is turned off.
+
+![introspection in production environments, where introspection is turned off](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1629226863/odyssey/lift-off-part5/e4-introspect-prod_co4itc.jpg)
 
 Use [Apollo Studio](http://studio.apollographql.com) instead. Query our server at a public URL on the internet.
 

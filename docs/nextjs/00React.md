@@ -282,6 +282,70 @@ const todoItems = todos.map((todo, index) => <li key={index}>{todo.text}</li>)
 
 Source : [Passing Props to a Component](https://beta.reactjs.org/learn/passing-props-to-a-component), [Rendering Lists](https://beta.reactjs.org/learn/rendering-lists), [Conditional Rendering](https://beta.reactjs.org/learn/conditional-rendering), curly braces `{ }`, [Introducing Hooks](https://reactjs.org/docs/hooks-intro.html), [Adding Interactivity](https://beta.reactjs.org/learn/adding-interactivity), [Managing State](https://beta.reactjs.org/learn/managing-state), [State: A Component's Memory](https://beta.reactjs.org/learn/state-a-components-memory#), [Meet your first Hook](https://beta.reactjs.org/learn/state-a-components-memory#meet-your-first-hook), [Responding to Events](https://beta.reactjs.org/learn/responding-to-events)
 
+## Tailwind CSS Installation
+
+Tailwind UI is more like a set of blueprints, patterns, and ideas than a rigid UI kit.
+
+Style in this order : Layout > Box > Borders > Backgrounds > Typography > Others
+
+Useful tools : [​IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss), [prettier-plugin-tailwindcss](https://github.com/tailwindlabs/prettier-plugin-tailwindcss)
+
+Source : [Heroicons](https://unpkg.com/browse/@heroicons/react/outline/), [Headless UI](https://headlessui.com/), [@tailwindcss/aspect-ratio](https://github.com/tailwindlabs/tailwindcss-aspect-ratio), [@tailwindcss/forms](https://github.com/tailwindlabs/tailwindcss-forms), [@tailwindcss/line-clamp](https://github.com/tailwindlabs/tailwindcss-line-clamp), [@tailwindcss/typography](https://tailwindcss.com/docs/typography-plugin)
+
+```bash
+# get started by running Create React App
+yarn create react-app <project_name>
+
+# net to the project root directory
+cd <project_name>
+
+# install React Router
+yarn add react-router-dom
+
+# install Tailwind CSS
+yarn add -D tailwindcss
+
+# install the official plugins of Tailwind CSS
+yarn add -D @tailwindcss/aspect-ratio @tailwindcss/forms @tailwindcss/line-clamp @tailwindcss/typography
+
+# install the official icon sets and UI utilities of Tailwind CSS
+yarn add @heroicons/react @headlessui/react@latest
+
+# install Prettier and its peer dependency
+yarn add -D prettier prettier-plugin-tailwindcss
+
+# generate `tailwind.config.js`
+npx tailwindcss init
+```
+
+```js title="tailwind.config.js"
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./src/**/*.{js,jsx,ts,tsx}"],
+  theme: {
+    extend: {}
+  },
+  plugins: []
+}
+```
+
+```css title="./src/index.css"
+/* add the @tailwind directives for each Tailwind’s layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+```js title="./src/App.js"
+export default function App() {
+  return <h1 className="text-3xl font-bold underline">Hello world!</h1>
+}
+```
+
+```bash title="start the dev server"
+yarn start
+```
+
 {% callout type="layout" title="array.map()" %}
 Manipulate data and generate UI elements that are identical in style but hold different information.
 Iterates over the array and use an arrow function to map a name to a list item.
