@@ -16,7 +16,7 @@ An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-par
 
 ![A collection of objects and the relationships among them](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
 
-## Setup
+## Project setup 🔧
 
 In the directory of your choice with your preferred terminal, clone one of the repositories createdy by [Apollo](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation).
 
@@ -26,12 +26,14 @@ git clone https://github.com/apollographql/odyssey-lift-off-part1
 git clone https://github.com/apollographql/odyssey-lift-off-part2
 git clone https://github.com/apollographql/odyssey-lift-off-part3
 git clone https://github.com/apollographql/odyssey-lift-off-part4
-git clone https://github.com/apollographql/odyssey-lift-off-part5
+git clone https://github.com/apollographql/odyssey-lift-off-part5-server.git
+git clone https://github.com/apollographql/odyssey-lift-off-part5-client.git
 
 # navigate to the server directory
 cd odyssey-lift-off-part1/server
 
 # install the default dependencies
+# the backend is built with Node.js
 yarn
 
 # install additional dependencies
@@ -48,6 +50,7 @@ yarn start
 cd odyssey-lift-off-part1/client
 
 # install the default dependencies
+# the frontend is built with React
 yarn
 
 # install additional dependencies
@@ -582,7 +585,7 @@ export default Cat
 
 An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing **SpaceCat** and **Mission** object types.
 
-![Comparing SpaceCat and Mission object types](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624650767/odyssey/lift-off-part4/doodle_schema_ea1ivm.png)
+![howing SpaceCat and Mission object types](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624650767/odyssey/lift-off-part4/doodle_schema_ea1ivm.png)
 
 A spacecat has a list of missions assigned to.
 
@@ -625,7 +628,37 @@ type Mutation {
 }
 ```
 
-##
+## Testing with Sandbox
+
+```bash title="opening Apollo Sandbox"
+# navigate to the server directory
+cd server/
+
+# start up the server
+yarn start
+
+# navigate to http://localhost:4000 in Firefox or Chrome
+```
+
+```graphql title="exe mutation operation"
+mutation IncrementTrackViews($incrementTrackViewsId: ID!) {
+  incrementTrackViews(id: $incrementTrackViewsId) {
+    code
+    success
+    message
+    track {
+      id
+      numberOfViews
+    }
+  }
+}
+```
+
+```bash title="passing an argument to the variable"
+{
+  "incrementTrackViewsId": "c_0"
+}
+```
 
 ```js title="server/src/resolvers.js"
 Mutation: {
@@ -651,6 +684,112 @@ Mutation: {
   }
 }
 ```
+
+## Deploy the backend
+
+The server and client apps need to be split into two separate repos.
+
+The backend will be deployed to Apollo schema registry.
+
+The frontend will be deployed to x.
+
+Schema evolution
+
+evolve over time as we add new features and improve our codebase.
+
+the schema registry is a version control system for our schema. It stores our schema's change history, tracking the types and fields that were added, modified, and removed. The registry powers almost every Apollo feature.
+
+can track variants of the same graph that are deployed in different environments, such as staging and production. We can run schema checks to detect when a potential change might break one of our clients.
+
+As our graph grows, multiple teams might even want to break parts of it into separate subgraphs that they manage independently. The schema registry can take care of tracking all those subgraphs, enabling Apollo to surface potential conflicts between them, and even powering schema composition with Apollo managed federation!
+
+storing schema change history for a single graph and field usage.
+
+Register our schema with Apollo
+
+[Apollo Studio](https://studio.apollographql.com)
+
+Sandbox is a **development** environment where we can explore and test a GraphQL schema. To register a **production** schema and track our changes over time, we can create a **deployed graph** in Apollo Studio, which is visible to **the whole organization**.
+
+Select Monolith as the graph architecture
+
+Apollo Server uses a protocol called schema reporting, where our GraphQL server automatically registers its latest schema every time it starts up! To enable this, we need to set up the three environment variables shown on the page:
+
+```env title=""
+APOLLO_KEY=service:xxxxx
+APOLLO_GRAPH_REF=xxxxxx
+APOLLO_SCHEMA_REPORTING=true
+```
+
+the structure of the graph reference variable is really <APOLLO_GRAPH_ID>@<APOLLO_GRAPH_VARIANT>.
+
+Railway automatically set the NODE_ENV environment variable to production, which alerts our **Apollo Server** to switch itself to production as well, **automatically disabling introspection**. Tools like Apollo Sandbox use introspection to build and run queries. Introspection enables us to query a GraphQL server for data like types, fields, and field-level descriptions.
+
+Illustration of introspection in development environments
+
+Having introspection in production can be a major security issue. It exposes all of our graph's structure and what we can do with it to the whole world.
+
+Illustration of introspection in production environments, where introspection is turned off
+
+Use [Apollo Studio](http://studio.apollographql.com) instead. Query our server at a public URL on the internet.
+
+```graphql title="on Apollo Studio Explorer"
+query GetTracks {
+  tracksForHome {
+    id
+    title
+    thumbnail
+    length
+    modulesCount
+    author {
+      name
+      photo
+    }
+  }
+}
+```
+
+The Explorer will prompt you for the **Production URL**. This is the domain URL we generated in Railway.
+
+Railway needs our server to run on a port specified by the PORT environment variable, which is set behind the scenes.
+
+```js title="server/src/index.js"
+// update the port number by specifying an options object in the listen method.
+await server.listen({ port: process.env.PORT || 4000 })
+```
+
+```js title="server/src/index.js"
+async function startApolloServer(server) {
+  // listen to a port specified by process.env.PORT, or if that doesn't exist, a hard-coded port number 4000
+  const { url } = await server.listen({ port: process.env.PORT || 4000 })
+  console.log(`🚀  Server ready at ${url}`)
+}
+
+startApolloServer(server)
+```
+
+On the Railway dashboard, click New. Select the GitHub Repo option. Connect the backend repository. Input environment variables. Click Generate Domain.
+
+The backend is live in production.
+
+## Deploy the frontend
+
+initialized our Apollo Client with properties such as the uri and cache
+
+Change the value of `uri` to the backend live address
+
+```js title="src/index.js"
+const client = new ApolloClient({
+  uri: "https://odyssey-lift-off-part5-server-production.up.railway.app/",
+  cache: new InMemoryCache()
+})
+```
+
+Commit and push changes to GitHub.
+
+On the Railway dashboard, click New. Select the GitHub Repo option. Connect the client app repository. Click Generate Domain.
+
+The frontend is up and running in Interent.
 
 ## wording
 
