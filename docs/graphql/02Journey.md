@@ -4,15 +4,15 @@ sidebar_position: 2
 
 # Fundamental of GraphQL
 
-## Running a GraphQL.js script
+## A GraphQL.js script
 
-[Getting started with GraphQL.js](https://graphql.org/graphql-js/)
+Running a GraphQL query on command line tool. [Getting started with GraphQL.js](https://graphql.org/graphql-js/)
 
 ```bash title="setup for running a GraphQL.js script"
-# create a new directory and move to it
+# create a new directory and move into it
 mkdir m1 && cd m1
 
-# create a new project
+# initialize a new Node.js project
 yarn init -y
 
 # install GraphQL.js
@@ -23,7 +23,7 @@ yarn add graphql
 touch hello.js
 ```
 
-> The following code shows ES6 features like [Promises](https://web.dev/learn/), classes, and [fat arrow functions](https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/).
+The following code shows ES6 features like [Promises](https://web.dev/learn/), classes, and [fat arrow functions](https://strongloop.com/strongblog/an-introduction-to-javascript-es6-arrow-functions/).
 
 ```js title="hello.js"
 var { buildSchema, graphql } = require("graphql")
@@ -51,63 +51,18 @@ node hello.js
 { data: [Object: null prototype] { hello: 'Hello world!' } }
 ```
 
-> [Running an Express GraphQL Server](https://graphql.org/graphql-js/running-an-express-graphql-server/) : For practical applications, you'll probably want to run GraphQL queries from an API server, rather than executing GraphQL with a command line tool. To use GraphQL for an API server over HTTP, check out Running an Express GraphQL Server.
+## Express GraphQL Server
 
-## Running with Apollo Server
+Running a GraphQL query over HTTP. [Getting started Express GraphQL Server](https://graphql.org/graphql-js/running-an-express-graphql-server/)
 
-Apollo Server has a built in standalone HTTP server and middleware for Express, and has an framework integration API that supports all Node.js HTTP server frameworks and serverless environments via community integrations.
-
-Apollo Server has a plugin API, integration with Apollo Studio, and performance and security features such as caching, automatic persisted queries, and CSRF prevention.
-
-[Apollo Server 4](https://www.apollographql.com/docs/apollo-server/)
-
-```bash title="setup for running an Apollo Server"
-# create a new directory and move to it
+```bash title="setup for running an Express webserver"
+# create a new directory and move into it
 mkdir m2 && cd m2
 
-# create a new project
+# initialize a new Node.js project
 yarn init -y
 
-# install GraphQL.js
-yarn add @apollo/server graphql
-
-# create a JavaScript file
-touch server.js
-```
-
-```js title="server.js"
-import { ApolloServer } from "@apollo/server"
-import { startStandaloneServer } from "@apollo/server/standalone"
-
-const server = new ApolloServer({
-  typeDefs,
-  resolvers
-})
-const { url } = await startStandaloneServer(server)
-
-console.log(`🚀 Server ready at ${url}`)
-```
-
-```bash title="starting the Apollo Server"
-# execute the GraphQL query in server.js
-node server.js
-
-# the GraphQL response printed out
-# { data: { hello: 'Hello world!' } }
-```
-
-## Running with Express GraphQL
-
-[Running an Express GraphQL Server](https://graphql.org/graphql-js/running-an-express-graphql-server/)
-
-```bash title="setup for running a Express GraphQL server"
-# create a new directory and move to it
-mkdir m3 && cd m3
-
-# create a new project
-yarn init -y
-
-# install
+# install dependencies
 yarn add express express-graphql graphql
 
 # create a JavaScript file
@@ -138,7 +93,7 @@ app.use(
 app.listen(4000, () => console.log("Now browse to localhost:4000/graphql"))
 ```
 
-```bash title="starting the Express GraphQL webserver"
+```bash title="starting the Express webserver"
 # start the Express GraphQL server
 node server.js
 
@@ -148,232 +103,54 @@ Now browse to localhost:4000/graphql
 # go to http://localhost:4000/graphql with a web browser
 ```
 
----
+## Apollo Server
 
-A query language for your API
-GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data. GraphQL provides a complete and understandable description of the data in your API, gives clients the power to ask for exactly what they need and nothing more, makes it easier to evolve APIs over time, and enables powerful developer tools.
+Apollo Server has a built in standalone HTTP server and middleware for Express, and has an framework integration API that supports all Node.js HTTP server frameworks and serverless environments via community integrations.
 
-Ask for what you need, get exactly that
+Apollo Server has a plugin API, integration with Apollo Studio, and performance and security features such as caching, automatic persisted queries, and CSRF prevention.
 
-Send a GraphQL query to your API and get exactly what you need, nothing more and nothing less. GraphQL queries always return predictable results. Apps using GraphQL are fast and stable because they control the data they get, not the server.
+[Apollo Server 4](https://www.apollographql.com/docs/apollo-server/)
 
-```
-{
-  hero {
-    name
-    height
-    mas
-  }
-}
-{
-  "hero": {
-      "name": "Luke Skywalker",
-      "height": 1.72
-  }
-}
-```
+```bash title="setup for running an Apollo Server"
+# create a new directory and move into it
+mkdir m3 && cd m3
 
-Get many resources in a single request
-GraphQL queries access not just the properties of one resource but also smoothly follow references between them. While typical REST APIs require loading from multiple URLs, GraphQL APIs get all the data your app needs in a single request. Apps using GraphQL can be quick even on slow mobile network connections.
+# initialize a new Node.js project
+yarn init -y
 
-```
-{
-    hero {
-    name
-    friends {
-        name
-        }
-    }
-}
-{
-    "hero": {
-      "name": "Luke Skywalker",
-      "friends": [
-        { "name": "Obi-Wan Kenobi" },
-        { "name": "R2-D2" },
-        { "name": "Han Solo" },
-        { "name": "Leia Organa" }
-      ]
-    }
-}
+# install dependencies
+yarn add @apollo/server graphql
+
+# create a JavaScript file
+touch server.js
+
+# start the Apollo Server
+node server.js
+
+# response from the Apollo Server
+🚀  Server ready at: http://localhost:4000/
+
+# go to http://localhost:4000 with a web browser
 ```
 
-Describe what’s possible with a type system
-GraphQL APIs are organized in terms of types and fields, not endpoints. Access the full capabilities of your data from a single endpoint. GraphQL uses types to ensure Apps only ask for what’s possible and provide clear and helpful errors. Apps can use types to avoid writing manual parsing code.
-
-```
-{
-  hero {
-    name
-    friends {
-      name
-      homeWorld {
-        name
-        climate
-      }
-      species {
-        name
-        lifespan
-        origin {
-          name
-        }
-      }
-    }
-  }
-}
-
-type Query {
-  hero: Character
-}
-
-type Character {
-  name: String
-  friends: [Character]
-  homeWorld: Planet
-  species: Species
-}
-
-type Planet {
-  name: String
-  climate: String
-}
-
-type Species {
-  name: String
-  lifespan: Int
-  origin: Planet
-}
-```
-
-Move faster with powerful developer tools
-Know exactly what data you can request from your API without leaving your editor, highlight potential issues before sending a query, and take advantage of improved code intelligence.
-
-Evolve your API without versions
-
-Add new fields and types to your GraphQL API without impacting existing queries. Aging fields can be deprecated and hidden from tools. By using a single evolving version, GraphQL APIs give apps continuous access to new features and encourage cleaner, more maintainable server code.
-
-```
-type Film {
-  title: String
-  episode: Int
-  releaseDate: String
-}
-
-type Film {
-  title: String
-  episode: Int
-  releaseDate: String
-  openingCrawl: String
-}
-
-type Film {
-  title: String
-  episode: Int
-  releaseDate: String
-  openingCrawl: String
-  director: String
-}
-
-type Film {
-  title: String
-  episode: Int
-  releaseDate: String
-  openingCrawl: String
-  director: String
-  directedBy: Person
-}
-
-type Person {
-  name: String
-  directed: [Film]
-  actedIn: [Film]
-}
-
-type Film {
-  title: String
-  episode: Int
-  releaseDate: String
-  openingCrawl: String
-  director: String @deprecated
-  directedBy: Person
-}
-```
-
-Bring your own data and code
-GraphQL creates a uniform API across your entire application without being limited by a specific storage engine. Write GraphQL APIs that leverage your existing data and code with GraphQL engines available in many languages. You provide functions for each field in the type system, and GraphQL calls them with optimal concurrency.
-
-```
-type Character {
-    name: String
-    homeWorld: Planet
-    friends: [Character]
-}
-
-// type Character {
-class Character {
-    // name: String
-    getName() {
-        return this._name
-    }
-
-    // homeWorld: Planet
-    getHomeWorld() {
-        return fetchHomeworld(this._homeworldID)
-    }
-
-    // friends: [Character]
-    getFriends() {
-        return this._friendIDs.map(fetchCharacter)
-    }
-}
-# type Character {
-class Character:
-    # name: String
-    def name(self):
-        return self._name
-
-    # homeWorld: Planet
-    def homeWorld(self):
-        return fetchHomeworld(self._homeworldID)
-
-    # friends: [Character]
-    def friends(self):
-        return map(fetchCharacter, self._friendIDs)
-
-
-// type Character {
-public class Character {
-  // name: String
-  public String Name { get; }
-
-  // homeWorld: Planet
-  public async Task<Planet> GetHomeWorldAsync() {
-    return await FetchHomeworldAsync(_HomeworldID);
-  }
-
-  // friends: [Character]
-  public async IEnumerable<Task<Character>> GetFriendsAsync() {
-    return _FriendIDs.Select(FetchCharacterAsync);
+```graphql title="returning all books"
+query GetBook {
+  books {
+    title
   }
 }
 ```
 
-# Apollo Server 4
-
-[Introduction to Apollo Server - Apollo GraphQL Docs](https://www.apollographql.com/docs/apollo-server)
-
-to build a production-ready, self-documenting GraphQL API that can use data from any source.
+An illustration by [Apollo](https://www.apollographql.com/docs/apollo-server) showing Apollo Server bridging frontend and backend.
 
 ![showing Apollo Server bridging frontend and backend](https://www.apollographql.com/docs/c5e2d4db4b0b5568a87ebf082ffe79e6/frontend_backend_diagram.svg)
 
-The GraphQL server for a subgraph in a federated supergraph
-A stand-alone GraphQL server
-An add-on to your application's existing Node.js middleware (such as Express, AWS Lambda, or Fastify)
-
-Apollo Server provides:
 Straightforward setup, so your client developers can start fetching data quickly
+
 Incremental adoption, enabling you to add features as they're needed
+
 Universal compatibility with any data source, any build tool, and any GraphQL client
+
 Production readiness, enabling you to confidently run your graph in production
 
 Obtain a basic understanding of GraphQL principles
@@ -383,20 +160,6 @@ Define a GraphQL schema that represents the structure of your data set
 Run an instance of Apollo Server that lets you execute queries against your schema
 
 This tutorial assumes that you are familiar with the command line and JavaScript and have installed a recent Node.js (v14.16.0+) version. Additionally, for those interested, this tutorial includes an optional section describing how to set up Apollo Server with TypeScript.
-
-Step 1: Create a new project
-From your preferred development directory
-
-```bash title=""
-mkdir graphql-server-example
-cd graphql-server-example
-
-# initialize a new Node.js project with Yarn
-yarn init --yes
-
-#
-yarn add @apollo/server graphql
-```
 
 graphql (also known as graphql-js) is the library that implements the core GraphQL parsing and execution algorithms.
 
@@ -673,3 +436,213 @@ This performs a search for all documents with a name property that begins with "
 
 Congratulations
 That's the end of our quick start. We created a schema, added a custom document method, saved and queried kittens in MongoDB using Mongoose. Head over to the guide, or API docs for more.
+
+---
+
+A query language for your API
+GraphQL is a query language for APIs and a runtime for fulfilling those queries with your existing data. GraphQL provides a complete and understandable description of the data in your API, gives clients the power to ask for exactly what they need and nothing more, makes it easier to evolve APIs over time, and enables powerful developer tools.
+
+Ask for what you need, get exactly that
+
+Send a GraphQL query to your API and get exactly what you need, nothing more and nothing less. GraphQL queries always return predictable results. Apps using GraphQL are fast and stable because they control the data they get, not the server.
+
+```
+{
+  hero {
+    name
+    height
+    mas
+  }
+}
+{
+  "hero": {
+      "name": "Luke Skywalker",
+      "height": 1.72
+  }
+}
+```
+
+Get many resources in a single request
+GraphQL queries access not just the properties of one resource but also smoothly follow references between them. While typical REST APIs require loading from multiple URLs, GraphQL APIs get all the data your app needs in a single request. Apps using GraphQL can be quick even on slow mobile network connections.
+
+```
+{
+    hero {
+    name
+    friends {
+        name
+        }
+    }
+}
+{
+    "hero": {
+      "name": "Luke Skywalker",
+      "friends": [
+        { "name": "Obi-Wan Kenobi" },
+        { "name": "R2-D2" },
+        { "name": "Han Solo" },
+        { "name": "Leia Organa" }
+      ]
+    }
+}
+```
+
+Describe what’s possible with a type system
+GraphQL APIs are organized in terms of types and fields, not endpoints. Access the full capabilities of your data from a single endpoint. GraphQL uses types to ensure Apps only ask for what’s possible and provide clear and helpful errors. Apps can use types to avoid writing manual parsing code.
+
+```
+{
+  hero {
+    name
+    friends {
+      name
+      homeWorld {
+        name
+        climate
+      }
+      species {
+        name
+        lifespan
+        origin {
+          name
+        }
+      }
+    }
+  }
+}
+
+type Query {
+  hero: Character
+}
+
+type Character {
+  name: String
+  friends: [Character]
+  homeWorld: Planet
+  species: Species
+}
+
+type Planet {
+  name: String
+  climate: String
+}
+
+type Species {
+  name: String
+  lifespan: Int
+  origin: Planet
+}
+```
+
+Move faster with powerful developer tools
+Know exactly what data you can request from your API without leaving your editor, highlight potential issues before sending a query, and take advantage of improved code intelligence.
+
+Evolve your API without versions
+
+Add new fields and types to your GraphQL API without impacting existing queries. Aging fields can be deprecated and hidden from tools. By using a single evolving version, GraphQL APIs give apps continuous access to new features and encourage cleaner, more maintainable server code.
+
+```
+type Film {
+  title: String
+  episode: Int
+  releaseDate: String
+}
+
+type Film {
+  title: String
+  episode: Int
+  releaseDate: String
+  openingCrawl: String
+}
+
+type Film {
+  title: String
+  episode: Int
+  releaseDate: String
+  openingCrawl: String
+  director: String
+}
+
+type Film {
+  title: String
+  episode: Int
+  releaseDate: String
+  openingCrawl: String
+  director: String
+  directedBy: Person
+}
+
+type Person {
+  name: String
+  directed: [Film]
+  actedIn: [Film]
+}
+
+type Film {
+  title: String
+  episode: Int
+  releaseDate: String
+  openingCrawl: String
+  director: String @deprecated
+  directedBy: Person
+}
+```
+
+Bring your own data and code
+GraphQL creates a uniform API across your entire application without being limited by a specific storage engine. Write GraphQL APIs that leverage your existing data and code with GraphQL engines available in many languages. You provide functions for each field in the type system, and GraphQL calls them with optimal concurrency.
+
+```
+type Character {
+    name: String
+    homeWorld: Planet
+    friends: [Character]
+}
+
+// type Character {
+class Character {
+    // name: String
+    getName() {
+        return this._name
+    }
+
+    // homeWorld: Planet
+    getHomeWorld() {
+        return fetchHomeworld(this._homeworldID)
+    }
+
+    // friends: [Character]
+    getFriends() {
+        return this._friendIDs.map(fetchCharacter)
+    }
+}
+# type Character {
+class Character:
+    # name: String
+    def name(self):
+        return self._name
+
+    # homeWorld: Planet
+    def homeWorld(self):
+        return fetchHomeworld(self._homeworldID)
+
+    # friends: [Character]
+    def friends(self):
+        return map(fetchCharacter, self._friendIDs)
+
+
+// type Character {
+public class Character {
+  // name: String
+  public String Name { get; }
+
+  // homeWorld: Planet
+  public async Task<Planet> GetHomeWorldAsync() {
+    return await FetchHomeworldAsync(_HomeworldID);
+  }
+
+  // friends: [Character]
+  public async IEnumerable<Task<Character>> GetFriendsAsync() {
+    return _FriendIDs.Select(FetchCharacterAsync);
+  }
+}
+```
