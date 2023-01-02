@@ -6,22 +6,12 @@ sidebar_position: 1
 
 A learning platform for adventurous cats who want to explore the universe! 😺 🚀 Created by [Apollo](https://www.apollographql.com/tutorials/), a series of amazing tutorials about GraphQL with super helpful videos and interactive code challenges along the way. Thank you the productioin team!! 🙏🏻
 
-## What data do we need?
-
-Think of an app's data as a collection of **objects** and **relationships** between objects.
-
-Think of the entire data model as a **graph** of nodes and edges.
-
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing a collection of **objects** and the **relationships** among them.
-
-![A collection of objects and the relationships among them](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
-
 ## Project setup 🔧
 
 In the directory of your choice with your preferred terminal, clone one of the repositories createdy by [Apollo](https://www.apollographql.com/tutorials/voyage-part1/intro-to-federation).
 
 ```bash title="repos from Apollo Odyssey tutorials"
-# clone one of the repos that suits you
+# clone one of them that suits you
 git clone https://github.com/apollographql/odyssey-lift-off-part1
 git clone https://github.com/apollographql/odyssey-lift-off-part2
 git clone https://github.com/apollographql/odyssey-lift-off-part3
@@ -33,13 +23,12 @@ git clone https://github.com/apollographql/odyssey-lift-off-part5-client.git
 cd odyssey-lift-off-part1/server
 
 # install the default dependencies
-# the backend is built with Node.js
 yarn
 
 # install additional dependencies
 yarn add apollo-server apollo-datasource-rest graphql
 
-# start up the server
+# start the backend dev server
 yarn start
 
 # navigate to localhost:4000 in a web browser
@@ -50,27 +39,41 @@ yarn start
 cd odyssey-lift-off-part1/client
 
 # install the default dependencies
-# the frontend is built with React
 yarn
 
 # install additional dependencies
 yarn add graphql @apollo/client
 
-# start up the client
+# start the frontend dev server
 yarn start
 
 # navigate to localhost:3000 in a web browser
 ```
 
-## Schema Definition Language (SDL)
+## What data do we need?
 
-A schema is a collection of **object types** that contain **fields**. Like a contract between a server and it's clients, it defines what a GraphQL API can and can't do, and how clients can request or change data. A field's type can be either an **object type** or a **scalar type**. A scalar type is a primitive (like ID, String, Boolean, Int or Float) that resolves to a single value.
+Think of an app's data as a collection of **objects** and **relationships** between objects. Think of the entire data model as a **graph** of nodes and edges.
 
-The **fields** of the **Query object type** are the **entry points** into the schema where clients can have a way to fetch data or execute against the graph. Two other kinds of entry points are **Mutation** and **Subscription**. Mutation enable clients to modify data / execute.
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements)
+
+![A collection of objects and the relationships among them](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
+
+## Schema
+
+A schema is a collection of **object types** that contain **fields**. Like a contract, it defines what a GraphQL server can and can't do, and how clients can request or change data.
+
+Schema Definition Language (SDL)
+
+A field's type can be either a **scalar type** or an **object type**.
+
+> scalar = primitive, always resolve to a single value
+> `Int` : Signed 32‐bit integer
+> `Float`: Signed double-precision floating-point value
+> `String` : UTF‐8 character sequence
+> `Boolean` : true or false
+> `ID` : Unique identifier. Serialized as a String.
 
 Structure the schema as intuitively as possible. Each object type you define should support the actions that your clients will take.
-
-Open the repository in your favorite IDE.
 
 ```js title="server/src/schema.js"
 // declare a constant called typeDefs (short for "type definitions")
@@ -104,6 +107,179 @@ const typeDefs = gql`
     spaceCats: [SpaceCat]
   }
 `
+```
+
+### The Query type
+
+The Query type is **a special object** type that defines the **top-level entry points** where clients can fetch data against the schema. **Each field** defines the name and return type of an entry point.
+
+Say there is a REST-based API with /api/books and /api/authors.
+
+```graphql title="requesting multiple resources in a single request"
+query GetBooksAndAuthors {
+  books {
+    title
+  }
+  authors {
+    name
+  }
+}
+```
+
+```json title="result of executing GetBooksAndAuthors"
+{
+  "data": {
+    "books": [
+      {
+        "title": "City of Glass"
+      },
+      ...
+    ],
+    "authors": [
+      {
+        "name": "Paul Auster"
+      },
+      ...
+    ]
+  }
+}
+```
+
+```graphql title="requesting details of books"
+query GetBooks {
+  books {
+    title
+    author {
+      name
+    }
+  }
+}
+```
+
+```json title="result of executing GetBooks"
+{
+  "data": {
+    "books": [
+      {
+        "title": "City of Glass",
+        "author": {
+          "name": "Paul Auster"
+        }
+      },
+      ...
+    ]
+  }
+}
+```
+
+### The Mutation type
+
+The Mutation type is **a special object** type that enables clients to modify data / execute.
+
+The **fields** of the Mutation type are also **entry points** into the GraphQL API. <-- Similar to the Query type
+
+A single mutation can modify multiple types, or multiple instances of the same type.
+
+Example 1 : to "like" a blog post
+
+1. Increment the likes count of the post.
+
+2. Update the likedPosts list of the user.
+
+Example 2 : An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing **SpaceCat** and **Mission** object types.
+
+![howing SpaceCat and Mission object types](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624650767/odyssey/lift-off-part4/doodle_schema_ea1ivm.png)
+
+A spacecat has a list of missions assigned to.
+
+A mission can have more than one spacecat assigned to it.
+
+> Assign one spacecat to a particular mission.
+
+> Update that spacecat's list of missions.
+
+> Update the mission lists of other crew members.
+
+### Mutation Response
+
+A mutation response is an object created for storing the return type of a mutation. It contains 3 properties, as well as additional fields for each object that the mutation updates.
+
+> `code` : Int! refers to the status of the mutation, similar to an HTTP status code.
+
+> `success` : Boolean! indicates whether the mutation was successful.
+
+> `message` : String! refers to a human-readable message describing the result of the mutation for the UI
+
+An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `AssignMissionResponse` return type.
+
+![The `AssignMissionResponse` return type](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624651213/odyssey/lift-off-part4/doodle_mutation_return_type_jklp3a.png)
+
+```graphql title="server/src/schema.js"
+type AssignSpaceshipResponse {
+  code: Int!
+  success: Boolean!
+  message: String!
+  spaceship: Spaceship
+  mission: Mission
+}
+
+type Mutation {
+  "assign a spaceship to a specific mission"
+  assignSpaceship(spaceshipId: ID!, missionId: ID!): AssignSpaceshipResponse!
+}
+```
+
+Our updateUserEmail mutation would specify UpdateUserEmailMutationResponse as its return type (instead of User), and the structure of its response would be the following:
+
+```json title="result of execution"
+{
+  "data": {
+    "updateUserEmail": {
+      "code": "200",
+      "success": true,
+      "message": "User email was successfully updated",
+      "user": {
+        "id": "1",
+        "name": "Jane Doe",
+        "email": "jane@example.com"
+      }
+    }
+  }
+}
+```
+
+user is added by the implementing type UpdateUserEmailMutationResponse to return the newly updated user to the client.
+
+```
+{
+  "data": {
+    "likePost": {
+      "code": "200",
+      "success": true,
+      "message": "Thanks!",
+      "post": {
+        "id": "123",
+        "likes": 5040
+      },
+      "user": {
+        "likedPosts": ["123"]
+      }
+    }
+  }
+}
+```
+
+```json title="result of executing a mutation"
+{
+  "data": {
+    "addBook": {
+      "title": "Fox in Socks",
+      "author": {
+        "name": "Dr. Seuss"
+      }
+    }
+  }
+}
 ```
 
 ## Using in Apollo Sandbox
@@ -580,53 +756,6 @@ export default Cat
 ```
 
 [Lift-off III: Arguments | Apollo Odyssey](https://www.apollographql.com/tutorials/lift-off-part3/the-usequery-hook---with-variables)
-
-## Mutations & mutation responses
-
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing **SpaceCat** and **Mission** object types.
-
-![howing SpaceCat and Mission object types](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624650767/odyssey/lift-off-part4/doodle_schema_ea1ivm.png)
-
-A spacecat has a list of missions assigned to.
-
-A mission can have more than one spacecat assigned to it.
-
-> Assign one spacecat to a particular mission.
-
-> Update that spacecat's list of missions.
-
-> Update the mission lists of other crew members.
-
-Fields of the **Mutation** type are also **entry points** into the GraphQL API. <-- Similar to the Query type
-
-When the `assignMission` mutation modifies multiple objects, it returns all the objects of the return type. The `AssignMissionResponse` return type is an **object** created for storing the return type of `assignMission`.
-
-An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `AssignMissionResponse` return type.
-
-![The `AssignMissionResponse` return type](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624651213/odyssey/lift-off-part4/doodle_mutation_return_type_jklp3a.png)
-
-A mutation response contains 3 properties, as well as additional fields for each object that the mutation updated.
-
-`code` : Int! refers to the status of the mutation, similar to an HTTP status code.
-
-`success` : Boolean! indicates whether the mutation was successful.
-
-`message` : String! refers to a human-readable message for the UI
-
-```graphql title="server/src/schema.js"
-type AssignSpaceshipResponse {
-  code: Int!
-  success: Boolean!
-  message: String!
-  spaceship: Spaceship
-  mission: Mission
-}
-
-type Mutation {
-  "assign a spaceship to a specific mission"
-  assignSpaceship(spaceshipId: ID!, missionId: ID!): AssignSpaceshipResponse!
-}
-```
 
 ## Testing with Sandbox
 

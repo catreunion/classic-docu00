@@ -273,22 +273,6 @@ nullable, non-nullable, nullability
 
 three special root operation types
 
-### Scalar types
-
-Always resolve to concrete data <-- known primitive types
-
-`Int` : Signed 32‐bit integer
-
-`Float`: Signed double-precision floating-point value
-
-`String` : UTF‐8 character sequence
-
-`Boolean` : true or false
-
-`ID` : Unique identifier that's often used to refetch an object or as the key for a cache. Although it's serialized as a String, an ID is not intended to be human‐readable. Serialized as a String.
-
-These primitive types cover the majority of use cases. For more specific use cases, you can create custom scalar types.
-
 ### Object types
 
 The **typename field
@@ -304,93 +288,7 @@ query UniversalQuery {
 }
 ```
 
-### The Query type
-
-The Query type is **a special object** type that defines all of the top-level entry points for queries that clients execute against your server.
-
-Each field of the Query type defines the name and return type of a different entry point. The Query type for our example schema might resemble the following:
-
-a REST-based API
-/api/books and
-/api/authors
-
-```graphql title="requesting multiple resources in a single request"
-query GetBooksAndAuthors {
-  books {
-    title
-  }
-  authors {
-    name
-  }
-}
-```
-
-```json title="result / response"
-{
-  "data": {
-    "books": [
-      {
-        "title": "City of Glass"
-      },
-      ...
-    ],
-    "authors": [
-      {
-        "name": "Paul Auster"
-      },
-      ...
-    ]
-  }
-}
-```
-
-```graphql title="requesting details of a book"
-query GetBooks {
-  books {
-    title
-    author {
-      name
-    }
-  }
-}
-```
-
-```json title="result / response"
-{
-  "data": {
-    "books": [
-      {
-        "title": "City of Glass",
-        "author": {
-          "name": "Paul Auster"
-        }
-      },
-      ...
-    ]
-  }
-}
-```
-
-The Mutation type
-
-As with queries, our server would respond to this mutation with a result that matches the mutation's structure, like so:
-
-```
-{
-  "data": {
-    "addBook": {
-      "title": "Fox in Socks",
-      "author": {
-        "name": "Dr. Seuss"
-      }
-    }
-  }
-}
-```
-
-A single mutation operation can include multiple top-level fields of the Mutation type. This usually means that the operation will execute multiple back-end writes (at least one for each field). To prevent race conditions, top-level Mutation fields are resolved serially in the order they're listed (all other fields can be resolved in parallel).
-
-## Input types
+### Input types
 
 Each field of an input type can be only a scalar, an enum, or another input type
 
@@ -537,56 +435,5 @@ type Location {
 type WeatherInfo {
   temperature: Float
   description: String
-}
-```
-
-## Structuring mutation responses
-
-A single mutation can modify multiple types, or multiple instances of the same type.
-
-to "like" a blog post
-increment the likes count for a Post
-update the likedPosts list for the User
-
-Our updateUserEmail mutation would specify UpdateUserEmailMutationResponse as its return type (instead of User), and the structure of its response would be the following:
-
-```
-{
-  "data": {
-    "updateUserEmail": {
-      "code": "200",
-      "success": true,
-      "message": "User email was successfully updated",
-      "user": {
-        "id": "1",
-        "name": "Jane Doe",
-        "email": "jane@example.com"
-      }
-    }
-  }
-}
-```
-
-code is a string that represents the status of the data transfer. Think of it like an HTTP status code.
-success is a boolean that indicates whether the mutation was successful. This allows a coarse check by the client to know if there were failures.
-message is a human-readable string that describes the result of the mutation. It is intended to be used in the UI of the product.
-user is added by the implementing type UpdateUserEmailMutationResponse to return the newly updated user to the client.
-
-```
-{
-  "data": {
-    "likePost": {
-      "code": "200",
-      "success": true,
-      "message": "Thanks!",
-      "post": {
-        "id": "123",
-        "likes": 5040
-      },
-      "user": {
-        "likedPosts": ["123"]
-      }
-    }
-  }
 }
 ```
