@@ -70,7 +70,7 @@ A field's type can be either a **scalar type** or an **object type**.
 
 > `Int` : Signed 32‐bit integer
 
-> `Float`: Signed double-precision floating-point value
+> `Float` : Signed double-precision floating-point value
 
 > `String` : UTF‐8 character sequence
 
@@ -118,9 +118,9 @@ const typeDefs = gql`
 
 The Query type is **a special object** type that defines the **top-level entry points** where clients can fetch data against the schema. **Each field** defines the name and return type of an entry point.
 
-Say there is a REST-based API with /api/books and /api/authors.
+Say there is a REST-based API with `/api/books` and `/api/authors` entry points.
 
-```graphql title="requesting multiple resources in a single request"
+```graphql title="querying multiple resources in a single request"
 query GetBooksAndAuthors {
   books {
     title
@@ -131,7 +131,7 @@ query GetBooksAndAuthors {
 }
 ```
 
-```json title="result of executing GetBooksAndAuthors"
+```json title="execution result"
 {
   "data": {
     "books": [
@@ -150,7 +150,7 @@ query GetBooksAndAuthors {
 }
 ```
 
-```graphql title="requesting details of books"
+```graphql title="querying books' details"
 query GetBooks {
   books {
     title
@@ -161,7 +161,7 @@ query GetBooks {
 }
 ```
 
-```json title="result of executing GetBooks"
+```json title="execution result"
 {
   "data": {
     "books": [
@@ -187,9 +187,9 @@ A single mutation can modify multiple types, or multiple instances of the same t
 
 Example 1 : to "like" a blog post
 
-1. Increment the likes count of the post.
+> Increment the likes count of the post.
 
-2. Update the likedPosts list of the user.
+> Update the likedPosts list of the user.
 
 Example 2 : An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing **SpaceCat** and **Mission** object types.
 
@@ -207,7 +207,7 @@ A mission can have more than one spacecat assigned to it.
 
 ### Mutation Response
 
-A mutation response is an object created for storing the return type of a mutation. It contains 3 properties, as well as additional fields for each object that the mutation updates.
+A mutation response is an object type created for storing the return type of a mutation. It contains 3 properties, as well as additional fields for each object that the mutation updates.
 
 > `code` : Int! refers to the status of the mutation, similar to an HTTP status code.
 
