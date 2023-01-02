@@ -107,6 +107,8 @@ Now browse to localhost:4000/graphql
 
 [MongoDB Compass](https://www.mongodb.com/try/download/compass), [GraphQL Queries & Mutations](https://gist.github.com/bradtraversy/fc527bc9a4659ab8de8e8066f3498723)
 
+In the directory of your choice with your preferred terminal, follow these steps :
+
 ```bash title="implementing Traversy's setup"
 # create a new directory and move into it
 mkdir m2-mine && cd m2-mine
@@ -119,8 +121,7 @@ yarn add express express-graphql graphql mongoose cors colors
 yarn add -D nodemon dotenv
 
 # create these files
-touch .env
-touch index.js
+touch .env index.js
 
 # create these directories
 mkdir db models schema
@@ -131,28 +132,10 @@ touch models/Client.js models/Project.js
 touch schema/schema.js
 ```
 
-```json title="package.json"
-{
-  "name": "mongo3",
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT",
-  "dependencies": {
-    "colors": "^1.4.0",
-    "cors": "^2.8.5",
-    "express": "^4.18.2",
-    "express-graphql": "^0.12.0",
-    "graphql": "^16.6.0",
-    "mongoose": "^6.8.2"
-  },
-  "devDependencies": {
-    "dotenv": "^16.0.3",
-    "nodemon": "^2.0.20"
-  },
-  "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
-  }
+```json title="add these to package.json"
+"scripts": {
+  "start": "node index.js",
+  "dev": "nodemon index.js"
 }
 ```
 
@@ -314,26 +297,140 @@ yarn dev
 
 # response from the Express GraphQL Server
 yarn run v1.22.19
-$ nodemon server/index.js
-[nodemon] 2.0.20
-[nodemon] to restart at any time, enter `rs`
-[nodemon] watching path(s): *.*
-[nodemon] watching extensions: js,mjs,json
-[nodemon] starting `node server/index.js`
 Server running on port 5000
+MongoDB connected : ac-vzbfpmx-shard-00-00.k2tca6i.mongodb.net
+
+# go to http://localhost:5000/graphql in a web browser
 ```
 
-❯ yarn dev
-yarn run v1.22.19
-$ nodemon server/index.js
-[nodemon] 2.0.20
-[nodemon] to restart at any time, enter `rs`
-[nodemon] watching path(s): _._
-[nodemon] watching extensions: js,mjs,json
-[nodemon] starting `node server/index.js`
-Server running on port 5000
+```text title="graphql hints"
+Type queries into this side of the screen, and you will see intelligent
+typeaheads aware of the current GraphQL type schema and live syntax and
+validation errors highlighted within the text.
 
-````
+{
+  field(arg: "value") {
+    subField
+  }
+}
+
+Prettify Query:  Shift-Ctrl-P (or Prettify button)
+   Merge Query:  Shift-Ctrl-M (or Merge button)
+     Run Query:  Ctrl-Enter (or Play button)
+ Auto Complete:  Ctrl-Space (or just start typing)
+```
+
+```graphql title="query for all clients"
+query GetClients {
+  clients {
+    id
+    name
+  }
+}
+```
+
+```json title="response from GraphQL server"
+{
+  "data": {
+    "clients": [
+      {
+        "id": "63b185f09c63df26be024568",
+        "name": "Tony Stark"
+      }
+    ]
+  }
+}
+```
+
+```graphql title="query for a specific client"
+query GetOneClient {
+  client(id: "63b185f09c63df26be024568") {
+    id
+    name
+  }
+}
+```
+
+```json title="response from GraphQL server"
+{
+  "data": {
+    "client": {
+      "id": "63b185f09c63df26be024568",
+      "name": "Tony Stark"
+    }
+  }
+}
+```
+
+```graphql title="query for all projects"
+query GetProjects {
+  projects {
+    id
+    name
+  }
+}
+```
+
+```json title="response from GraphQL server"
+{
+  "data": {
+    "projects": [
+      {
+        "id": "63b186c59c63df26be02456a",
+        "name": "Mobile App"
+      }
+    ]
+  }
+}
+```
+
+```graphql title="query for a specific project"
+query GetOneProject {
+  project(id: "63b186c59c63df26be02456a") {
+    id
+    name
+  }
+}
+```
+
+```json title="response from GraphQL server"
+{
+  "data": {
+    "project": {
+      "id": "63b186c59c63df26be02456a",
+      "name": "Mobile App"
+    }
+  }
+}
+```
+
+```graphql title="query for more details"
+query getOneProject {
+  project(id: "63b186c59c63df26be02456a") {
+    id
+    name
+    client {
+      id
+      name
+    }
+  }
+}
+```
+
+```json title="response from GraphQL server"
+{
+  "data": {
+    "project": {
+      "id": "63b186c59c63df26be02456a",
+      "name": "Mobile App",
+      "client": {
+        "id": "63b185f09c63df26be024568",
+        "name": "Tony Stark"
+      }
+    }
+  }
+}
+```
 
 ## Apollo Server
 
@@ -361,7 +458,7 @@ yarn start
 🚀  Server ready at: http://localhost:4000/
 
 # go to http://localhost:4000 with a web browser
-````
+```
 
 `"type": "module"` loads your JavaScript files as ES modules, enabling top-level await calls.
 
