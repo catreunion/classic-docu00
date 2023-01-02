@@ -67,10 +67,15 @@ Schema Definition Language (SDL)
 A field's type can be either a **scalar type** or an **object type**.
 
 > scalar = primitive, always resolve to a single value
+
 > `Int` : Signed 32‐bit integer
+
 > `Float`: Signed double-precision floating-point value
+
 > `String` : UTF‐8 character sequence
+
 > `Boolean` : true or false
+
 > `ID` : Unique identifier. Serialized as a String.
 
 Structure the schema as intuitively as possible. Each object type you define should support the actions that your clients will take.
