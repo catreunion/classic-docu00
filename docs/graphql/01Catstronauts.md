@@ -58,13 +58,11 @@ An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-par
 
 ![A collection of objects and the relationships among them](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
 
-## Schema
-
-A schema is a collection of **object types** that contain **fields**. Like a contract, it defines what a GraphQL server can and can't do, and how clients can request or change data.
+A **schema** defines a collection of **object types** and the **relationships** between those types. Like a contract, it defines what a GraphQL server can and can't do, and how clients can request or change data.
 
 Schema Definition Language (SDL)
 
-A field's type can be either a **scalar type** or an **object type**.
+Most of the types defined in a schema are object types. An object type contains a collection of **fields**. Each field returns data of the type specified. A field's return type can be a scalar, object, input, enum, union, or interface.
 
 > scalar = primitive, always resolve to a single value
 
@@ -78,6 +76,24 @@ A field's type can be either a **scalar type** or an **object type**.
 
 > `ID` : Unique identifier. Serialized as a String.
 
+These 2 object types include each other as fields.
+
+```graphql title="in schema"
+# a Book can have an associated author
+type Book {
+  title: String!
+  author: Author
+}
+
+# an Author can have a list of books
+type Author {
+  name: String!
+  # indicated with square brackets []
+  # can't be null AND its items can't be null
+  books: [Book!]!
+}
+```
+
 Structure the schema as intuitively as possible. Each object type you define should support the actions that your clients will take.
 
 ```js title="server/src/schema.js"
@@ -86,25 +102,24 @@ Structure the schema as intuitively as possible. Each object type you define sho
 // convert/parse GraphQL strings into the format that Apollo libraries understand
 // use backticks (`), don't confused with single quotes (')
 
-// declare an object type called SpaceCat in PascalCase with curly brackets
-// declare a field called name in camelCase with a colon and without commas
-// if a field should never be null (non-nullable), add an exclamation mark after its type
-// declare a field called missions which is an array of Mission enclosed by square brackets
-// if an array has an exclamation point after it, the array cannot be null, but it can be empty.
-
 const typeDefs = gql`
+  # declare an object type in PascalCase with curly brackets
   type SpaceCat {
+    # declare a field in camelCase with a colon and without commas
     id: ID!
     name: String!
     age: Int
+    # an array of Mission enclosed by square brackets
     missions: [Mission]
   }
 
   type Mission {
+    # if a field should never be null (non-nullable), add an exclamation mark after its type
     id: ID!
     codename: String!
     to: String!
     scheduled: Boolean!
+    # this array cannot be null, but can be empty
     crewMembers: [SpaceCat]!
   }
 
@@ -114,13 +129,29 @@ const typeDefs = gql`
 `
 ```
 
-### The Query type
+Every object type automatically has a field named `__typename`. It returns the object type's name as a String (e.g., Book or Author).
 
-The Query type is **a special object** type that defines the **top-level entry points** where clients can fetch data against the schema. **Each field** defines the name and return type of an entry point.
+```graphql title="try"
+query UniversalQuery {
+  __typename
+}
+```
+
+## The Query type
+
+The Query type is a **special object type** that defines the **top-level entry points** where clients can fetch data against the schema. **Each field** defines the name and the **return type** of an entry point.
 
 Say there is a REST-based API with `/api/books` and `/api/authors` entry points.
 
-```graphql title="querying multiple resources in a single request"
+```graphql title="in schema"
+type Query {
+  # each field returns a list of the corresponding type
+  books: [Book]
+  authors: [Author]
+}
+```
+
+```graphql title="querying from both resources in a single request"
 query GetBooksAndAuthors {
   books {
     title
@@ -131,7 +162,7 @@ query GetBooksAndAuthors {
 }
 ```
 
-```json title="execution result"
+```json title="response from the GraphQL server"
 {
   "data": {
     "books": [
@@ -161,7 +192,7 @@ query GetBooks {
 }
 ```
 
-```json title="execution result"
+```json title="response from the GraphQL server"
 {
   "data": {
     "books": [
@@ -177,21 +208,42 @@ query GetBooks {
 }
 ```
 
-### The Mutation type
+## The Mutation type
 
 The Mutation type is **a special object** type that enables clients to modify data / execute.
 
-The **fields** of the Mutation type are also **entry points** into the GraphQL API. <-- Similar to the Query type
+The **fields** of the Mutation type are also **entry points** into the GraphQL API. Each field of the Mutation type defines the signature and **return type** of a different entry point.
+
+Example 1
+
+```graphql title="in "
+type Mutation {
+  # needs two arguments
+  # return a newly created Book object
+  addBook(title: String, author: String): Book
+}
+```
+
+```graphql title=""
+mutation CreateBook {
+  addBook(title: "Fox in Socks", author: "Dr. Seuss") {
+    title
+    author {
+      name
+    }
+  }
+}
+```
 
 A single mutation can modify multiple types, or multiple instances of the same type.
 
-Example 1 : to "like" a blog post
+Example 2 : to "like" a blog post
 
 > Increment the likes count of the post.
 
 > Update the likedPosts list of the user.
 
-Example 2 : An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing **SpaceCat** and **Mission** object types.
+Example 3 : An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing **SpaceCat** and **Mission** object types.
 
 ![howing SpaceCat and Mission object types](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1624650767/odyssey/lift-off-part4/doodle_schema_ea1ivm.png)
 
@@ -205,7 +257,7 @@ A mission can have more than one spacecat assigned to it.
 
 > Update the mission lists of other crew members.
 
-### Mutation Response
+## Mutation Response
 
 A mutation response is an object type created for storing the return type of a mutation. It contains 3 properties, as well as additional fields for each object that the mutation updates.
 
