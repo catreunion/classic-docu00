@@ -58,11 +58,11 @@ An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-par
 
 ![A collection of objects and the relationships among them](https://res.cloudinary.com/apollographql/image/upload/e_sharpen:50,c_scale,q_90,w_1440,fl_progressive/v1612409160/odyssey/lift-off-part1/LO_02_v2.00_04_53_09.Still002_g8xow6_bbgabz.jpg)
 
-A **schema** defines a collection of **object types** and the **relationships** between those types. Like a contract, it defines what a GraphQL server can and can't do, and how clients can request or change data.
+A **schema** defines a collection of **object types** and the **relationships** between object types. Like a contract, it defines what a GraphQL server can and can't do, and how clients can request or change data.
 
 Schema Definition Language (SDL)
 
-Most of the types defined in a schema are object types. An object type contains a collection of **fields**. Each field returns data of the type specified. A field's return type can be a scalar, object, input, enum, union, or interface.
+Most of the types defined in a schema are object types. An object type contains a collection of **fields**. Each field **returns** data of the type specified. A field's return type can be a scalar, object, input, enum, union or interface. **Schema does not store data**, database does.
 
 > scalar = primitive, always resolve to a single value
 
@@ -76,25 +76,7 @@ Most of the types defined in a schema are object types. An object type contains 
 
 > `ID` : Unique identifier. Serialized as a String.
 
-These 2 object types include each other as fields.
-
-```graphql title="in schema"
-# a Book can have an associated author
-type Book {
-  title: String!
-  author: Author
-}
-
-# an Author can have a list of books
-type Author {
-  name: String!
-  # indicated with square brackets []
-  # can't be null AND its items can't be null
-  books: [Book!]!
-}
-```
-
-Structure the schema as intuitively as possible. Each object type you define should support the actions that your clients will take.
+The following object types include each other as fields.
 
 ```js title="server/src/schema.js"
 // declare a constant called typeDefs (short for "type definitions")
@@ -103,85 +85,46 @@ Structure the schema as intuitively as possible. Each object type you define sho
 // use backticks (`), don't confused with single quotes (')
 
 const typeDefs = gql`
-  # declare an object type in PascalCase with curly brackets
-  type SpaceCat {
-    # declare a field in camelCase with a colon and without commas
-    id: ID!
+  # A Book has an associated author.
+  type Book {
+    title: String!
+    author: Author
+  }
+
+  # An Author can have a list of books.
+  type Author {
     name: String!
-    age: Int
-    # an array of Mission enclosed by square brackets
-    missions: [Mission]
-  }
-
-  type Mission {
-    # if a field should never be null (non-nullable), add an exclamation mark after its type
-    id: ID!
-    codename: String!
-    to: String!
-    scheduled: Boolean!
-    # this array cannot be null, but can be empty
-    crewMembers: [SpaceCat]!
-  }
-
-  type Query {
-    spaceCats: [SpaceCat]
+    books: [Book!]!
   }
 `
 ```
 
-Every object type automatically has a field named `__typename`. It returns the object type's name as a String (e.g., Book or Author).
+Declare an object type in PascalCase with curly brackets.
 
-```graphql title="try"
-query UniversalQuery {
-  __typename
-}
-```
+Declare a field in camelCase with a colon and without commas.
+
+If a field should never be null (non-nullable), add an exclamation mark after its type.
+
+Structure a schema as intuitively as possible. Each object type you define should support the actions that your clients will take.
+
+Every object type automatically has a field named `__typename`. It returns the typename of the object (e.g., Book or Author).
 
 ## The Query type
 
-The Query type is a **special object type** that defines the **top-level entry points** where clients can fetch data against the schema. **Each field** defines the name and the **return type** of an entry point.
+The Query type is a **special object type** that defines the **top-level entry points** where clients can fetch data against the schema. **Each field** defines the **name** and **return type** of an entry point.
 
-Say there is a REST-based API with `/api/books` and `/api/authors` entry points.
+In the following example, each field returns a list of the corresponding type.
 
-```graphql title="in schema"
+```graphql title="server/src/schema.js"
 type Query {
-  # each field returns a list of the corresponding type
   books: [Book]
   authors: [Author]
 }
 ```
 
-```graphql title="querying from both resources in a single request"
-query GetBooksAndAuthors {
-  books {
-    title
-  }
-  authors {
-    name
-  }
-}
-```
+Say there is a REST-based API with `/api/books` and `/api/authors` entry points.
 
-```json title="response from the GraphQL server"
-{
-  "data": {
-    "books": [
-      {
-        "title": "City of Glass"
-      },
-      ...
-    ],
-    "authors": [
-      {
-        "name": "Paul Auster"
-      },
-      ...
-    ]
-  }
-}
-```
-
-```graphql title="querying books' details"
+```graphql title="fetching data from multiple entry points in a single query"
 query GetBooks {
   books {
     title
@@ -192,7 +135,7 @@ query GetBooks {
 }
 ```
 
-```json title="response from the GraphQL server"
+```json title="response from GraphQL server"
 {
   "data": {
     "books": [
@@ -210,22 +153,22 @@ query GetBooks {
 
 ## The Mutation type
 
-The Mutation type is **a special object** type that enables clients to modify data / execute.
+The Mutation type is a special object type that enables clients to modify data / execute. The **fields** of the Mutation type are **also entry points** into the GraphQL API. Each field defines the signature and **return type** of an entry point.
 
-The **fields** of the Mutation type are also **entry points** into the GraphQL API. Each field of the Mutation type defines the signature and **return type** of a different entry point.
+Example 1 : too add a book
 
-Example 1
+Need two arguments.
 
-```graphql title="in "
+Return a newly created Book object.
+
+```graphql title="server/src/schema.js"
 type Mutation {
-  # needs two arguments
-  # return a newly created Book object
   addBook(title: String, author: String): Book
 }
 ```
 
-```graphql title=""
-mutation CreateBook {
+```graphql title="executing the AddBook operation"
+mutation AddBook {
   addBook(title: "Fox in Socks", author: "Dr. Seuss") {
     title
     author {
@@ -235,13 +178,13 @@ mutation CreateBook {
 }
 ```
 
-A single mutation can modify multiple types, or multiple instances of the same type.
-
 Example 2 : to "like" a blog post
 
-> Increment the likes count of the post.
+Increment the likes count of the post.
 
-> Update the likedPosts list of the user.
+Update the likedPosts list of the user.
+
+A single mutation can modify multiple types, or multiple instances of the same type.
 
 Example 3 : An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing **SpaceCat** and **Mission** object types.
 
@@ -259,13 +202,15 @@ A mission can have more than one spacecat assigned to it.
 
 ## Mutation Response
 
-A mutation response is an object type created for storing the return type of a mutation. It contains 3 properties, as well as additional fields for each object that the mutation updates.
+A mutation response is an object type created for **storing the return type of a mutation**. It contains 3 properties, as well as additional fields for each object that the mutation updates.
 
-> `code` : Int! refers to the status of the mutation, similar to an HTTP status code.
+> `code` : Int! - Status of the mutation, similar to an HTTP status code.
 
-> `success` : Boolean! indicates whether the mutation was successful.
+> `success` : Boolean! - Whether the mutation was successful.
 
-> `message` : String! refers to a human-readable message describing the result of the mutation for the UI
+> `message` : String! - A human-readable message for the UI
+
+Example 1 :
 
 An illustration by [Apollo](https://www.apollographql.com/tutorials/lift-off-part1/feature-data-requirements) showing the `AssignMissionResponse` return type.
 
@@ -281,14 +226,15 @@ type AssignSpaceshipResponse {
 }
 
 type Mutation {
-  "assign a spaceship to a specific mission"
   assignSpaceship(spaceshipId: ID!, missionId: ID!): AssignSpaceshipResponse!
 }
 ```
 
-Our updateUserEmail mutation would specify UpdateUserEmailMutationResponse as its return type (instead of User), and the structure of its response would be the following:
+Example 2 :
 
-```json title="result of execution"
+Say there is a mutation defined for updating a user's email address. The object returned should be structured in something like this.
+
+```json title="response from GraphQL server"
 {
   "data": {
     "updateUserEmail": {
@@ -305,9 +251,11 @@ Our updateUserEmail mutation would specify UpdateUserEmailMutationResponse as it
 }
 ```
 
-user is added by the implementing type UpdateUserEmailMutationResponse to return the newly updated user to the client.
+Example 3 :
 
-```
+Say there is a mutation defined for liking a blog post. The object returned should be structured in something like this.
+
+```json title="response from GraphQL server"
 {
   "data": {
     "likePost": {
@@ -326,19 +274,6 @@ user is added by the implementing type UpdateUserEmailMutationResponse to return
 }
 ```
 
-```json title="result of executing a mutation"
-{
-  "data": {
-    "addBook": {
-      "title": "Fox in Socks",
-      "author": {
-        "name": "Dr. Seuss"
-      }
-    }
-  }
-}
-```
-
 ## Using in Apollo Sandbox
 
 [Apollo Studio](https://studio.apollographql.com/) is a powerful web IDE for exploring a GraphQL schema and building queries against it.
@@ -346,7 +281,7 @@ user is added by the implementing type UpdateUserEmailMutationResponse to return
 [Apollo Sandbox](https://studio.apollographql.com/sandbox) is a special mode of Apollo Studio. It allows using the Studio features without an Apollo account.
 
 ```graphql title="for Catstronauts homepage"
-query getTracksForHome {
+query GetTracksForHome {
   tracksForHome {
     id
     title
