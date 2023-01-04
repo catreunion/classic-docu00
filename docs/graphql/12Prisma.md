@@ -30,11 +30,20 @@ npx tsc --init
 # install Prisma CLI
 yarn add -D prisma
 
+# invoke the Prisma CLI
 # configure SQLite as your database with Prisma
+# create schema.prisma
+# creates the .env file
 npx prisma init --datasource-provider sqlite
 ```
 
 ### Data modeling
+
+`prisma generate` : Read all above mentioned information from the Prisma schema to generate the correct data source client code (e.g. Prisma Client).
+
+`prisma migrate dev` : Read the data sources and data model definition to create a new migration.
+
+[Docs](https://www.prisma.io/docs/concepts/components/prisma-schema)
 
 ```prisma title="prisma/schema.prisma"
 generator client {
@@ -63,7 +72,13 @@ model Post {
 }
 ```
 
-### Migration
+### Prisma Migrate
+
+An imperative schema [migration tool](https://www.prisma.io/docs/concepts/components/prisma-migrate).
+
+Keep the database schema in sync with Prisma schema.
+
+Generate a history of .sql migration files.
 
 ```bash title="create a local SQLite database"
 # create a local SQLite database
@@ -71,7 +86,7 @@ model Post {
 npx prisma migrate dev --name init
 ```
 
-```bash title="response after creating a SQLite database"
+```bash title="creating a SQLite database"
 Environment variables loaded from .env
 Prisma schema loaded from prisma/schema.prisma
 Datasource "db": SQLite database "dev.db" at "file:./dev.db"
@@ -108,6 +123,14 @@ info All dependencies
 
 ### Operations from frontend
 
+[Prisma Client](https://www.prisma.io/docs/concepts/components/prisma-client) is an auto-generated and type-safe query builder.
+
+Whenever you make changes to your database that are reflected in the Prisma schema, you need to manually re-generate Prisma Client to update the generated code in the node_modules/.prisma/client directory:
+
+```bash
+prisma generate
+```
+
 ```ts title="script1.ts"
 import { PrismaClient } from "@prisma/client"
 
@@ -115,13 +138,13 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 async function main() {
-  const user = await prisma.user.create({
+  const newUser = await prisma.user.create({
     data: {
       name: "Alice",
       email: "alice@prisma.io"
     }
   })
-  console.log(user)
+  console.log(newUser)
 }
 
 main()
@@ -179,7 +202,7 @@ import { PrismaClient } from "@prisma/client"
 const prisma = new PrismaClient()
 
 async function main() {
-  const user = await prisma.user.create({
+  const newUser = await prisma.user.create({
     data: {
       name: "Bob",
       email: "bob@prisma.io",
@@ -190,7 +213,7 @@ async function main() {
       }
     }
   })
-  console.log(user)
+  console.log(newUser)
 }
 
 main()
@@ -212,7 +235,7 @@ npx ts-node script3.ts
 { id: 2, email: 'bob@prisma.io', name: 'Bob' }
 ```
 
-### Retrieve relation using `include`
+### Retrieving relation with `include`
 
 ```ts title="script4.ts"
 import { PrismaClient } from "@prisma/client"
@@ -288,25 +311,17 @@ filtering, sorting, pagination, updating and deleting
 
 [Fullstack app with TypeScript, Next.js, Prisma & GraphQL](https://www.prisma.io/blog/fullstack-nextjs-graphql-prisma-oklidw1rhw)
 
-## Data modeling w Prisma
+## Mahmoud Abdelwahab's Tutorial
 
-## GraphQL API
+### GraphQL API
 
-## Authentication w Auth0
+### Authentication w Auth0
 
-## Authorization
+### Authorization
 
-## Image upload
+### Image upload
 
-## Deployment
-
-Create your database schema with Prisma
-Defining the models
-Defining relations
-Migrating and pushing changes to the database
-Seeding the database
-Use Prisma studio to explore your database
-Summary and next steps
+### Deployment
 
 Next.js, Apollo Server, Apollo Client, Nexus (construct GraphQL schema), Prisma (ORM for migrations and database access), PostgreSQL, AWS S3, Auth0, TypeScript, TailwindCSS,
 Vercel
@@ -331,7 +346,7 @@ npx prisma init
 yarn dev
 ```
 
-## Prisma, an ORM
+### Prisma, an ORM
 
 [prisma](https://pris.ly/d/getting-started), [schema.prisma](https://pris.ly/d/prisma-schema)
 
@@ -417,7 +432,7 @@ models are spelled in PascalCase and should use the singular form.
 
 All fields are required by default. To make a field optional, can add a ? after the field type.
 
-## Migrating and pushing changes to the database
+### Migrating and pushing changes to the database
 
 prisma db push is useful for schema prototyping, where the goal is to synchronize a new schema with a development database. As your schema evolves, you will want to create and maintain a migration history, to do that you will use Prisma Migrate.
 
@@ -465,16 +480,8 @@ Use Prisma Studio to explore your database
 
 Prisma comes with Prisma Studio, a GUI for exploring and manipulating your data. You can use it to view, create, update or delete data from your database.
 
-To start Prisma Studio, run the following command
-
-npx prisma studio
-COPY
-
 If you've done all the steps correctly you should you have the Link and User models inside your database. Inside the Link model you'll find 4 records and for the User model you'll find 1 record.
 
-Prisma Studio
-
-Summary and next steps
 In this article we explained the problem domain and modeled our data using Prisma. We also seeded our database and explored it using Prisma Studio. Now we have a Next.js app that is connected to a PostgreSQL database.
 
 In the next part of the course, we will learn about:
