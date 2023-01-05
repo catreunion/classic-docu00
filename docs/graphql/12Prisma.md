@@ -29,7 +29,7 @@ pgAdmin 4 is an open source PostgreSQL client.
 
 Postico is a commercial Mac app, made by the same people that maintain Postgres.app
 
-[official PostgreSQL docs]()
+official PostgreSQL docs
 
 Invoke autocompletion by pressing the CTRL+SPACE keys on your keyboard.
 
