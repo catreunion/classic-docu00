@@ -4,6 +4,33 @@ sidebar_position: 12
 
 # Prisma
 
+Postgres.app is a full-featured PostgreSQL installation packaged as a standard Mac app.
+
+Click "Initialize" to create a new server.
+
+```bash title="configure $PATH to use CLI tools"
+sudo mkdir -p /etc/paths.d &&
+echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
+
+# Host : localhost
+# Port : 5432
+# User : your system user name
+# Database : same as user
+# Password: none
+# Connection URL: postgresql://localhost
+
+# connect
+psql
+```
+
+Graphical Clients
+
+pgAdmin 4 is an open source PostgreSQL client.
+
+Postico is a commercial Mac app, made by the same people that maintain Postgres.app
+
+[official PostgreSQL docs]()
+
 Invoke autocompletion by pressing the CTRL+SPACE keys on your keyboard.
 
 ## Prisma in a plain TypeScript project

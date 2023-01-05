@@ -109,7 +109,7 @@ Structure a schema as intuitively as possible. Each object type you define shoul
 
 Every object type automatically has a field named `__typename`. It returns the typename of the object (e.g., Book or Author).
 
-## The Query type
+## Query type
 
 The Query type is a **special object type** that defines the **top-level entry points** where clients can fetch data against the schema. **Each field** defines the **name** and **return type** of an entry point.
 
@@ -151,7 +151,7 @@ query GetBooks {
 }
 ```
 
-## The Mutation type
+## Mutation type
 
 The Mutation type is a special object type that enables clients to modify data / execute. The **fields** of the Mutation type are **also entry points** into the GraphQL API. Each field defines the signature and **return type** of an entry point.
 
