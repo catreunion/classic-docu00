@@ -4,71 +4,32 @@ sidebar_position: 12
 
 # Prisma
 
-[Postgres.app](https://postgresapp.com/) is a full-featured PostgreSQL installation packaged as a standard Mac app.
-
-Click "Initialize" to create a new server.
-
-```bash title="configure $PATH to use CLI tools"
-sudo mkdir -p /etc/paths.d &&
-echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
-
-# Host : localhost
-# Port : 5432
-# User : your system user name
-# Database : same as user
-# Password: none
-# Connection URL: postgresql://localhost
-
-# connect
-psql
-```
-
-Graphical Clients
-
-pgAdmin 4 is an open source PostgreSQL client.
-
-Postico is a commercial Mac app, made by the same people that maintain Postgres.app
-
-official PostgreSQL docs
-
-Invoke autocompletion by pressing the CTRL+SPACE keys on your keyboard.
-
-## Prisma in a plain TypeScript project
+## A plain TypeScript project
 
 [Quickstart with TypeScript & SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
 
-```bash
+```bash title="setup a plain TypeScript project"
 # initialize a project
 yarn init -y
 
-# install TypeScript
-yarn add -D typescript ts-node @types/node
+# install dev dependencies
+yarn add -D typescript ts-node @types/node prisma
+
+# install dependencies
+yarn add @prisma/client
 
 # create tsconfig.json
 npx tsc --init
 
-  target: es2016
-  module: commonjs
-  strict: true
-  esModuleInterop: true
-  skipLibCheck: true
-  forceConsistentCasingInFileNames: true
-
-# install Prisma CLI
-yarn add -D prisma
-
-# invoke the Prisma CLI
-# configure SQLite as your database with Prisma
-# create schema.prisma
-# creates the .env file
+# create prisma/schema.prisma & .env
 npx prisma init --datasource-provider sqlite
 ```
 
-### Data modeling
+```env title=".env"
+DATABASE_URL="file:./dev.db"
+```
 
-`prisma generate` : Read all above mentioned information from the Prisma schema to generate the correct data source client code (e.g. Prisma Client).
-
-`prisma migrate dev` : Read the data sources and data model definition to create a new migration.
+## Data modeling
 
 [Docs](https://www.prisma.io/docs/concepts/components/prisma-schema)
 
@@ -99,69 +60,27 @@ model Post {
 }
 ```
 
-### Prisma Migrate
+## Prisma Migrate
 
-An imperative schema [migration tool](https://www.prisma.io/docs/concepts/components/prisma-migrate).
+An imperative schema [migration tool](https://www.prisma.io/docs/concepts/components/prisma-migrate)
 
-Keep the database schema in sync with Prisma schema.
+Create `prisma/migrations/` and `prisma/dev.db`
 
-Generate a history of .sql migration files.
+Generate **Prisma Client** in `./node_modules/@prisma/client/`
 
-```bash title="create a local SQLite database"
-# create a local SQLite database
-# the prisma/migrations directory & dev.db are created
+```bash title="create database tables"
 npx prisma migrate dev --name init
 ```
 
-```bash title="creating a SQLite database"
-Environment variables loaded from .env
-Prisma schema loaded from prisma/schema.prisma
-Datasource "db": SQLite database "dev.db" at "file:./dev.db"
+## Prisma Client
 
-SQLite database dev.db created at file:./dev.db
+An auto-generated and type-safe query builder for Node.js & TypeScript.
 
-Applying migration `20230103123128_init`
-
-The following migration(s) have been created and applied from new schema changes:
-
-migrations/
-  └─ 20230103123128_init/
-    └─ migration.sql
-
-Your database is now in sync with your schema.
-
-Running generate... (Use --skip-generate to skip the generators)
-yarn add v1.22.19
-[1/4] 🔍  Resolving packages...
-[2/4] 🚚  Fetching packages...
-[3/4] 🔗  Linking dependencies...
-[4/4] 🔨  Building fresh packages...
-success Saved lockfile.
-success Saved 2 new dependencies.
-info Direct dependencies
-└─ @prisma/client@4.8.0
-info All dependencies
-├─ @prisma/client@4.8.0
-└─ @prisma/engines-version@4.8.0-61.d6e67a83f971b175a593ccc12e15c4a757f93ffe
-✨  Done in 4.51s.
-
-✔ Generated Prisma Client (4.8.0 | library) to ./node_modules/@prisma/client in 99ms
-```
-
-### Operations from frontend
-
-[Prisma Client](https://www.prisma.io/docs/concepts/components/prisma-client) is an auto-generated and type-safe query builder.
-
-Whenever you make changes to your database that are reflected in the Prisma schema, you need to manually re-generate Prisma Client to update the generated code in the node_modules/.prisma/client directory:
-
-```bash
-prisma generate
-```
+[Docs](https://www.prisma.io/docs/concepts/components/prisma-client)
 
 ```ts title="script1.ts"
 import { PrismaClient } from "@prisma/client"
 
-// instantiate PrismaClient
 const prisma = new PrismaClient()
 
 async function main() {
@@ -185,49 +104,26 @@ main()
   })
 ```
 
-```bash title="adding a User record"
-# execute the script
+```bash title="create a record of a given model"
 npx ts-node script1.ts
 
-# response
-# { id: 1, email: 'alice@prisma.io', name: 'Alice' }
+{ id: 1, email: 'alice@prisma.io', name: 'Alice' }
 ```
 
 ```ts title="script2.ts"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
-
 async function main() {
-  // return all records from the database for a given model
   const users = await prisma.user.findMany()
   console.log(users)
 }
-
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
 ```
 
-```bash title="retrieving all User records"
-# execute the script
+```bash title="retrieve all records of a given model"
 npx ts-node script2.ts
 
-# response
-# [ { id: 1, email: 'alice@prisma.io', name: 'Alice' } ]
+[ { id: 1, email: 'alice@prisma.io', name: 'Alice' } ]
 ```
 
 ```ts title="script3.ts"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
-
 async function main() {
   const newUser = await prisma.user.create({
     data: {
@@ -242,33 +138,16 @@ async function main() {
   })
   console.log(newUser)
 }
-
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
 ```
 
-```bash title="creating a User and a Post at the same time"
-# execute the script
+```bash title="create a user record with post"
 npx ts-node script3.ts
 
-# by default, Prisma only returns scalar fields in the result objects of a query.
+# by default, Prisma only returns scalar fields
 { id: 2, email: 'bob@prisma.io', name: 'Bob' }
 ```
 
-### Retrieving relation with `include`
-
 ```ts title="script4.ts"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
-
 async function main() {
   const usersWithPosts = await prisma.user.findMany({
     include: {
@@ -277,20 +156,9 @@ async function main() {
   })
   console.dir(usersWithPosts, { depth: null })
 }
-
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
 ```
 
-```bash title="retrieving users and their posts"
-# execute the script
+```bash title="retrieve all users and their posts"
 npx ts-node script.ts
 
 [
@@ -310,16 +178,12 @@ npx ts-node script.ts
     ]
   }
 ]
-
-# open Prisma Studio
-npx prisma studio
 ```
 
-```bash title="running Prisma Studio"
-# install Prisma Client
-yarn add @prisma/client
+## Prisma Studio
 
-# run Prisma Studio
+```bash
+# open Prisma Studio
 npx prisma studio
 
 # go to
@@ -330,7 +194,48 @@ http://localhost:5555
 
 [Build a REST API with NestJS](https://www.prisma.io/blog/nestjs-prisma-rest-api-7D056s1BmOL0)
 
-### Next
+## misc
+
+```bash title=""
+# turn your database schema into a Prisma schema https://pris.ly/d/prisma-schema
+prisma db pull
+
+# generate the Prisma Client https://pris.ly/d/getting-started
+prisma generate
+```
+
+## Postgres.app
+
+A full-featured PostgreSQL installation packaged as a standard Mac app.
+
+[Docs](https://postgresapp.com/)
+
+```bash title="configure $PATH to use CLI tools"
+sudo mkdir -p /etc/paths.d &&
+echo /Applications/Postgres.app/Contents/Versions/latest/bin | sudo tee /etc/paths.d/postgresapp
+
+# Host : localhost
+# Port : 5432
+# User : your system user name
+# Database : same as user
+# Password: none
+# Connection URL: postgresql://localhost
+
+# connect
+psql
+```
+
+Graphical Clients
+
+pgAdmin 4 is an open source PostgreSQL client.
+
+Postico is a commercial Mac app, made by the same people that maintain Postgres.app
+
+official PostgreSQL docs
+
+Invoke autocompletion by pressing the CTRL+SPACE keys on your keyboard.
+
+## Next
 
 filtering, sorting, pagination, updating and deleting
 
@@ -340,15 +245,15 @@ filtering, sorting, pagination, updating and deleting
 
 ## Mahmoud Abdelwahab's Tutorial
 
-### GraphQL API
+## GraphQL API
 
-### Authentication w Auth0
+## Authentication w Auth0
 
-### Authorization
+## Authorization
 
-### Image upload
+## Image upload
 
-### Deployment
+## Deployment
 
 Next.js, Apollo Server, Apollo Client, Nexus (construct GraphQL schema), Prisma (ORM for migrations and database access), PostgreSQL, AWS S3, Auth0, TypeScript, TailwindCSS,
 Vercel
@@ -373,7 +278,7 @@ npx prisma init
 yarn dev
 ```
 
-### Prisma, an ORM
+## Prisma, an ORM
 
 [prisma](https://pris.ly/d/getting-started), [schema.prisma](https://pris.ly/d/prisma-schema)
 
@@ -459,7 +364,7 @@ models are spelled in PascalCase and should use the singular form.
 
 All fields are required by default. To make a field optional, can add a ? after the field type.
 
-### Migrating and pushing changes to the database
+## Migrating and pushing changes to the database
 
 prisma db push is useful for schema prototyping, where the goal is to synchronize a new schema with a development database. As your schema evolves, you will want to create and maintain a migration history, to do that you will use Prisma Migrate.
 
