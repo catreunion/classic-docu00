@@ -4,7 +4,7 @@ sidebar_position: 12
 
 # Prisma
 
-Postgres.app is a full-featured PostgreSQL installation packaged as a standard Mac app.
+[Postgres.app](https://postgresapp.com/) is a full-featured PostgreSQL installation packaged as a standard Mac app.
 
 Click "Initialize" to create a new server.
 

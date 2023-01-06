@@ -6,41 +6,39 @@ sidebar_position: 1
 
 ## Create a repository on GitHub
 
-1. Sign in to [GitHub](https://github.com/)
+Sign in to [GitHub](https://github.com/).
 
-2. On the upper right corner, click the plus icon. Click "New repository"
+On the upper right corner, click the plus icon. Click "New repository".
 
-3. Suggest a repository name, e.g. `next-demo-00`. Choose **private**. Click "Create repository"
+Suggest a repository name, e.g. `next-demo-00`. Choose **private**. Click "Create repository".
 
-4. On the section of **Quick setup**, click **SSH**. Click the copy icon.
+On the section of **Quick setup**, click **SSH**. Click the copy icon.
 
-&nbsp;
-
-## Link the Next.js project with the GitHub repository
-
-```shell
+```bash title="link a project with GitHub"
 # stop the dev environment
 
-# remove the default git setup
-❯ rm -rf .git
+# remove the default git directory
+rm -rf .git
 
-# initialize a local git
-❯ git init
+# initialize a local repository
+git init
 
-# add all the files and directories to local git
-❯ git add .
+# add all the items to local repository
+git add .
 
-# leave a note about this changes
-❯ git commit -m 'version 1.0.0'
+# leave a note for this stage
+git commit -m 'version 1.0.0'
 
-# link the local git to the remote git on GitHub
-❯ git remote add origin git@github.com:yuniscat/next-demo-00.git
+# create a new repository in GitHub
 
-# create a new branch called main
-❯ git branch -M main
+# connect to the remote repository
+git remote add origin git@github.com:<username>/<project-name>.git
 
-# upload all the files and directories to the remote git on GitHub
-❯ git push -u origin main
+# create the main branch
+git branch -M main
+
+# add all the items to remote repository
+git push -u origin main
 
 # input the passphrase of the SSH keys
 Enter passphrase for key '/Users/isaac/.ssh/id_ed25519':
@@ -60,9 +58,7 @@ Useful Browser Extensions
 
 [GoFullPage](https://chrome.google.com/webstore/detail/gofullpage-full-page-scre/fdpohaocaechififmbbbbbknoalclacl)
 
-### Miscellaneous
-
-```bash
+```bash title="Miscellaneous"
 # wget : retrieve content from web servers
 # ca-certificates : allow SSL-based applications to check for the authenticity of SSL connections
 sudo apt-get install wget ca-certificates curl
@@ -84,9 +80,7 @@ Windows + R > winver
 
 ## Generating a new site
 
-Generate a new Docusaurus site with the **classic template**
-
-```bash
+```bash title="generate a new Docusaurus site "
 # method 1
 npx create-docusaurus@latest classic-docu01 classic
 
@@ -106,9 +100,7 @@ yarn start
 # npx docusaurus --version
 ```
 
-## Creating a pair of SSH keys on Mac
-
-```shell
+```bash title="Creating a pair of SSH keys on Mac"
 # 1. generate a pair of SSH keys
 ssh-keygen -t ed25519 -C <emailAddress>
 # or: ssh-keygen -t rsa -b 4096 -C <emailAddress>
@@ -131,9 +123,7 @@ Host *
   IdentityFile ~/.ssh/id_ed25519
 ```
 
-## Adding the private key to ssh-agent
-
-```bash
+```bash title="Adding the private key to ssh-agent"
 # 1. make sure a SSH client is installed
 ssh -V
 
