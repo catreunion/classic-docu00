@@ -4,9 +4,7 @@ sidebar_position: 3
 
 # Prisma
 
-Object-Relational Mapper (ORM)
-
-[prisma-examples repository](https://github.com/prisma/prisma-examples/)
+◭ [Prisma](<(https://prisma.io)>), an Object-Relational Mapper (ORM), is a modern DB toolkit to model, migrate, and query a database. [prisma-examples repo](https://github.com/prisma/prisma-examples/)
 
 ## A plain TS project
 
@@ -70,13 +68,13 @@ model User {
 
 An imperative schema [migration tool](https://www.prisma.io/docs/concepts/components/prisma-migrate)
 
-Create `prisma/migrations/` and `prisma/dev.db`
-
-Generate **Prisma Client** in `./node_modules/@prisma/client/`
-
 ```bash title="create database tables"
 npx prisma migrate dev --name init
 ```
+
+Create `prisma/migrations/` and `prisma/dev.db`
+
+Generate **Prisma Client** in `./node_modules/@prisma/client/`
 
 ## Prisma Client
 
@@ -91,7 +89,7 @@ import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
 
-async function main() {
+const main = async () => {
   const newUser = await prisma.user.create({
     data: {
       name: "Alice",
@@ -119,7 +117,7 @@ npx ts-node script1.ts
 ```
 
 ```ts title="script2.ts"
-async function main() {
+const main = async () => {
   const users = await prisma.user.findMany()
   console.log(users)
 }
@@ -132,7 +130,7 @@ npx ts-node script2.ts
 ```
 
 ```ts title="script3.ts"
-async function main() {
+const main = async () => {
   const newUser = await prisma.user.create({
     data: {
       name: "Bob",
@@ -156,7 +154,7 @@ npx ts-node script3.ts
 ```
 
 ```ts title="script4.ts"
-async function main() {
+const main = async () => {
   const usersWithPosts = await prisma.user.findMany({
     include: {
       posts: true
@@ -201,6 +199,42 @@ http://localhost:5555
 [prisma-examples repository](https://github.com/prisma/prisma-examples/)
 
 [Build a REST API with NestJS](https://www.prisma.io/blog/nestjs-prisma-rest-api-7D056s1BmOL0)
+
+## PostgreSQL
+
+[Connection URLs (Reference)](https://www.prisma.io/docs/reference/database-reference/connection-urls)
+
+```bash title="setup with PostgreSQL database"
+# show introduction
+npx prisma
+
+# set up a new Prisma project
+prisma init
+
+# generate artifacts (e.g. Prisma Client)
+prisma generate
+
+# browse data
+prisma studio
+
+# create migrations from your Prisma schema, apply them to the database, generate artifacts (e.g. Prisma Client)
+prisma migrate dev
+
+# pull the schema from an existing database, updating the Prisma schema
+prisma db pull
+
+# push the Prisma schema state to the database
+prisma db push
+
+# validate your Prisma schema
+prisma validate
+
+# format your Prisma schema
+prisma format
+
+# create Prisma schema
+npx prisma init
+```
 
 ## misc
 
