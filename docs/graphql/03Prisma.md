@@ -1,10 +1,14 @@
 ---
-sidebar_position: 12
+sidebar_position: 3
 ---
 
 # Prisma
 
-## A plain TypeScript project
+Object-Relational Mapper (ORM)
+
+[prisma-examples repository](https://github.com/prisma/prisma-examples/)
+
+## A plain TS project
 
 [Quickstart with TypeScript & SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
 
@@ -21,7 +25,7 @@ yarn add @prisma/client
 # create tsconfig.json
 npx tsc --init
 
-# create prisma/schema.prisma & .env
+# create prisma/schema.prisma/ & .env
 npx prisma init --datasource-provider sqlite
 ```
 
@@ -33,6 +37,8 @@ DATABASE_URL="file:./dev.db"
 
 [Docs](https://www.prisma.io/docs/concepts/components/prisma-schema)
 
+[Relations (Reference)](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)
+
 ```prisma title="prisma/schema.prisma"
 generator client {
   provider = "prisma-client-js"
@@ -43,13 +49,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
-}
-
 model Post {
   id        Int     @id @default(autoincrement())
   title     String
@@ -57,6 +56,13 @@ model Post {
   published Boolean @default(false)
   author    User    @relation(fields: [authorId], references: [id])
   authorId  Int
+}
+
+model User {
+  id    Int     @id @default(autoincrement())
+  email String  @unique
+  name  String?
+  posts Post[]
 }
 ```
 
@@ -75,6 +81,8 @@ npx prisma migrate dev --name init
 ## Prisma Client
 
 An auto-generated and type-safe query builder for Node.js & TypeScript.
+
+CTRL + SPACE : Invoke autocompletion
 
 [Docs](https://www.prisma.io/docs/concepts/components/prisma-client)
 
