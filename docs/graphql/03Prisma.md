@@ -6,11 +6,13 @@ sidebar_position: 3
 
 ◭ [Prisma](https://prisma.io), an Object-Relational Mapper (ORM), is a modern DB toolkit to model, migrate, and query a database. [prisma-examples repo](https://github.com/prisma/prisma-examples/)
 
+[What is Prisma? (Overview)](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
+
 ## A plain TS project
 
 [Quickstart with TypeScript & SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
 
-```bash title="setup a plain TypeScript project"
+```bash title="setup a TS project with Prisma"
 # initialize a project
 yarn init -y
 
@@ -23,7 +25,7 @@ yarn add @prisma/client
 # create tsconfig.json
 npx tsc --init
 
-# create prisma/schema.prisma/ & .env
+# create prisma/schema.prisma & .env
 npx prisma init --datasource-provider sqlite
 ```
 
@@ -33,9 +35,7 @@ DATABASE_URL="file:./dev.db"
 
 ## Data modeling
 
-[Docs](https://www.prisma.io/docs/concepts/components/prisma-schema)
-
-[Relations (Reference)](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)
+[Docs](https://www.prisma.io/docs/concepts/components/prisma-schema), [Relations (Reference)](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)
 
 ```prisma title="prisma/schema.prisma"
 generator client {
@@ -48,21 +48,47 @@ datasource db {
 }
 
 model Post {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   title     String
   content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
+  published Boolean  @default(false)
+  author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
 }
 
+model Profile {
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  user   User    @relation(fields: [userId], references: [id])
+  userId Int     @unique
+}
+
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  name    String?
+  posts   Post[]
+  profile Profile?
 }
 ```
+
+The User record is connected to the two other ones via
+
+`Post.author` ↔ `User.posts`
+
+`Profile.user` ↔ `User.profile` [relation fields](https://www.prisma.io/docs/concepts/components/prisma-schema/relations#relation-fields) respectively. [Relation queries](https://www.prisma.io/docs/concepts/components/prisma-client/relation-queries#nested-writes)
+
+The numbers in
+
+the `authorId` column on `Post` and
+
+`userId` column on `Profile` both
+
+reference the `id` column of the User table
+
+"publish" the Post record you just created using an update query. Adjust the main function as follows:
 
 ## Prisma Migrate
 
@@ -74,17 +100,39 @@ npx prisma migrate dev --name init
 
 Create `prisma/migrations/` and `prisma/dev.db`
 
-Generate **Prisma Client** in `./node_modules/@prisma/client/`
+Generate **Prisma Client** in `node_modules/@prisma/client/`
+
+An illustration by [Prisma.io](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases/install-prisma-client-typescript-postgres) showing the workflow of `prisma generate`
+
+![prisma generate](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/FensWfo.png)
+
+```bash title="more about Prisma CLI"
+# show introduction
+npx prisma
+
+# whenever making changes in Prisma schema, need to invoke `prisma generate` to accommodate the changes
+npx prisma generate
+
+# pull the schema from an existing database, updating the Prisma schema
+npx prisma db pull
+
+# push the Prisma schema state to the database
+npx prisma db push
+
+# validate your Prisma schema
+npx prisma validate
+
+# format your Prisma schema
+npx prisma format
+```
 
 ## Prisma Client
 
-An auto-generated and type-safe query builder for Node.js & TypeScript.
+A type-safe query builder. [Docs](https://www.prisma.io/docs/concepts/components/prisma-client), [API Reference](https://www.prisma.io/docs/concepts/components/prisma-client)
 
 CTRL + SPACE : Invoke autocompletion
 
-[Docs](https://www.prisma.io/docs/concepts/components/prisma-client)
-
-```ts title="script1.ts"
+```ts title="scripts/01addUser.ts"
 import { PrismaClient } from "@prisma/client"
 
 const prisma = new PrismaClient()
@@ -111,25 +159,25 @@ main()
 ```
 
 ```bash title="create a record of a given model"
-npx ts-node script1.ts
+npx ts-node scripts/01addUser.ts
 
 { id: 1, email: 'alice@prisma.io', name: 'Alice' }
 ```
 
-```ts title="script2.ts"
+```ts title="scripts/02getUsers.ts"
 const main = async () => {
   const users = await prisma.user.findMany()
   console.log(users)
 }
 ```
 
-```bash title="retrieve all records of a given model"
-npx ts-node script2.ts
+```bash title="retrieve all users"
+npx ts-node scripts/02getUsers.ts
 
 [ { id: 1, email: 'alice@prisma.io', name: 'Alice' } ]
 ```
 
-```ts title="script3.ts"
+```ts title="scripts/03addUser.ts"
 const main = async () => {
   const newUser = await prisma.user.create({
     data: {
@@ -146,14 +194,14 @@ const main = async () => {
 }
 ```
 
-```bash title="create a user record with post"
-npx ts-node script3.ts
+```bash title="create a user with a post"
+npx ts-node scripts/03addUser.ts
 
 # by default, Prisma only returns scalar fields
 { id: 2, email: 'bob@prisma.io', name: 'Bob' }
 ```
 
-```ts title="script4.ts"
+```ts title="scripts/04getUsers.ts"
 const main = async () => {
   const usersWithPosts = await prisma.user.findMany({
     include: {
@@ -165,7 +213,7 @@ const main = async () => {
 ```
 
 ```bash title="retrieve all users and their posts"
-npx ts-node script.ts
+npx ts-node scripts/04getUsers.ts
 
 [
   { id: 1, email: 'alice@prisma.io', name: 'Alice', posts: [] },
@@ -186,7 +234,76 @@ npx ts-node script.ts
 ]
 ```
 
+```ts title="scripts/05addUserBio.ts"
+async function main() {
+  await prisma.user.create({
+    data: {
+      name: "Alice",
+      email: "alice@prisma.io",
+      posts: {
+        create: { title: "Hello World" }
+      },
+      profile: {
+        create: { bio: "I like turtles" }
+      }
+    }
+  })
+
+  const allUsers = await prisma.user.findMany({
+    include: {
+      posts: true,
+      profile: true
+    }
+  })
+  console.dir(allUsers, { depth: null })
+}
+```
+
+```bash title="create a user with a post & a bio"
+[
+  {
+    id: 2,
+    email: 'alice@prisma.io',
+    name: 'Alice',
+    posts: [
+      {
+        id: 1,
+        createdAt: 2023-01-07T09:54:17.185Z,
+        updatedAt: 2023-01-07T09:54:17.185Z,
+        title: 'Hello World',
+        content: null,
+        published: false,
+        authorId: 2
+      }
+    ],
+    profile: { id: 1, bio: 'I like turtles', userId: 2 }
+  }
+]
+```
+
+```
+async function main() {
+  const post = await prisma.post.update({
+    where: { id: 1 },
+    data: { published: true },
+  })
+  console.log(post)
+}
+```
+
+```
+{
+  id: 1,
+  title: 'Hello World',
+  content: null,
+  published: true,
+  authorId: 1
+}
+```
+
 ## Prisma Studio
+
+[prisma-examples repository](https://github.com/prisma/prisma-examples/), [Build a REST API with NestJS](https://www.prisma.io/blog/nestjs-prisma-rest-api-7D056s1BmOL0)
 
 ```bash
 # open Prisma Studio
@@ -196,44 +313,122 @@ npx prisma studio
 http://localhost:5555
 ```
 
-[prisma-examples repository](https://github.com/prisma/prisma-examples/)
+[rest-nextjs-api-routes](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-nextjs-api-routes) : Simple Next.js app (React) with a REST API
 
-[Build a REST API with NestJS](https://www.prisma.io/blog/nestjs-prisma-rest-api-7D056s1BmOL0)
+[graphql-nextjs](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql-nextjs) : Simple Next.js app (React) with a GraphQL API
+
+[graphql-apollo-server](https://github.com/prisma/prisma-examples/tree/latest/typescript/graphql) : Simple GraphQL server based on apollo-server
+
+[rest-express](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-express) : Simple REST API with Express.JS
+
+[grpc](https://github.com/prisma/prisma-examples/tree/latest/typescript/grpc) : Simple gRPC API
 
 ## PostgreSQL
 
 [Connection URLs (Reference)](https://www.prisma.io/docs/reference/database-reference/connection-urls)
 
-```bash title="setup with PostgreSQL database"
-# show introduction
-npx prisma
+Connect your database
 
-# set up a new Prisma project
-prisma init
+prisma/schema.prisma
 
-# generate artifacts (e.g. Prisma Client)
-prisma generate
+```
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
 
-# browse data
-prisma studio
+```env
+DATABASE_URL="postgresql://janedoe:janedoe@localhost:5432/janedoe?schema=hello-prisma"
 
-# create migrations from your Prisma schema, apply them to the database, generate artifacts (e.g. Prisma Client)
-prisma migrate dev
+DATABASE_URL="postgresql://johndoe:randompassword@localhost:5432/mydb?schema=public"
 
-# pull the schema from an existing database, updating the Prisma schema
-prisma db pull
+DATABASE_URL="postgresql://opnmyfngbknppm:XXX@ec2-46-137-91-216.eu-west-1.compute.amazonaws.com:5432/d50rgmkqi2ipus?schema=hello-prisma"
+```
 
-# push the Prisma schema state to the database
-prisma db push
+```
+postgresql://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA
+```
 
-# validate your Prisma schema
-prisma validate
+DATABASE: The name of the database
 
-# format your Prisma schema
-prisma format
+SCHEMA: The name of the schema inside the database
 
-# create Prisma schema
-npx prisma init
+Using Prisma Migrate
+
+prisma/schema.prisma
+
+```
+model Post {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  title     String   @db.VarChar(255)
+  content   String?
+  published Boolean  @default(false)
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+}
+
+model Profile {
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  user   User    @relation(fields: [userId], references: [id])
+  userId Int     @unique
+}
+
+model User {
+  id      Int      @id @default(autoincrement())
+  email   String   @unique
+  name    String?
+  posts   Post[]
+  profile Profile?
+}
+```
+
+```bash
+npx prisma migrate dev --name init
+```
+
+create a new SQL migration file for this migration
+
+run the SQL migration file against the database
+
+`generate` is called under the hood by default, after running `prisma migrate dev`
+
+SQL
+Tables
+
+```sql
+CREATE TABLE "Post" (
+  "id" SERIAL,
+  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" TIMESTAMP(3) NOT NULL,
+  "title" VARCHAR(255) NOT NULL,
+  "content" TEXT,
+  "published" BOOLEAN NOT NULL DEFAULT false,
+  "authorId" INTEGER NOT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE "Profile" (
+  "id" SERIAL,
+  "bio" TEXT,
+  "userId" INTEGER NOT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE "User" (
+  "id" SERIAL,
+  "email" TEXT NOT NULL,
+  "name" TEXT,
+  PRIMARY KEY ("id")
+);
+
+CREATE UNIQUE INDEX "Profile.userId_unique" ON "Profile"("userId");
+CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
+ALTER TABLE "Post" ADD FOREIGN KEY("authorId")REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ```
 
 ## misc
