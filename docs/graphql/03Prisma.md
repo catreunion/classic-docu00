@@ -4,7 +4,7 @@ sidebar_position: 3
 
 # Prisma
 
-◭ [Prisma](<(https://prisma.io)>), an Object-Relational Mapper (ORM), is a modern DB toolkit to model, migrate, and query a database. [prisma-examples repo](https://github.com/prisma/prisma-examples/)
+◭ [Prisma](https://prisma.io), an Object-Relational Mapper (ORM), is a modern DB toolkit to model, migrate, and query a database. [prisma-examples repo](https://github.com/prisma/prisma-examples/)
 
 ## A plain TS project
 
