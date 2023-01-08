@@ -6,11 +6,11 @@ sidebar_position: 3
 
 ◭ [Prisma](https://prisma.io), an open source Object-Relational Mapper (ORM), is a modern toolkit to model, migrate, and query a database. [Examples repo](https://github.com/prisma/prisma-examples/), [Overview](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
 
-## Setup Prisma w TS 🛠
+## Setup Prisma with TS 🛠
 
-**TypeScript** make database access entirely **type safe**. [SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
+**TypeScript** makes database access entirely **type safe**. [SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
 
-```bash title="setup a Prisma project with TypeScript and SQLite"
+```bash title="setup TypeScript, Prisma & SQLite"
 # initialize a project
 yarn init -y
 
@@ -31,11 +31,11 @@ npx prisma init --datasource-provider sqlite
 DATABASE_URL="file:./dev.db"
 ```
 
-## Data modeling
+## `prisma/schema.prisma`
 
 A Prisma schema can only have **one** [data source](https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources). [SSL with PostgreSQL](https://www.prisma.io/docs/concepts/database-connectors/postgresql#configuring-an-ssl-connection)
 
-```prisma title="if certificate files are outside the prisma directory"
+```prisma title="if certificate files exist"
 datasource db {
   provider = "postgresql"
   url      = "postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public&sslmode=require&sslcert=../server-ca.pem&sslidentity=../client-identity.p12&sslpassword=<REDACTED>"
@@ -44,22 +44,40 @@ datasource db {
 
 A Prisma schema can have **one or more** [generators](https://www.prisma.io/docs/concepts/components/prisma-schema/generators). The generator for Prisma's JavaScript Client accepts multiple properties.
 
-```prisma title="multiple properties of prisma-client-js"
+```prisma title="accept multiple properties"
 generator client {
   provider = "prisma-client-js"
   output   = "./generated/prisma-client-js"
 }
 ```
 
-`prisma/schema.prisma` : the **single source of truth** for the models of your application
+`prisma/schema.prisma`
 
-> Models represent the entities of your application domain. A model defines a number of fields.
+The **single source of truth** for the **models** of your application. Models represent the **entities** of your application domain. A model defines a number of **fields**, including **relations** between models, **attributes**, and **modifiers**.
 
-> Enums
+> Modifier `[]` makes a field a list.
 
-> Attributes and functions that change the behavior of fields and models
+> Modifier `?` makes a field optional.
 
-```prisma title="a schema describing a blogging platform"
+> Modifiers cannot be combined. --> Optional lists are not supported.
+
+> The default value of an optional field is `null`.
+
+> Attributes modify the behavior of fields or model blocks.
+
+> `@id`, `@default`, `@unique` : field attributes
+
+> `@@unique` : block attribute
+
+> `@default` accepts arguments
+
+**Map** to the tables (relational databases like **PostgreSQL**) or collections (**MongoDB**) in your database.
+
+Form the foundation of the **queries** available in the generated Prisma Client API.
+
+> Prisma's model naming conventions (singular form, PascalCase) do not always match table/collection names in database. A common approach for naming tables/collections in databases is to use plural form and snake_case notation.
+
+```prisma title="schema of a blog app"
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
@@ -70,13 +88,17 @@ generator client {
 }
 
 model User {
-  id      Int      @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-  email   String   @unique
-  name    String?
-  role    Role     @default(USER)
-  profile Profile?
-  posts   Post[]
+  email     String   @unique
+  firstName String
+  lastName  String
+  isAdmin   Boolean  @default(false)
+  role      Role     @default(USER)
+  profile   Profile?
+  posts     Post[]
+
+  @@unique([firstName, lastName])
 }
 
 enum Role {
@@ -92,20 +114,40 @@ model Profile {
 }
 
 model Post {
-  id         Int        @id @default(autoincrement())
-  createdAt  DateTime   @default(now())
-  updatedAt  DateTime   @updatedAt
-  title      String
-  published  Boolean    @default(false)
-  author     User       @relation(fields: [authorId], references: [id])
-  authorId   Int
-  categories Category[] @relation(references: [id])
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  title     String
+  published Boolean   @default(false)
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  Int
+  keywords  String[] // a scalar list
+  // categories Category[] @relation(references: [id])
+  // a list of related models
+  // a post can have many comments
+  comments  Comment[]
 }
 
 model Category {
-  id    Int    @id @default(autoincrement())
-  name  String
-  posts Post[] @relation(references: [id])
+  id   Int    @id @default(autoincrement())
+  name String
+  // posts Post[] @relation(references: [id])
+}
+
+model Comment {
+  id      Int     @id @default(autoincrement())
+  title   String
+  content String?
+  // a comment can have one post
+  Post    Post?   @relation(fields: [postId], references: [id])
+  postId  Int?
+}
+
+model Tag {
+  name String @id
+}
+
+model Comment {
 }
 ```
 
@@ -113,7 +155,15 @@ An illustration by [Prisma](https://www.prisma.io/docs/concepts/components/prism
 
 ![the relations between models](https://www.prisma.io/docs/static/fc0ed56f4213ebf4d2309c0965b166da/3c492/sample-database.png)
 
-```ts title="2 nested Post records, 3 nested Category records"
+A relation field's type is another model.
+
+> One User record
+
+> Two nested Post records
+
+> Three nested Category records
+
+```ts title="an example query"
 const user = await prisma.user.create({
   data: {
     email: "ariadne@prisma.io",
