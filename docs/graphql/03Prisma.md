@@ -148,7 +148,7 @@ prisma generate --schema=./alternative/schema.prisma
 
 Prisma Schema Language (PSL).
 
-[VS Code extension]() for syntax highlighting, auto-format the contents, indicates syntax errors with red squiggly lines
+VS Code extension for syntax highlighting, auto-format the contents, indicates syntax errors with red squiggly lines
 
 ```json title="package.json"
 "prisma": {
@@ -156,13 +156,13 @@ Prisma Schema Language (PSL).
 }
 ```
 
-/// This comment will show up in the abstract syntax tree (AST) of the schema file as descriptions to AST nodes. Tools can then use these comments to provide additional information. All comments are attached to the next available node - free-floating comments are not supported and are not included in the AST.
+This comment will show up in the abstract syntax tree (AST) of the schema file as descriptions to AST nodes. Tools can then use these comments to provide additional information. All comments are attached to the next available node - free-floating comments are not supported and are not included in the AST.
 
 Two ways to format .prisma files :
 
 Run the `prisma format` command.
 
-Install the [Prisma VS Code extension]() and invoke the VS Code format action - manually or on save.
+Install the Prisma VS Code extension and invoke the VS Code format action - manually or on save.
 
 There are no configuration options - formatting rules are fixed (similar to Golang's gofmt but unlike Javascript's prettier):
 
