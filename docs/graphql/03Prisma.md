@@ -4,13 +4,13 @@ sidebar_position: 3
 
 # Prisma
 
-◭ [Prisma](https://prisma.io), an open source Object-Relational Mapper (ORM), is a modern DB toolkit to model, migrate, and query a database. [Examples repo](https://github.com/prisma/prisma-examples/), [Overview](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
+◭ [Prisma](https://prisma.io), an open source Object-Relational Mapper (ORM), is a modern toolkit to model, migrate, and query a database. [Examples repo](https://github.com/prisma/prisma-examples/), [Overview](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
 
-## A plain TS project
+## Setup Prisma w TS 🛠
 
-[SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
+**TypeScript** make database access entirely **type safe**. [SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
 
-```bash title="setup Prisma with SQLite"
+```bash title="setup a Prisma project with TypeScript and SQLite"
 # initialize a project
 yarn init -y
 
@@ -35,14 +35,14 @@ DATABASE_URL="file:./dev.db"
 
 A Prisma schema can only have **one** [data source](https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources). [SSL with PostgreSQL](https://www.prisma.io/docs/concepts/database-connectors/postgresql#configuring-an-ssl-connection)
 
-```prisma title="if certificate files are outside ./prisma directory"
+```prisma title="if certificate files are outside the prisma directory"
 datasource db {
   provider = "postgresql"
   url      = "postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public&sslmode=require&sslcert=../server-ca.pem&sslidentity=../client-identity.p12&sslpassword=<REDACTED>"
 }
 ```
 
-A Prisma schema can have **one or more** [generators](https://www.prisma.io/docs/concepts/components/prisma-schema/generators). When used with **TypeScript**, Prisma Client provides generated type definitions for your models and any variations of them to **make database access entirely type safe**. The generator for Prisma's JavaScript Client accepts multiple properties.
+A Prisma schema can have **one or more** [generators](https://www.prisma.io/docs/concepts/components/prisma-schema/generators). The generator for Prisma's JavaScript Client accepts multiple properties.
 
 ```prisma title="multiple properties of prisma-client-js"
 generator client {
