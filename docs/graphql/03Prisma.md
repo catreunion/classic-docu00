@@ -6,11 +6,11 @@ sidebar_position: 3
 
 ◭ [Prisma](https://prisma.io), an open source Object-Relational Mapper (ORM), is a modern toolkit to model, migrate, and query a database. [Examples repo](https://github.com/prisma/prisma-examples/), [Overview](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
 
-## Setup Prisma with TS 🛠
+## Setup Prisma with SQLite
 
 **TypeScript** makes database access entirely **type safe**. [SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
 
-```bash title="setup TypeScript, Prisma & SQLite"
+```bash title="setup Prisma with SQLite"
 # initialize a project
 yarn init -y
 
@@ -29,6 +29,111 @@ npx prisma init --datasource-provider sqlite
 
 ```env title=".env"
 DATABASE_URL="file:./dev.db"
+```
+
+## Setup Prisma with MongoDB
+
+The [MongoDB database connector](https://www.prisma.io/docs/concepts/database-connectors/mongodb) uses transactions to support nested writes. Transactions requires a [replica set](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/) deployment. The easiest way to deploy a replica set is with [Atlas](https://www.mongodb.com/docs/atlas/getting-started/). [Migrate from Mongoose](https://www.prisma.io/docs/guides/migrate-to-prisma/migrate-from-mongoose)
+
+```bash title="setup Prisma with MongoDB"
+yarn init -y
+yarn add -D typescript ts-node @types/node prisma
+yarn add @prisma/client
+npx tsc --init
+npx prisma init
+```
+
+```prisma title="prisma/schema.prisma"
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+```
+
+An illustration by [Prisma](https://www.prisma.io/docs/concepts/database-connectors/mongodb) showing the structure of MongoDB connection URL.
+
+![Structure of MongoDB connection URL](https://www.prisma.io/docs/static/b5ef4062c4686c772571b3079ba1331c/3c492/mongodb.png)
+
+```env
+DATABASE_URL="mongodb+srv://<username>:<password>@<host>/test2"
+```
+
+[MongoDB schema reference](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#mongodb-2)
+
+It is common practice for the `_id` field of a MongoDB document to contain an ObjectId:
+
+```bash
+npx ts-node index.ts
+```
+
+include the posts relations on the returned User objects
+
+```json
+{
+  "_id": { "$oid": "60d599cb001ef98000f2cad2" },
+  "createdAt": { "$date": { "$numberLong": "1624611275577" } },
+  "email": "ella@prisma.io",
+  "name": "Ella",
+  "role": "ADMIN"
+}
+```
+
+```prisma "schema.prisma"
+model User {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  // or : id Bytes @id @default(auto()) @map("_id") @db.ObjectId
+  // Other fields
+}
+```
+
+See also: Defining ID fields in MongoDB
+
+```bash title="install bson for generating `ObjectId`"
+yarn add -D bson
+
+````
+
+```ts
+import { ObjectId } from 'bson'
+
+const id = new ObjectId()
+````
+
+MongoDB projects do not rely on internal schemas where changes need to be managed with an extra tool. Management of @unique indexes is realized through db push. --> NO Prisma Migrate
+
+Primary keys in MongoDB are always on the \_id field of a model. --> NO @@id attribute and autoincrement()
+
+`autoincrement()` does not work with the ObjectID type that the `_id` field has in MongoDB.
+
+Replica set configuration
+
+MongoDB only allows you to start a transaction on a replica set. Prisma uses transactions internally to avoid partial writes on nested queries. This means we inherit the requirement of needing a replica set configured.
+
+Type mapping between MongoDB and the Prisma schema
+
+Prisma schema reference for type mappings organized by Prisma type.
+
+Mapping from Prisma to MongoDB types on migration
+
+The MongoDB connector maps the scalar types from the Prisma data model to MongoDB's native column types as follows:
+
+Prisma MongoDB
+String string
+Boolean bool
+Int int
+BigInt long
+Float double
+Decimal Currently unsupported
+DateTime timestamp
+Date date
+Bytes binData
+Json
+
+```prisma title="if certificate files exist"
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public&sslmode=require&sslcert=../server-ca.pem&sslidentity=../client-identity.p12&sslpassword=<REDACTED>"
+}
 ```
 
 ## `prisma/schema.prisma`
