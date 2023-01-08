@@ -31,6 +31,13 @@ npx prisma init --datasource-provider sqlite
 DATABASE_URL="file:./dev.db"
 ```
 
+```prisma title="if certificate files exist"
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public&sslmode=require&sslcert=../server-ca.pem&sslidentity=../client-identity.p12&sslpassword=<REDACTED>"
+}
+```
+
 ## Prisma with MongoDB
 
 The [MongoDB database connector](https://www.prisma.io/docs/concepts/database-connectors/mongodb) uses transactions to support nested writes. Transactions requires a [replica set](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/) deployment. The easiest way to deploy a replica set is with [Atlas](https://www.mongodb.com/docs/atlas/getting-started/). [Migrate from Mongoose](https://www.prisma.io/docs/guides/migrate-to-prisma/migrate-from-mongoose)
@@ -71,6 +78,18 @@ The MongoDB connector maps the scalar types from the Prisma data model to MongoD
 
 Prisma MongoDB, String string, Boolean bool, Int int, BigInt long, Float double, DateTime timestamp, Date date, Bytes binData
 
+## Prisma with PostgreSQL
+
+[SSL with PostgreSQL](https://www.prisma.io/docs/concepts/database-connectors/postgresql#configuring-an-ssl-connection)
+
+```bash title="setup Prisma with MongoDB"
+yarn init -y
+yarn add -D typescript ts-node @types/node prisma
+yarn add @prisma/client
+npx tsc --init
+npx prisma init --datasource-provider postgresql
+```
+
 ```prisma title="if certificate files exist"
 datasource db {
   provider = "postgresql"
@@ -80,14 +99,29 @@ datasource db {
 
 ## `prisma/schema.prisma`
 
-A Prisma schema can only have **one** [data source](https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources). [SSL with PostgreSQL](https://www.prisma.io/docs/concepts/database-connectors/postgresql#configuring-an-ssl-connection)
+The **single source of truth** for the **models** of your application. Models represent the **entities** of your application domain. A model defines a number of **fields**, including **relations** between models, **attributes**, and **modifiers**. Form the foundation of **queries**. **Map** to tables (relational databases like **PostgreSQL**) or collections (**MongoDB**) in your database.
 
-```prisma title="if certificate files exist"
-datasource db {
-  provider = "postgresql"
-  url      = "postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public&sslmode=require&sslcert=../server-ca.pem&sslidentity=../client-identity.p12&sslpassword=<REDACTED>"
-}
-```
+Modifiers
+
+> Examples : `[]`, `?`
+
+> Modifiers cannot be combined. --> Optional lists are not supported.
+
+> The default value of an optional field is `null`.
+
+Attributes
+
+> Attributes modify the behavior of fields or model blocks.
+
+> Field attributes : `@id`, `@default`, `@unique`
+
+> Block attribute : `@@unique`e
+
+> `@default` accepts arguments
+
+> Prisma's model naming conventions (singular form, PascalCase) do not always match table/collection names in database. A common approach for naming tables/collections in databases is to use plural form and snake_case notation.
+
+A Prisma schema can only have **one** [data source](https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources).
 
 A Prisma schema can have **one or more** [generators](https://www.prisma.io/docs/concepts/components/prisma-schema/generators). The generator for Prisma's JavaScript Client accepts multiple properties.
 
@@ -97,32 +131,6 @@ generator client {
   output   = "./generated/prisma-client-js"
 }
 ```
-
-`prisma/schema.prisma`
-
-The **single source of truth** for the **models** of your application. Models represent the **entities** of your application domain. A model defines a number of **fields**, including **relations** between models, **attributes**, and **modifiers**.
-
-> Modifier `[]` makes a field a list.
-
-> Modifier `?` makes a field optional.
-
-> Modifiers cannot be combined. --> Optional lists are not supported.
-
-> The default value of an optional field is `null`.
-
-> Attributes modify the behavior of fields or model blocks.
-
-> `@id`, `@default`, `@unique` : field attributes
-
-> `@@unique` : block attribute
-
-> `@default` accepts arguments
-
-**Map** to the tables (relational databases like **PostgreSQL**) or collections (**MongoDB**) in your database.
-
-Form the foundation of the **queries** available in the generated Prisma Client API.
-
-> Prisma's model naming conventions (singular form, PascalCase) do not always match table/collection names in database. A common approach for naming tables/collections in databases is to use plural form and snake_case notation.
 
 ```prisma title="schema of a blog app"
 datasource db {
