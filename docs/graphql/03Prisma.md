@@ -31,13 +31,6 @@ npx prisma init --datasource-provider sqlite
 DATABASE_URL="file:./dev.db"
 ```
 
-```prisma title="if certificate files exist"
-datasource db {
-  provider = "postgresql"
-  url      = "postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public&sslmode=require&sslcert=../server-ca.pem&sslidentity=../client-identity.p12&sslpassword=<REDACTED>"
-}
-```
-
 ## Prisma with MongoDB
 
 The [MongoDB database connector](https://www.prisma.io/docs/concepts/database-connectors/mongodb) uses transactions to support nested writes. Transactions requires a [replica set](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/) deployment. The easiest way to deploy a replica set is with [Atlas](https://www.mongodb.com/docs/atlas/getting-started/). [Migrate from Mongoose](https://www.prisma.io/docs/guides/migrate-to-prisma/migrate-from-mongoose)
@@ -99,27 +92,31 @@ datasource db {
 
 ## `prisma/schema.prisma`
 
-The **single source of truth** for the **models** of your application. Models represent the **entities** of your application domain. A model defines a number of **fields**, including **relations** between models, **attributes**, and **modifiers**. Form the foundation of **queries**. **Map** to tables (relational databases like **PostgreSQL**) or collections (**MongoDB**) in your database.
+The **single source of truth** for the **models** of your application. Models represent the **entities** of your application domain. A model defines a number of **fields**. Fields can include **relations** between models, **attributes**, and **modifiers**.
 
-Modifiers
+Schema forms the foundation of **queries**. It **maps** to tables (relational databases like **PostgreSQL** using Prisma Migrate) or collections (**MongoDB**) in your database.
 
-> Examples : `[]`, `?`
+### Modifiers
 
-> Modifiers cannot be combined. --> Optional lists are not supported.
+Examples : `[]`, `?`
 
-> The default value of an optional field is `null`.
+Modifiers cannot be combined. --> Optional lists are not supported.
 
-Attributes
+The default value of an optional field is `null`.
 
-> Attributes modify the behavior of fields or model blocks.
+### Attributes
 
-> Field attributes : `@id`, `@default`, `@unique`
+Attributes modify the behavior of fields or model blocks.
 
-> Block attribute : `@@unique`e
+Field attributes : `@id`, `@default`, `@unique`
+
+Block attribute : `@@unique`
 
 > `@default` accepts arguments
 
-> Prisma's model naming conventions (singular form, PascalCase) do not always match table/collection names in database. A common approach for naming tables/collections in databases is to use plural form and snake_case notation.
+### More about schema
+
+Prisma's model naming conventions (singular form, PascalCase) do not always match table/collection names in database. A common approach for naming tables/collections in databases is to use plural form and snake_case notation.
 
 A Prisma schema can only have **one** [data source](https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources).
 
@@ -131,6 +128,8 @@ generator client {
   output   = "./generated/prisma-client-js"
 }
 ```
+
+### Schema of a blog app
 
 ```prisma title="schema of a blog app"
 datasource db {
@@ -173,6 +172,7 @@ model Post {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   title     String
+  content   String?
   published Boolean   @default(false)
   author    User      @relation(fields: [authorId], references: [id])
   authorId  Int
@@ -251,9 +251,9 @@ prisma generate --schema ./database/myschema.prisma
 prisma generate --schema=./alternative/schema.prisma
 ```
 
-Prisma Schema Language (PSL).
+Prisma Schema Language (PSL)
 
-VS Code extension for syntax highlighting, auto-format the contents, indicates syntax errors with red squiggly lines
+indicates syntax errors with red squiggly lines
 
 ```json title="package.json"
 "prisma": {
@@ -263,37 +263,9 @@ VS Code extension for syntax highlighting, auto-format the contents, indicates s
 
 This comment will show up in the abstract syntax tree (AST) of the schema file as descriptions to AST nodes. Tools can then use these comments to provide additional information. All comments are attached to the next available node - free-floating comments are not supported and are not included in the AST.
 
-Two ways to format .prisma files :
-
-Run the `prisma format` command.
-
-Install the Prisma VS Code extension and invoke the VS Code format action - manually or on save.
-
-There are no configuration options - formatting rules are fixed (similar to Golang's gofmt but unlike Javascript's prettier):
-
 The data model is a collection of models. Define application models in an intuitive data modeling language. [Docs](https://www.prisma.io/docs/concepts/components/prisma-schema), [Relations (Reference)](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)
 
 ```prisma title="prisma/schema.prisma"
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
-
-model Post {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  title     String
-  content   String?
-  published Boolean  @default(false)
-  author    User     @relation(fields: [authorId], references: [id])
-  authorId  Int
-}
-
 model Profile {
   id     Int     @id @default(autoincrement())
   bio    String?
@@ -305,7 +277,6 @@ model User {
   id      Int      @id @default(autoincrement())
   email   String   @unique
   name    String?
-  posts   Post[]
   profile Profile?
 }
 ```
@@ -313,18 +284,10 @@ model User {
 The User record is connected to the two other ones via
 
 `Post.author` ↔ `User.posts`
+`Profile.user` ↔ `User.profile`
+[relation fields](https://www.prisma.io/docs/concepts/components/prisma-schema/relations#relation-fields) respectively. [Relation queries](https://www.prisma.io/docs/concepts/components/prisma-client/relation-queries#nested-writes)
 
-`Profile.user` ↔ `User.profile` [relation fields](https://www.prisma.io/docs/concepts/components/prisma-schema/relations#relation-fields) respectively. [Relation queries](https://www.prisma.io/docs/concepts/components/prisma-client/relation-queries#nested-writes)
-
-The numbers in
-
-the `authorId` column on `Post` and
-
-`userId` column on `Profile` both
-
-reference the `id` column of the User table
-
-"publish" the Post record you just created using an update query. Adjust the main function as follows:
+"publish" the Post record you just created using an update query.
 
 ## Prisma Migrate
 
@@ -380,51 +343,6 @@ prisma generate
 
 CTRL + SPACE : Invoke autocompletion
 
-```ts title="scripts/01addUser.ts"
-import { PrismaClient } from "@prisma/client"
-
-const prisma = new PrismaClient()
-
-const main = async () => {
-  const newUser = await prisma.user.create({
-    data: {
-      name: "Alice",
-      email: "alice@prisma.io"
-    }
-  })
-  console.log(newUser)
-}
-
-main()
-  .then(async () => {
-    await prisma.$disconnect()
-  })
-  .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
-```
-
-```bash title="create a record of a given model"
-npx ts-node scripts/01addUser.ts
-
-{ id: 1, email: 'alice@prisma.io', name: 'Alice' }
-```
-
-```ts title="scripts/02getUsers.ts"
-const main = async () => {
-  const users = await prisma.user.findMany()
-  console.log(users)
-}
-```
-
-```bash title="retrieve all users"
-npx ts-node scripts/02getUsers.ts
-
-[ { id: 1, email: 'alice@prisma.io', name: 'Alice' } ]
-```
-
 ```ts title="scripts/03addUser.ts"
 const main = async () => {
   const newUser = await prisma.user.create({
@@ -447,39 +365,6 @@ npx ts-node scripts/03addUser.ts
 
 # by default, Prisma only returns scalar fields
 { id: 2, email: 'bob@prisma.io', name: 'Bob' }
-```
-
-```ts title="scripts/04getUsers.ts"
-const main = async () => {
-  const usersWithPosts = await prisma.user.findMany({
-    include: {
-      posts: true
-    }
-  })
-  console.dir(usersWithPosts, { depth: null })
-}
-```
-
-```bash title="retrieve all users and their posts"
-npx ts-node scripts/04getUsers.ts
-
-[
-  { id: 1, email: 'alice@prisma.io', name: 'Alice', posts: [] },
-  {
-    id: 2,
-    email: 'bob@prisma.io',
-    name: 'Bob',
-    posts: [
-      {
-        id: 1,
-        title: 'Hello World',
-        content: null,
-        published: false,
-        authorId: 2
-      }
-    ]
-  }
-]
 ```
 
 ```ts title="scripts/05addUserBio.ts"
@@ -601,7 +486,7 @@ Using Prisma Migrate
 
 prisma/schema.prisma
 
-```
+```prisma
 model Post {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
@@ -639,41 +524,6 @@ run the SQL migration file against the database
 
 `generate` is called under the hood by default, after running `prisma migrate dev`
 
-SQL
-Tables
-
-```sql
-CREATE TABLE "Post" (
-  "id" SERIAL,
-  "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  "updatedAt" TIMESTAMP(3) NOT NULL,
-  "title" VARCHAR(255) NOT NULL,
-  "content" TEXT,
-  "published" BOOLEAN NOT NULL DEFAULT false,
-  "authorId" INTEGER NOT NULL,
-  PRIMARY KEY ("id")
-);
-
-CREATE TABLE "Profile" (
-  "id" SERIAL,
-  "bio" TEXT,
-  "userId" INTEGER NOT NULL,
-  PRIMARY KEY ("id")
-);
-
-CREATE TABLE "User" (
-  "id" SERIAL,
-  "email" TEXT NOT NULL,
-  "name" TEXT,
-  PRIMARY KEY ("id")
-);
-
-CREATE UNIQUE INDEX "Profile.userId_unique" ON "Profile"("userId");
-CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
-ALTER TABLE "Post" ADD FOREIGN KEY("authorId")REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE "Profile" ADD FOREIGN KEY("userId")REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-```
-
 ## misc
 
 ```bash title=""
@@ -710,8 +560,6 @@ Graphical Clients
 pgAdmin 4 is an open source PostgreSQL client.
 
 Postico is a commercial Mac app, made by the same people that maintain Postgres.app
-
-official PostgreSQL docs
 
 Invoke autocompletion by pressing the CTRL+SPACE keys on your keyboard.
 
@@ -759,8 +607,6 @@ yarn dev
 ```
 
 ## Prisma, an ORM
-
-[prisma](https://pris.ly/d/getting-started), [schema.prisma](https://pris.ly/d/prisma-schema)
 
 ```env title="demo db URL"
 DATABASE_URL="postgresql://giwuzwpdnrgtzv:d003c6a604bb400ea955c3abd8c16cc98f2d909283c322ebd8e9164b33ccdb75@ec2-54-170-123-247.eu-west-1.compute.amazonaws.com:5432/d6ajekcigbuca9"
