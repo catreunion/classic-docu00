@@ -1,15 +1,79 @@
 ---
-sidebar_position: 5
+sidebar_position: 2
 ---
 
-# Overview of TypeScript
+# TypeScript
 
 [TypeScript Handbook](https://www.typescriptlang.org/), [TypeScript Example on React](https://www.typescriptlang.org/play?jsx=2&esModuleInterop=true&e=196#example/typescript-with-react), [React + TypeScript Cheatsheets](https://github.com/typescript-cheatsheets/react#reacttypescript-cheatsheets)
 
-## Installation
+## Installation with Vite
+
+Vite is a build tool that aims to provide a faster and leaner development experience for modern web projects. It consists of two major parts:
+
+A dev server that provides rich feature enhancements over native ES modules, for example extremely fast Hot Module Replacement (HMR).
+
+A build command that bundles your code with Rollup, pre-configured to output highly optimized static assets for production.
+
+Vite is opinionated and comes with sensible defaults out of the box, but is also highly extensible via its Plugin API and JavaScript API with full typing support.
+
+Browser Support
+The default build targets browsers that support native ES Modules, native ESM dynamic import, and import.meta. Legacy browsers can be supported via the official @vitejs/plugin-legacy - see the Building for Production section for more details.
+
+```bash title="setup a TS project with Vite"
+yarn create vite frontend --template react-ts
+cd frontend
+yarn
+yarn dev
+
+# quit the dev server
+# remove App.css
+
+# install Tailwind CSS and its peer dependencies
+yarn add -D tailwindcss postcss autoprefixer
+
+# generate both tailwind.config.cjs and postcss.config.cjs
+npx tailwindcss init -p
+```
+
+```bash title="other templates"
+yarn create vite frontend --template react
+yarn create vite frontend --template vue-ts
+yarn create vite frontend --template vue
+```
+
+```cjs title="tailwind.config.cjs"
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  // tell TailwindCSS to look at these files in src/
+  // how TailwindCSS determines what needs to be bundled into its built and minified output
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  theme: {
+    extend: {}
+  },
+  plugins: []
+}
+```
+
+Add Tailwind directives for each Tailwind’s layer.
+
+```css title="src/index.css"
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+## Installation with Create React App
 
 ```bash title="a Create React App project with TypeScript"
-yarn create react-app my-app --template typescript
+yarn create react-app frontend --template typescript
+cd frontend
+yarn
+yarn dev
+
+# quit the dev server
+# remove App.css
+
+# install Tailwind CSS
 ```
 
 `tsconfig.json`

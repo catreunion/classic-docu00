@@ -63,7 +63,7 @@ const config = {
             docId: "intro",
             position: "left"
           },
-          { label: "Next.js", to: "/docs/nextjs/00React", position: "left" },
+          { label: "Next.js", to: "/docs/nextjs/01React", position: "left" },
           { label: "Tailwind", to: "/docs/tailwind/get-started", position: "left" },
           { label: "GraphQL", to: "/docs/graphql/01Catstronauts", position: "left" },
           { label: "Supabase", to: "/docs/supabase/00JWT", position: "left" },
@@ -95,7 +95,7 @@ const config = {
               },
               {
                 label: "Next.js",
-                to: "/docs/nextjs/00React"
+                to: "/docs/nextjs/01React"
               },
               {
                 label: "Tailwind CSS",
