@@ -4,6 +4,173 @@ sidebar_position: 3
 
 # Prisma
 
+Prisma's data modeling language
+
+create the Prisma model
+
+`id`: an auto-incrementing integer to uniquely identify each user in the database
+
+create the database table
+
+explore some of the available database queries you can send with it. You'll learn about CRUD queries, relation queries (like nested writes), filtering and pagination. Along the way, you will run another migration to introduce a second model with a _[relation](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)_ to the `User` model that you created before.
+
+**Type yourself**, don't copy and paste. To learn and really _understand_ what you are doing for each task, be sure to **not copy and paste the solution** but type out the solution yourself (even if you have to look it up).
+
+run a migration to apply the changes against your database:
+
+```graphql
+npx prisma migrate dev --name add-post
+```
+
+- **Use the autocompletion**
+
+  To invoke the autocompletion, you can open `src/index.ts` and type following _inside_ of the `main` function (you can delete the comment `// ... your Prisma Client queries will go here` that's currently there):
+
+  Once you typed the line `const result = await prisma.` \**\*\*into your editor, a little popup will be shown that lets you select the options for composing a query (e.g. selecting a *model* you want to query or using another top-level function like `$queryRaw` or `$connect`). Autocompletion is available for the *entire\* query, including any arguments that you might want to provide!
+
+```bash
+yarn dev
+```
+
+```ts title="update an existing record"
+async function main() {
+  const updateOneRecord = await prisma.user.update({
+    where: {
+      email: "alice@prisma.io"
+    },
+    data: {
+      name: "Alice"
+    }
+  })
+  console.log(updateOneRecord)
+}
+```
+
+`id`: an auto-incrementing integer to uniquely identify each post in the database
+
+`author` and `authorId`: configures a _relation_ from a post to a user who should be considered the author of the post; the relation should be _optional_ so that a post doesn't necessarily need an author in the database; note that _all_ relations in Prisma are bi-directional, meaning you'll need to add the second side of the relation on the already existing `User` model as well
+
+the `authorId` foreign key column in the database.
+
+set foreign keys but you can configure relations
+
+```ts title="update an existing related record"
+async function main() {
+  const updateOneRelatedRecord = await prisma.post.update({
+    where: { id: 1 },
+    data: {
+      author: {
+        connect: { email: "alice@prisma.io" }
+      }
+    }
+  })
+  console.log(updateOneRelatedRecord)
+}
+```
+
+```ts title="retrieve one record by an unique value"
+async function main() {
+  const retrieveOneRecord = await prisma.user.findUnique({
+    where: { email: "alice@prisma.io" }
+  })
+  console.log(retrieveOneRecord)
+}
+```
+
+```ts title="retrieve all records with selected fields"
+async function main() {
+  const retrieveAllRecordsSelectedFields = await prisma.user.findMany({
+    select: {
+      id: true,
+      name: true
+    }
+  })
+  console.log(retrieveAllRecordsSelectedFields)
+}
+```
+
+```ts title="retrieve one user with his related posts"
+async function main() {
+  const oneUserAndRelatedPosts = await prisma.user.findUnique({
+    where: { email: "alice@prisma.io" },
+    include: { posts: true }
+  })
+  console.dir(oneUserAndRelatedPosts, { depth: null })
+}
+```
+
+```tsx
+const result: (User & { posts: Post[] }) | null
+
+type Post = {
+  id: number
+  title: string
+  content: string | null
+  published: boolean
+  authorId: number | null
+}
+
+type User = {
+  id: number
+  name: string | null
+  email: string
+}
+```
+
+```tsx
+async function main() {
+  const newUserWithRelatedPost = await prisma.user.create({
+    data: {
+      name: "Nikolas",
+      email: "burk@prisma.io",
+      posts: {
+        create: { title: "A practical introduction to Prisma" }
+      }
+    }
+  })
+  console.log(newUserWithRelatedPost)
+}
+```
+
+```tsx
+async function main() {
+  const recordsStartWithA = await prisma.user.findMany({
+    where: {
+      name: {
+        startsWith: "A"
+      }
+    }
+  })
+  console.log(recordsStartWithA)
+}
+```
+
+```ts title=""
+async function main() {
+  const pagination = await prisma.user.findMany({
+    skip: 2,
+    take: 2
+  })
+  console.log(pagination)
+}
+```
+
+Prisma Client supports _atomic operations_ on integers. Write a Prisma Client query that updates an existing `Post` record by increasing the value of its `viewCount` by 1.
+
+```jsx
+async function main() {
+  const result = await prisma.post.update({
+    where: { id: 1 },
+    data: {
+      viewCount: {
+        increment: 1
+      }
+    }
+  })
+  console.log(result)
+}
+```
+
 ◭ [Prisma](https://prisma.io), an open source Object-Relational Mapper (ORM), is a modern toolkit to model, migrate, and query a database. [Examples repo](https://github.com/prisma/prisma-examples/), [Overview](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
 
 **TypeScript** makes database access entirely **type safe**. [SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
@@ -31,6 +198,17 @@ npx prisma init --datasource-provider mongodb
 
 # for PostgreSQL
 npx prisma init --datasource-provider postgresql
+
+# build Prisma schema
+
+# format the schema file for easier understanding
+npx prisma format
+
+# create database tables
+npx prisma migrate dev --name init
+
+# accommodate any new changes in Prisma schema
+npx prisma generate
 ```
 
 ## Prisma with MongoDB
@@ -124,8 +302,8 @@ model User {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   email     String   @unique
-  firstName String
-  lastName  String
+  firstName String?
+  lastName  String?
   isAdmin   Boolean  @default(false)
   role      Role     @default(USER)
   profile   Profile?
@@ -153,13 +331,14 @@ model Post {
   title     String
   content   String?
   published Boolean   @default(false)
-  author    User      @relation(fields: [authorId], references: [id])
-  authorId  Int
+  author    User?      @relation(fields: [authorId], references: [id])
+  authorId  Int?
   keywords  String[] // a scalar list
   // categories Category[] @relation(references: [id])
   // a list of related models
   // a post can have many comments
   comments  Comment[]
+  viewCount Int     @default(0)
 }
 
 model Category {
@@ -292,9 +471,6 @@ An illustration by [Prisma.io](https://www.prisma.io/docs/getting-started/setup-
 # show introduction
 npx prisma
 
-# whenever making changes in Prisma schema, need to invoke `prisma generate` to accommodate the changes
-npx prisma generate
-
 # pull the schema from an existing database, updating the Prisma schema
 npx prisma db pull
 
@@ -303,9 +479,6 @@ npx prisma db push
 
 # validate your Prisma schema
 npx prisma validate
-
-# format your Prisma schema
-npx prisma format
 ```
 
 ## Prisma Client
