@@ -8,9 +8,7 @@ sidebar_position: 3
 
 **TypeScript** makes database access entirely **type safe**. [SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
 
-## Prisma with SQLite
-
-```bash title="setup Prisma with SQLite"
+```bash title="setup"
 # initialize a project
 yarn init -y
 
@@ -24,11 +22,15 @@ yarn add @prisma/client
 npx tsc --init
 
 # create prisma/schema.prisma & .env
-npx prisma init --datasource-provider sqlite
-```
 
-```env title=".env"
-DATABASE_URL="file:./dev.db"
+# for SQLite
+npx prisma init --datasource-provider sqlite
+
+# for MongoDB
+npx prisma init --datasource-provider mongodb
+
+# for PostgreSQL
+npx prisma init --datasource-provider postgresql
 ```
 
 ## Prisma with MongoDB
@@ -40,14 +42,6 @@ MongoDB projects do not rely on internal schemas where changes need to be manage
 Primary keys in MongoDB are always on the \_id field of a model. --> NO @@id attribute and autoincrement()
 
 MongoDB only allows you to start a transaction on a replica set. Prisma uses transactions internally to avoid partial writes on nested queries. This means we inherit the requirement of needing a replica set configured.
-
-```bash title="setup Prisma with MongoDB"
-yarn init -y
-yarn add -D typescript ts-node @types/node prisma
-yarn add @prisma/client
-npx tsc --init
-npx prisma init --datasource-provider mongodb
-```
 
 An illustration by [Prisma](https://www.prisma.io/docs/concepts/database-connectors/mongodb) showing the structure of a MongoDB connection URL
 
@@ -74,21 +68,6 @@ Prisma MongoDB, String string, Boolean bool, Int int, BigInt long, Float double,
 ## Prisma with PostgreSQL
 
 [SSL with PostgreSQL](https://www.prisma.io/docs/concepts/database-connectors/postgresql#configuring-an-ssl-connection)
-
-```bash title="setup Prisma with MongoDB"
-yarn init -y
-yarn add -D typescript ts-node @types/node prisma
-yarn add @prisma/client
-npx tsc --init
-npx prisma init --datasource-provider postgresql
-```
-
-```prisma title="if certificate files exist"
-datasource db {
-  provider = "postgresql"
-  url      = "postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public&sslmode=require&sslcert=../server-ca.pem&sslidentity=../client-identity.p12&sslpassword=<REDACTED>"
-}
-```
 
 ## `prisma/schema.prisma`
 
