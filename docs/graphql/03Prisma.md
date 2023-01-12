@@ -4,29 +4,55 @@ sidebar_position: 3
 
 # Prisma
 
-Prisma's data modeling language
+◭ [Prisma](https://prisma.io), an open source Object-Relational Mapper (ORM), is a modern toolkit to model, migrate, and query a database. [Examples repo](https://github.com/prisma/prisma-examples/), [Overview](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
 
-create the Prisma model
+**TypeScript** makes database access entirely **type safe**. [SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
+
+To learn and really understand what you are doing for each task, **TYPE YOURSELF**, don't copy and paste.
+
+```bash title="setup"
+# initialize a project
+yarn init -y
+
+# install dev dependencies
+yarn add -D typescript ts-node @types/node prisma
+
+# install dependencies
+# invoke the autocompletion using CTRL + SPACE
+yarn add @prisma/client
+
+# create tsconfig.json
+npx tsc --init
+
+# create prisma/schema.prisma & .env
+
+# for SQLite
+npx prisma init --datasource-provider sqlite
+
+# for MongoDB
+npx prisma init --datasource-provider mongodb
+
+# for PostgreSQL
+npx prisma init --datasource-provider postgresql
+
+# build the Prisma data models (prisma/schema.prisma)
+
+# format the schema file
+npx prisma format
+
+# run a migration to apply the changes against the database
+# create `prisma/migrations/` and `prisma/dev.db`
+npx prisma migrate dev --name init
+
+# manually regenerate Prisma Client after a schema change
+npx prisma generate
+```
+
+## notes
 
 `id`: an auto-incrementing integer to uniquely identify each user in the database
 
-create the database table
-
 explore some of the available database queries you can send with it. You'll learn about CRUD queries, relation queries (like nested writes), filtering and pagination. Along the way, you will run another migration to introduce a second model with a _[relation](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)_ to the `User` model that you created before.
-
-**Type yourself**, don't copy and paste. To learn and really _understand_ what you are doing for each task, be sure to **not copy and paste the solution** but type out the solution yourself (even if you have to look it up).
-
-run a migration to apply the changes against your database:
-
-```graphql
-npx prisma migrate dev --name add-post
-```
-
-- **Use the autocompletion**
-
-  To invoke the autocompletion, you can open `src/index.ts` and type following _inside_ of the `main` function (you can delete the comment `// ... your Prisma Client queries will go here` that's currently there):
-
-  Once you typed the line `const result = await prisma.` \**\*\*into your editor, a little popup will be shown that lets you select the options for composing a query (e.g. selecting a *model* you want to query or using another top-level function like `$queryRaw` or `$connect`). Autocompletion is available for the *entire\* query, including any arguments that you might want to provide!
 
 ```bash
 yarn dev
@@ -68,38 +94,7 @@ async function main() {
 }
 ```
 
-```ts title="retrieve one record by an unique value"
-async function main() {
-  const retrieveOneRecord = await prisma.user.findUnique({
-    where: { email: "alice@prisma.io" }
-  })
-  console.log(retrieveOneRecord)
-}
-```
-
-```ts title="retrieve all records with selected fields"
-async function main() {
-  const retrieveAllRecordsSelectedFields = await prisma.user.findMany({
-    select: {
-      id: true,
-      name: true
-    }
-  })
-  console.log(retrieveAllRecordsSelectedFields)
-}
-```
-
-```ts title="retrieve one user with his related posts"
-async function main() {
-  const oneUserAndRelatedPosts = await prisma.user.findUnique({
-    where: { email: "alice@prisma.io" },
-    include: { posts: true }
-  })
-  console.dir(oneUserAndRelatedPosts, { depth: null })
-}
-```
-
-```tsx
+```ts
 const result: (User & { posts: Post[] }) | null
 
 type Post = {
@@ -132,19 +127,6 @@ async function main() {
 }
 ```
 
-```tsx
-async function main() {
-  const recordsStartWithA = await prisma.user.findMany({
-    where: {
-      name: {
-        startsWith: "A"
-      }
-    }
-  })
-  console.log(recordsStartWithA)
-}
-```
-
 ```ts title=""
 async function main() {
   const pagination = await prisma.user.findMany({
@@ -171,83 +153,9 @@ async function main() {
 }
 ```
 
-◭ [Prisma](https://prisma.io), an open source Object-Relational Mapper (ORM), is a modern toolkit to model, migrate, and query a database. [Examples repo](https://github.com/prisma/prisma-examples/), [Overview](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
-
-**TypeScript** makes database access entirely **type safe**. [SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
-
-```bash title="setup"
-# initialize a project
-yarn init -y
-
-# install dev dependencies
-yarn add -D typescript ts-node @types/node prisma
-
-# install dependencies
-yarn add @prisma/client
-
-# create tsconfig.json
-npx tsc --init
-
-# create prisma/schema.prisma & .env
-
-# for SQLite
-npx prisma init --datasource-provider sqlite
-
-# for MongoDB
-npx prisma init --datasource-provider mongodb
-
-# for PostgreSQL
-npx prisma init --datasource-provider postgresql
-
-# build Prisma schema
-
-# format the schema file for easier understanding
-npx prisma format
-
-# create database tables
-npx prisma migrate dev --name init
-
-# accommodate any new changes in Prisma schema
-npx prisma generate
-```
-
-## Prisma with MongoDB
-
-The [MongoDB database connector](https://www.prisma.io/docs/concepts/database-connectors/mongodb) uses transactions to support nested writes. Transactions requires a [replica set](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/) deployment. The easiest way to deploy a replica set is with [Atlas](https://www.mongodb.com/docs/atlas/getting-started/). [Migrate from Mongoose](https://www.prisma.io/docs/guides/migrate-to-prisma/migrate-from-mongoose)
-
-MongoDB projects do not rely on internal schemas where changes need to be managed with an extra tool. Management of @unique indexes is realized through db push. --> NO Prisma Migrate
-
-Primary keys in MongoDB are always on the \_id field of a model. --> NO @@id attribute and autoincrement()
-
-MongoDB only allows you to start a transaction on a replica set. Prisma uses transactions internally to avoid partial writes on nested queries. This means we inherit the requirement of needing a replica set configured.
-
-An illustration by [Prisma](https://www.prisma.io/docs/concepts/database-connectors/mongodb) showing the structure of a MongoDB connection URL
-
-![Structure of MongoDB connection URL](https://www.prisma.io/docs/static/b5ef4062c4686c772571b3079ba1331c/3c492/mongodb.png)
-
-```env title=".env"
-DATABASE_URL="mongodb+srv://<username>:<password>@<host>/testDB"
-```
-
-[MongoDB schema reference](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#mongodb-2)
-
-include the posts relations on the returned User objects
-
-Type mapping between MongoDB and the Prisma schema
-
-Prisma schema reference for type mappings organized by Prisma type.
-
-Mapping from Prisma to MongoDB types on migration
-
-The MongoDB connector maps the scalar types from the Prisma data model to MongoDB's native column types as follows:
-
-Prisma MongoDB, String string, Boolean bool, Int int, BigInt long, Float double, DateTime timestamp, Date date, Bytes binData
-
-## Prisma with PostgreSQL
-
-[SSL with PostgreSQL](https://www.prisma.io/docs/concepts/database-connectors/postgresql#configuring-an-ssl-connection)
-
 ## `prisma/schema.prisma`
+
+Prisma Schema Language (PSL) : An intuitive data modeling language. [Docs](https://www.prisma.io/docs/concepts/components/prisma-schema), [Relations (Reference)](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)
 
 The **single source of truth** for the **models** of your application. Models represent the **entities** of your application domain. A model defines a number of **fields**. Fields can include **relations** between models, **attributes**, and **modifiers**.
 
@@ -270,8 +178,6 @@ Field attributes : `@id`, `@default`, `@unique`, `@relation`
 Block attribute : `@@unique`
 
 > `@default` accepts arguments
-
-### More about schema
 
 Prisma's model naming conventions (singular form, PascalCase) do not always match table/collection names in database. A common approach for naming tables/collections in databases is to use plural form and snake_case notation.
 
@@ -403,16 +309,6 @@ const user = await prisma.user.create({
 })
 ```
 
-```bash
-prisma generate --schema ./database/myschema.prisma
-# or
-prisma generate --schema=./alternative/schema.prisma
-```
-
-Prisma Schema Language (PSL)
-
-indicates syntax errors with red squiggly lines
-
 ```json title="package.json"
 "prisma": {
   "schema": "db/schema.prisma"
@@ -420,24 +316,6 @@ indicates syntax errors with red squiggly lines
 ```
 
 This comment will show up in the abstract syntax tree (AST) of the schema file as descriptions to AST nodes. Tools can then use these comments to provide additional information. All comments are attached to the next available node - free-floating comments are not supported and are not included in the AST.
-
-The data model is a collection of models. Define application models in an intuitive data modeling language. [Docs](https://www.prisma.io/docs/concepts/components/prisma-schema), [Relations (Reference)](https://www.prisma.io/docs/concepts/components/prisma-schema/relations)
-
-```prisma title="prisma/schema.prisma"
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  user   User    @relation(fields: [userId], references: [id])
-  userId Int     @unique
-}
-
-model User {
-  id      Int      @id @default(autoincrement())
-  email   String   @unique
-  name    String?
-  profile Profile?
-}
-```
 
 The User record is connected to the two other ones via
 
@@ -455,62 +333,15 @@ An illustration by [Prisma.io](https://www.prisma.io/docs/getting-started/setup-
 
 ![Typical workflow with Prisma Migrate](https://www.prisma.io/docs/static/153657b52bde1b006c94234b5753d495/3c492/prisma-migrate-development-workflow.png)
 
-```bash title="create database tables"
-npx prisma migrate dev --name init
-```
-
-Create `prisma/migrations/` and `prisma/dev.db`
-
-Generate **Prisma Client** in `node_modules/@prisma/client/`
-
 An illustration by [Prisma.io](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases/install-prisma-client-typescript-postgres) showing the workflow of `prisma generate`
 
 ![prisma generate](https://res.cloudinary.com/prismaio/image/upload/v1628761155/docs/FensWfo.png)
-
-```bash title="more about Prisma CLI"
-# show introduction
-npx prisma
-
-# pull the schema from an existing database, updating the Prisma schema
-npx prisma db pull
-
-# push the Prisma schema state to the database
-npx prisma db push
-
-# validate your Prisma schema
-npx prisma validate
-```
 
 ## Prisma Client
 
 A type-safe query builder. Query result is statically typed --> Can't accidentally access a property that doesn't exist. [Docs](https://www.prisma.io/docs/concepts/components/prisma-client), [API Reference](https://www.prisma.io/docs/concepts/components/prisma-client)
 
-Prisma Client can be used in any Node.js (supported versions) or TypeScript backend application (including serverless applications and microservices). This can be a [REST API](https://www.prisma.io/docs/concepts/overview/prisma-in-your-stack/rest), a [GraphQL API](https://www.prisma.io/docs/concepts/overview/prisma-in-your-stack/graphql), a gRPC API, or anything else that needs a database.
-
-Installing the `@prisma/client` package invokes the `prisma generate` command, which reads your Prisma schema and generates the Prisma Client code in `node_modules/.prisma/client`
-
-```bash title="manually regenerate Prisma Client after a schema change"
-prisma generate
-```
-
-CTRL + SPACE : Invoke autocompletion
-
-```ts title="scripts/03addUser.ts"
-const main = async () => {
-  const newUser = await prisma.user.create({
-    data: {
-      name: "Bob",
-      email: "bob@prisma.io",
-      posts: {
-        create: {
-          title: "Hello World"
-        }
-      }
-    }
-  })
-  console.log(newUser)
-}
-```
+[REST API](https://www.prisma.io/docs/concepts/overview/prisma-in-your-stack/rest), [GraphQL API](https://www.prisma.io/docs/concepts/overview/prisma-in-your-stack/graphql)
 
 ```bash title="create a user with a post"
 npx ts-node scripts/03addUser.ts
@@ -519,79 +350,9 @@ npx ts-node scripts/03addUser.ts
 { id: 2, email: 'bob@prisma.io', name: 'Bob' }
 ```
 
-```ts title="scripts/05addUserBio.ts"
-async function main() {
-  await prisma.user.create({
-    data: {
-      name: "Alice",
-      email: "alice@prisma.io",
-      posts: {
-        create: { title: "Hello World" }
-      },
-      profile: {
-        create: { bio: "I like turtles" }
-      }
-    }
-  })
-
-  const allUsers = await prisma.user.findMany({
-    include: {
-      posts: true,
-      profile: true
-    }
-  })
-  console.dir(allUsers, { depth: null })
-}
-```
-
-```bash title="create a user with a post & a bio"
-[
-  {
-    id: 2,
-    email: 'alice@prisma.io',
-    name: 'Alice',
-    posts: [
-      {
-        id: 1,
-        createdAt: 2023-01-07T09:54:17.185Z,
-        updatedAt: 2023-01-07T09:54:17.185Z,
-        title: 'Hello World',
-        content: null,
-        published: false,
-        authorId: 2
-      }
-    ],
-    profile: { id: 1, bio: 'I like turtles', userId: 2 }
-  }
-]
-```
-
-```ts title="update an existing post"
-const post = await prisma.post.update({
-  where: { id: 42 },
-  data: { published: true }
-})
-```
-
-```ts title="filter posts that contain a keyword"
-const filteredPosts = await prisma.post.findMany({
-  where: {
-    OR: [{ title: { contains: "prisma" } }, { content: { contains: "prisma" } }]
-  }
-})
-```
-
 ## Prisma Studio
 
 [prisma-examples repository](https://github.com/prisma/prisma-examples/), [Build a REST API with NestJS](https://www.prisma.io/blog/nestjs-prisma-rest-api-7D056s1BmOL0)
-
-```bash
-# open Prisma Studio
-npx prisma studio
-
-# go to
-http://localhost:5555
-```
 
 [rest-nextjs-api-routes](https://github.com/prisma/prisma-examples/tree/latest/typescript/rest-nextjs-api-routes) : Simple Next.js app (React) with a REST API
 
@@ -950,7 +711,41 @@ model Post {
 
 ---
 
-## PostgreSQL
+## Prisma with MongoDB
+
+The [MongoDB database connector](https://www.prisma.io/docs/concepts/database-connectors/mongodb) uses transactions to support nested writes. Transactions requires a [replica set](https://www.mongodb.com/docs/manual/tutorial/deploy-replica-set/) deployment. The easiest way to deploy a replica set is with [Atlas](https://www.mongodb.com/docs/atlas/getting-started/). [Migrate from Mongoose](https://www.prisma.io/docs/guides/migrate-to-prisma/migrate-from-mongoose)
+
+MongoDB projects do not rely on internal schemas where changes need to be managed with an extra tool. Management of @unique indexes is realized through db push. --> NO Prisma Migrate
+
+Primary keys in MongoDB are always on the \_id field of a model. --> NO @@id attribute and autoincrement()
+
+MongoDB only allows you to start a transaction on a replica set. Prisma uses transactions internally to avoid partial writes on nested queries. This means we inherit the requirement of needing a replica set configured.
+
+An illustration by [Prisma](https://www.prisma.io/docs/concepts/database-connectors/mongodb) showing the structure of a MongoDB connection URL
+
+![Structure of MongoDB connection URL](https://www.prisma.io/docs/static/b5ef4062c4686c772571b3079ba1331c/3c492/mongodb.png)
+
+```env title=".env"
+DATABASE_URL="mongodb+srv://<username>:<password>@<host>/testDB"
+```
+
+[MongoDB schema reference](https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#mongodb-2)
+
+include the posts relations on the returned User objects
+
+Type mapping between MongoDB and the Prisma schema
+
+Prisma schema reference for type mappings organized by Prisma type.
+
+Mapping from Prisma to MongoDB types on migration
+
+The MongoDB connector maps the scalar types from the Prisma data model to MongoDB's native column types as follows:
+
+Prisma MongoDB, String string, Boolean bool, Int int, BigInt long, Float double, DateTime timestamp, Date date, Bytes binData
+
+## Prisma with PostgreSQL
+
+[SSL with PostgreSQL](https://www.prisma.io/docs/concepts/database-connectors/postgresql#configuring-an-ssl-connection)
 
 [Connection URLs (Reference)](https://www.prisma.io/docs/reference/database-reference/connection-urls)
 
@@ -1070,33 +865,12 @@ filtering, sorting, pagination, updating and deleting
 
 [Fullstack app with TypeScript, Next.js, Prisma & GraphQL](https://www.prisma.io/blog/fullstack-nextjs-graphql-prisma-oklidw1rhw)
 
-## Mahmoud Abdelwahab's Tutorial
-
-## GraphQL API
-
-## Authentication w Auth0
-
-## Authorization
-
-## Image upload
-
-## Deployment
-
 Next.js, Apollo Server, Apollo Client, Nexus (construct GraphQL schema), Prisma (ORM for migrations and database access), PostgreSQL, AWS S3, Auth0, TypeScript, TailwindCSS,
 Vercel
 
 ```bash title=""
 # clone
 git clone -b part-1 https://github.com/m-abdelwahab/awesome-links.git
-
-# navigate into the cloned directory
-cd awesome-links
-
-# install the dependencies
-yarn
-
-# install Prisma CLI
-yarn add -D prisma
 
 # create a basic Prisma setup
 npx prisma init
@@ -1107,20 +881,7 @@ yarn dev
 
 ## Prisma, an ORM
 
-```env title="demo db URL"
-DATABASE_URL="postgresql://giwuzwpdnrgtzv:d003c6a604bb400ea955c3abd8c16cc98f2d909283c322ebd8e9164b33ccdb75@ec2-54-170-123-247.eu-west-1.compute.amazonaws.com:5432/d6ajekcigbuca9"
-```
-
 ```prisma title="schema.prisma"
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -1150,20 +911,7 @@ model Link {
 }
 ```
 
-```bash
-# create these tables in the database
-npx prisma db push
-
-# turn database schema into a Prisma schema.
-prisma db pull
-
-# generate the Prisma Client
-prisma generate
-```
-
 ![database](https://prisma-blog-ebon.vercel.app/blog/posts/database-url-breakdown.png)
-
-NAME PLACEHOLDER DESCRIPTION
 
 Host HOST IP address/domain of your database server, e.g. localhost
 
@@ -1197,37 +945,15 @@ Seeding the database
 
 Since the database is currently empty, we want to populate it with data. The first thing we need to do is install Prisma Client, a type-safe query builder, which will allow us to interact with our database.
 
-To install Prisma Client, run the following command:
+use Prisma's integrated seeding functionality
 
-npm install @prisma/client
-COPY
-
-Next, create a new file called /prisma/seed.ts, it will allow us to use Prisma's integrated seeding functionality. Inside this file, import Prisma Client, instantiate it, and create some records:
-
-// prisma/seed.ts
-import { PrismaClient } from '@prisma/client'import { data } from '../data/links'const prisma = new PrismaClient()
-async function main() { await prisma.user.create({ data: { email: `testemail@gmail.com`, role: 'ADMIN', }, })
-await prisma.link.createMany({ data: data, })}
-main() .catch(e => { console.error(e) process.exit(1) }) .finally(async () => { await prisma.$disconnect() })
-COPY
-
-We are first creating a user using the create() function, which creates a new database record.
-
-Next, we are using the createMany() function to create multiple records. We are passing the hard-coded data we have as a parameter.
+the createMany() function to create multiple records. We are passing the hard-coded data we have as a parameter.
 
 By default, Next.js forces the use of ESNext modules, we need to override this behavior or else we will not be able to execute the seeding script. To do so, first install ts-node as a development dependency:
 
-npm install ts-node -D
-COPY
-
 Then in the tsconfig.json file, specify that ts-node will use CommonJS modules.
 
-{ //...
-"include": [ "next-env.d.ts", "**/*.ts", "**/*.tsx" ], "exclude": [ "node_modules" ],+ "ts-node": {+ "compilerOptions": {+ "module": "commonjs"+ }+ }}
-You can now seed your database by running the following command:
-
 npx prisma db seed
-COPY
 
 If everything worked correctly you should see the following output:
 
@@ -1238,12 +964,3 @@ Use Prisma Studio to explore your database
 Prisma comes with Prisma Studio, a GUI for exploring and manipulating your data. You can use it to view, create, update or delete data from your database.
 
 If you've done all the steps correctly you should you have the Link and User models inside your database. Inside the Link model you'll find 4 records and for the User model you'll find 1 record.
-
-In this article we explained the problem domain and modeled our data using Prisma. We also seeded our database and explored it using Prisma Studio. Now we have a Next.js app that is connected to a PostgreSQL database.
-
-In the next part of the course, we will learn about:
-
-GraphQL and the advantages it has over REST when building APIs.
-Building a GraphQL API for our app using Apollo server and Nexus.
-Consuming the API on the client using Apollo Client.
-GraphQL pagination so that we don't load all links at once and have better performance.
