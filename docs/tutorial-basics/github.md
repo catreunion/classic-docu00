@@ -2,34 +2,92 @@
 sidebar_position: 1
 ---
 
-# GitHub
+# Build a notes app
 
-## Create a repository on GitHub
+## Docusaurus
 
-Sign in to [GitHub](https://github.com/).
+```bash title="generate a Docusaurus site "
+npx create-docusaurus@latest connie-docu01 classic
+cd connie-docu01
+
+# remove the node_modules directory
+rm -rf node_modules
+
+# install the default dep
+yarn
+```
+
+## GitHub
+
+[GitHub](https://github.com/)
+
+## SSH keys
+
+```bash title="create a new pair of SSH keys"
+ssh-keygen -t ed25519 -C <emailAddress>
+# or
+ssh-keygen -t rsa -b 4096 -C <emailAddress>
+
+# enter a secure passphrase and write it down immediately
+# accept the default location
+# add the public key to GitHub
+
+# create a config file
+touch ~/.ssh/config
+
+# add to the config file
+Host *
+  AddKeysToAgent yes
+  UseKeychain yes
+  IdentityFile ~/.ssh/id_ed25519
+```
+
+## Private key
+
+```bash title="activate the private key"
+# make sure a SSH client is installed
+ssh -V
+
+# start the ssh client
+eval "$(ssh-agent -s)"
+
+# for Mac
+ssh-add -K ~/.ssh/id_ed25519
+# for macOS Monterey, -K and -A are replaced by --apple-use-keychain and --apple-load-keychain
+
+# for Linux
+ssh-add ~/.ssh/id_ed25519
+
+# adjust file permissions if error occurs
+chmod 600 ~/.ssh/*
+
+# basic configuration
+git config --global user.name <full user name>
+git config --global user.email <email address>
+
+# run a test
+ssh -T git@github.com
+```
+
+## A repo in GitHub
 
 On the upper right corner, click the plus icon. Click "New repository".
 
-Suggest a repository name, e.g. `next-demo-00`. Choose **private**. Click "Create repository".
+Name the repository, e.g. `connie-docu01`, click "Create repository".
 
-On the section of **Quick setup**, click **SSH**. Click the copy icon.
+On the section of **Quick setup**, click **SSH**. Click the copy icon. SSH stands for Secure Shell Protocol.
 
-```bash title="link a project with GitHub"
-# stop the dev environment
+[Git official](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git), [Git Handbook](https://docs.github.com/en/get-started/using-git/about-git), [GitHub](https://github.com/), [.gitignore](https://git-scm.com/docs/gitignore)
 
-# remove the default git directory
-rm -rf .git
-
-# initialize a local repository
+```bash title="setup a local repository"
+# initialize a new local repository
 git init
 
-# add all the items to local repository
+# add items to the local repository
 git add .
 
 # leave a note for this stage
 git commit -m 'version 1.0.0'
-
-# create a new repository in GitHub
 
 # connect to the remote repository
 git remote add origin git@github.com:<username>/<project-name>.git
@@ -37,22 +95,19 @@ git remote add origin git@github.com:<username>/<project-name>.git
 # create the main branch
 git branch -M main
 
-# add all the items to remote repository
+# push all the items to the remote repository
 git push -u origin main
-
-# input the passphrase of the SSH keys
-Enter passphrase for key '/Users/isaac/.ssh/id_ed25519':
-
-# go to https://vercel.com and sign up for a free account
 ```
 
-Connect and authenticate to GitHub using Secure Shell Protocol (SSH).
+## Common hosting providers
 
-If you haven't used your SSH key for one year, GitHub will automatically delete your inactive SSH key.
+[Netlify](https://app.netlify.com/)
 
-Source : [Git official](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git), [Git Handbook](https://docs.github.com/en/get-started/using-git/about-git), [GitHub](https://github.com/), [.gitignore](https://git-scm.com/docs/gitignore)
+[Vercel](https://vercel.com/catreunion)
 
-Useful Browser Extensions
+[Railway](https://railway.app/dashboard)
+
+## Browser Extensions
 
 [React Developer Tools](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi)
 
@@ -76,78 +131,6 @@ wsl pwd
 
 # check the version and build number of your Windows
 Windows + R > winver
-```
-
-## Generating a new site
-
-```bash title="generate a new Docusaurus site "
-# method 1
-npx create-docusaurus@latest classic-docu01 classic
-
-# method 2 (seems not responding but will eventually work)
-npm init docusaurus@latest classic-docu01 classic
-
-# yarn add @docusaurus/plugin-content-pages
-# @docusaurus/preset-classic
-
-cd classic-docu01
-
-yarn
-
-yarn start
-# npx docusaurus start
-
-# npx docusaurus --version
-```
-
-```bash title="Creating a pair of SSH keys on Mac"
-# 1. generate a pair of SSH keys
-ssh-keygen -t ed25519 -C <emailAddress>
-# or: ssh-keygen -t rsa -b 4096 -C <emailAddress>
-
-# 2. enter a secure passphrase and write it down immediately
-
-# 3. accept the default location
-# directory   : ~/.ssh/
-# private key : ~/.ssh/id_ed25519
-# public key  : ~/.ssh/id_ed25519.pub
-# ~/.gitconfig
-
-# 4. create a config file
-touch ~/.ssh/config
-
-# 5. add these lines to the config file
-Host *
-  AddKeysToAgent yes
-  UseKeychain yes
-  IdentityFile ~/.ssh/id_ed25519
-```
-
-```bash title="Adding the private key to ssh-agent"
-# 1. make sure a SSH client is installed
-ssh -V
-
-# 2. start the ssh client in background
-eval "$(ssh-agent -s)"
-
-# 3A. if you are using Mac, follow it to add the private key to the ssh client
-ssh-add -K ~/.ssh/id_ed25519
-# In MacOS Monterey, -K and -A are replaced by --apple-use-keychain and --apple-load-keychain
-
-# 3B. if you are using Linux, follow it
-ssh-add ~/.ssh/id_ed25519
-
-# adjust the file permissions of the SSH keys if necessary
-chmod 600 ~/.ssh/*
-
-# add the public key to GitHub if necessary
-
-# 4. handle basic configuration
-git config --global user.name <user name>
-git config --global user.email <email address>
-
-# 5. run a test
-ssh -T git@github.com
 ```
 
 ## Option 1 : React Page
