@@ -15,7 +15,7 @@ const HomepageHeader = () => {
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
           <Link to="/docs/intro" className="button button--secondary button--lg">
-            Docusaurus Tutorial - 5min ⏱️
+            Get started
           </Link>
         </div>
       </div>

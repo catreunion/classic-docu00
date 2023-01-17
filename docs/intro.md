@@ -59,7 +59,7 @@ chsh -s /usr/bin/zsh <username>
 
 suggested extensions
 
-> coding : [One Dark Pro](https://marketplace.visualstudio.com/items?itemName=zhuangtongfa.Material-theme), [Prettier - Code formatter](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+> coding : [One Dark Pro](https://marketplace.visualstudio.com/items?itemName=zhuangtongfa.Material-theme), [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
 
 > frontend : [Tailwind CSS IntelliSense](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss)
 
@@ -83,7 +83,11 @@ suggested extensions
   "prettier.trailingComma": "none",
   "terminal.integrated.fontFamily": "MesloLGS NF",
   "workbench.colorTheme": "One Dark Pro",
-  "workbench.startupEditor": "none"
+  "workbench.startupEditor": "none",
+  "window.zoomLevel": 2,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
 }
 ```
 

@@ -4,19 +4,11 @@ sidebar_position: 3
 
 # Prisma
 
-◭ [Prisma](https://prisma.io), an open source Object-Relational Mapper (ORM), is a modern toolkit to model, migrate, and query a database. [Examples repo](https://github.com/prisma/prisma-examples/), [Overview](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
+[Prisma](https://prisma.io) is an open source Object-Relational Mapper (ORM). It consists of Prisma Client (a query builder for Node.js & TypeScript), Prisma Migrate, and Prisma Studio.
 
-**TypeScript** makes database access entirely **type safe**. [SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig)
+**TypeScript** makes database access entirely **type safe**.
 
-To learn and really understand what you are doing for each task, **TYPE YOURSELF**, don't copy and paste.
-
-[Prisma extension - VS Code](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma)
-
-```json title="settings.json"
-"[prisma]": {
-  "editor.defaultFormatter": "Prisma.prisma"
-}
-```
+[SQLite](https://www.prisma.io/docs/getting-started/quickstart), [Get started](https://pris.ly/d/getting-started), [Prisma schema](https://pris.ly/d/prisma-schema), [tsconfig.json](https://aka.ms/tsconfig), [Examples repo](https://github.com/prisma/prisma-examples/), [Overview](https://www.prisma.io/docs/concepts/overview/what-is-prisma)
 
 ```bash title="setup"
 # initialize a project
@@ -25,36 +17,32 @@ yarn init -y
 # install dev dependencies
 yarn add -D typescript ts-node @types/node prisma
 
-# install dependencies
-# invoke the autocompletion using CTRL + SPACE
-yarn add @prisma/client
-
 # create tsconfig.json
 npx tsc --init
 
-# create prisma/schema.prisma & .env
+# create prisma/schema.prisma & .env for different types of databases
+npx prisma init --datasource-provider sqlite | mongodb | postgresql
 
-# for SQLite
-npx prisma init --datasource-provider sqlite
-
-# for MongoDB
-npx prisma init --datasource-provider mongodb
-
-# for PostgreSQL
-npx prisma init --datasource-provider postgresql
-
-# build the Prisma data models (prisma/schema.prisma)
+# build the Prisma data models
 
 # format the schema file
 npx prisma format
 
-# run a migration to apply the changes against the database
+# install dependencies
+# invoke autocompletion using CTRL + SPACE
+yarn add @prisma/client
+
+# apply changes against the database
 # create `prisma/migrations/` and `prisma/dev.db`
 npx prisma migrate dev --name init
 
 # manually regenerate Prisma Client after a schema change
 npx prisma generate
 ```
+
+PostgreSQL - a Relational database
+
+Prisma with Next.js, Prisma with GraphQL, Prisma with Apollo, Prisma with Nestjs, Prisma with Express, Prisma with hapi
 
 ## notes
 
