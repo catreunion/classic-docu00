@@ -7,7 +7,6 @@ const darkCodeTheme = require("prism-react-renderer/themes/dracula")
 /** @type {import('@docusaurus/types').Config} */
 
 const config = {
-  // title: "Easier to learn by practice",
   // title: "Go to sleep and come back with a cup of coffee.",
   title: "Come back with a cup of coffee.",
   tagline: "A documentation by Isaac Li",

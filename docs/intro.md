@@ -65,7 +65,7 @@ suggested extensions
 
 > backend : [Prisma](https://marketplace.visualstudio.com/items?itemName=Prisma.prisma), [MongoDB for VS Code](https://marketplace.visualstudio.com/items?itemName=mongodb.mongodb-vscode), [Rainbow CSV](https://marketplace.visualstudio.com/items?itemName=mechatroner.rainbow-csv)
 
-```json title="suggested settings"
+```json title="suggested settings for Mac / Linux"
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnPaste": true,
@@ -95,7 +95,7 @@ suggested extensions
 
 [Node.js](https://nodejs.org/en/) is a Javascript runtime environment for the development of web apps and network tools.
 
-With Node.js, JavaScript can be executed outside a web browser <-- become a standalone process on Node
+With Node.js, JavaScript can be executed outside a web browser → become a standalone process on Node
 
 JavaScript packages are distributed via [npm Registry](https://www.npmjs.com/).
 
@@ -138,7 +138,7 @@ yarn remove <package>
 
 ## WSL2 Part 1
 
-[WSL2](https://docs.microsoft.com/en-us/windows/wsl/about) lets developers run a GNU/Linux environment directly on Windows.
+[WSL2](https://docs.microsoft.com/en-us/windows/wsl/about) lets developers run a Linux environment directly on Windows.
 
 Your app, the **server**, runs remotely on **WSL2**.
 
@@ -174,7 +174,7 @@ wsl --install
 # run Ubuntu
 wsl -d Ubuntu
 
-# update Ubuntu
+# update the system
 sudo apt update && sudo apt upgrade -y
 
 # install Powerlevel10k
@@ -202,9 +202,9 @@ code .
 
 ## WSL2 Part 3
 
-In **local environment** : install Remote Development (includes WSL, Dev Containers, Remote - SSH), One Dark Pro
+In **local** environment : Remote Development (includes WSL, Dev Containers, Remote - SSH), One Dark Pro
 
-In **WSL environment** : Prettier, Tailwind CSS IntelliSense, Volar
+In **WSL** environment : Prettier, Tailwind CSS IntelliSense, Volar
 
 ```json title="suggested VS Code Settings"
 {

@@ -2,18 +2,24 @@
 sidebar_position: 1
 ---
 
-# Build a notes app
+# Docusaurus app
 
-## Docusaurus
+## Getting started
 
-```bash title="generate a Docusaurus site "
+```bash title="setup a Docusaurus project"
+# create a docusaurus project
 npx create-docusaurus@latest connie-docu01 classic
+npx create-docusaurus@latest i-science classic
+npx create-docusaurus@latest i-maths classic
+npx create-docusaurus@latest i-history classic
+
+# navigate to the project root directory
 cd connie-docu01
 
 # remove the node_modules directory
 rm -rf node_modules
 
-# install the default dep
+# install the default dependencies using yarn
 yarn
 ```
 
