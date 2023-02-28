@@ -8,13 +8,10 @@ sidebar_position: 1
 
 ```bash title="setup a Docusaurus project"
 # create a docusaurus project
-npx create-docusaurus@latest connie-docu01 classic
-npx create-docusaurus@latest i-science classic
-npx create-docusaurus@latest i-maths classic
-npx create-docusaurus@latest i-history classic
+npx create-docusaurus@latest i-computers classic
 
 # navigate to the project root directory
-cd connie-docu01
+cd <project-directory>
 
 # remove the node_modules directory
 rm -rf node_modules
